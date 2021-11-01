@@ -1,4 +1,3 @@
-import * as aws from 'aws-sdk';
 import * as dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import cors from "cors";
@@ -12,7 +11,8 @@ if (!process.env.PORT) {
   process.exit(1);
 }
 
-const PORT: number = parseInt(process.env.PORT as string, 10);
+// Heroku exposes PORT env var by default
+const PORT = process.env.PORT || 80;
 
 const app = express();
 app.use(helmet());
