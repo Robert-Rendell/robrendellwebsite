@@ -1,7 +1,7 @@
 import ImageUrl from '../models/image-s3-url';
 
-interface HomeResponse {
+interface HomePageResponse {
   travelImages: ImageUrl[];
 }
 
-export { HomeResponse as default };
+export { HomePageResponse as default };
