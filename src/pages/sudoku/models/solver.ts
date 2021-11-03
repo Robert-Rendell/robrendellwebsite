@@ -4,5 +4,6 @@ export interface Solver {
   id: string,
   who: string,
   sudoku: SudokuId,
-  dateGenerated: string,
+  timeTaken: number,
+  dateSolved: string,
 }
