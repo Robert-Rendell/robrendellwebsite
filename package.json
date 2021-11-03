@@ -10,9 +10,11 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "postinstall": "npm run build",
-    "dev": "ts-node index.ts",
+    "dev:slow": "ts-node index.ts",
+    "dev": "ts-node-dev --respawn --pretty --transpile-only index.ts",
     "test": "jasmine-ts \"./unit-tests/**/*.spec.ts\"",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
   },
   "repository": {
     "type": "git",
@@ -36,6 +38,7 @@
     "eslint": "~7.32.0",
     "eslint-config-airbnb-base": "~14.2.1",
     "eslint-plugin-import": "~2.25.2",
+    "ts-node-dev": "^1.1.8",
     "typescript": "~4.4.4"
   },
   "dependencies": {

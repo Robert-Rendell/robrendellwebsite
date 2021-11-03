@@ -1,9 +1,9 @@
-import * as dotenv from "dotenv";
-import express, { Request, Response } from "express";
-import cors from "cors";
-import helmet from "helmet";
-import morgan from "morgan";
-import { homepage } from './src/pages/homepage';
+import * as dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import homepage from './src/pages/home/home.page';
 
 dotenv.config();
 
@@ -22,4 +22,4 @@ app.use(express.json());
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
-app.get("/", homepage);
+app.get('/', homepage);
