@@ -4,7 +4,7 @@ import { ListObjectsV2Request, ObjectList } from 'aws-sdk/clients/s3';
 export default class S3BucketService {
   private s3: AWS.S3 = new AWS.S3();
 
-  async getDownloadLink(bucket: string, key: string): Promise<string> {
+  public async getDownloadLink(bucket: string, key: string): Promise<string> {
     const options = {
       Bucket: bucket,
       Key: key,
@@ -13,9 +13,10 @@ export default class S3BucketService {
     return this.s3.getSignedUrlPromise('getObject', options);
   }
 
-  async getDownloadLinks(bucket: string): Promise<string[]> {
+  public async getDownloadLinks(bucket: string, prefix?: string): Promise<string[]> {
     const options: ListObjectsV2Request = {
       Bucket: bucket,
+      Prefix: prefix,
     };
 
     const objs = await this.s3.listObjectsV2(options).promise();
@@ -23,8 +24,7 @@ export default class S3BucketService {
 
     const downloadLinkPromises: Promise<string>[] = [];
 
-    console.log(keys);
-    keys?.forEach((k) => {
+    keys?.filter((k) => (k.Size ?? -1) > 0).forEach((k) => {
       downloadLinkPromises.push(
         this.getDownloadLink(bucket, k.Key || ''),
       );
