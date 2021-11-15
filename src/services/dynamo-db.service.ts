@@ -1,10 +1,11 @@
 import * as AWS from 'aws-sdk';
+import { AttributeMap, GetItemInput } from 'aws-sdk/clients/dynamodb';
 import ConfigService from './config-service';
 
 export default class DynamoDBService {
-  private ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
+  static ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 
-  public async save() {
+  public static async save() {
     const params = {
       TableName: ConfigService.HomePageDynamoDbTable,
       Item: {
@@ -14,7 +15,7 @@ export default class DynamoDBService {
     };
 
     // Call DynamoDB to add the item to the table
-    this.ddb.putItem(params, (err, data) => {
+    DynamoDBService.ddb.putItem(params, (err, data) => {
       if (err) {
         console.log('Error', err);
       } else {
@@ -23,22 +24,25 @@ export default class DynamoDBService {
     });
   }
 
-  public async load() {
-    const params = {
-      TableName: ConfigService.HomePageDynamoDbTable,
+  public static async load(
+    tableName: string,
+    primaryKeyName: string,
+    key: string,
+  ): Promise<AttributeMap | undefined> {
+    console.log(`LOADING FROM DYNAMODB: ${tableName}, ${primaryKeyName}, ${key}`);
+    const params: GetItemInput = {
+      TableName: tableName,
       Key: {
-        KEY_NAME: { N: '001' },
+        [primaryKeyName]: { S: key },
       },
-      ProjectionExpression: 'ATTRIBUTE_NAME',
+      // ProjectionExpression: 'ATTRIBUTE_NAME',
     };
-
-    // Call DynamoDB to read the item from the table
-    this.ddb.getItem(params, (err, data) => {
-      if (err) {
-        console.log('Error', err);
-      } else {
-        console.log('Success', data.Item);
-      }
+    console.log(JSON.stringify(params));
+    const response = await DynamoDBService.ddb.getItem(params).promise().catch((e) => {
+      console.error(e);
     });
+    console.log(response);
+    if (!response) return undefined;
+    return response.Item;
   }
 }

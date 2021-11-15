@@ -4,6 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import homepage from './src/pages/home/home.page';
+import SudokuAPI from './src/pages/sudoku/sudoku.page';
 
 dotenv.config();
 
@@ -23,3 +24,4 @@ app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
 app.get('/', homepage);
+app.get('/sudoku/:id', SudokuAPI.loadSudoku);
