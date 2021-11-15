@@ -20,7 +20,7 @@ class SudokuAPI {
       return;
     }
 
-    response.problem = sudoku.puzzle;
+    response.problem = JSON.parse(sudoku.puzzle);
     res.status(200).send(response);
   }
 
