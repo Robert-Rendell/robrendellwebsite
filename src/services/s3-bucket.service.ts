@@ -1,4 +1,4 @@
-import * as AWS from 'aws-sdk';
+import AWS from 'aws-sdk';
 import { ListObjectsV2Request, ObjectList } from 'aws-sdk/clients/s3';
 
 export default class S3BucketService {
