@@ -4,27 +4,31 @@ import IPAddressService from '../../services/ip-address.service';
 import { Sudoku } from './models/sudoku';
 import PostSubmissionRequest from './requests/submission.post';
 import { SudokuResponse, SudokuNotFoundResponse, SudokuInternalServerError } from './response/sudoku.response';
-import { SubmitSudokuResponse, SubmitSudokuInternalServerError, SubmitSudokuNotFoundError } from './response/submit-sudoku.response';
+import { SubmitSudokuBasicResponse, SubmitSudokuInternalServerError, SubmitSudokuNotFoundError } from './response/submit-sudoku.response';
 import SudokuDynamoDBService from './services/sudoku-dynamodb.service';
 import SudokuValidatorService from './services/sudoku-validator.service';
 import GetSudokuRequest from './requests/sudoku.get';
-import { Submission } from './models/submission';
+import { ExtendedSubmission, Submission } from './models/submission';
 import SudokuPuzzle from './models/sudoku-puzzle';
 import SubmissionsDynamoDbService from './services/submission-dynamodb.service';
+import SudokuValidation from './models/sudoku-validation';
 
 class SudokuAPI {
   private static createSubmission(
     req: Request,
     sudoku: Sudoku,
     submissionPuzzle?: SudokuPuzzle,
+    validation?: SudokuValidation,
   ): Submission {
-    const submission: Submission = {
+    const submission: ExtendedSubmission = {
       submissionId: uuidv4(),
       sudokuId: sudoku.id,
       sudokuSubmission: submissionPuzzle,
       timeTaken: 0,
       dateSubmitted: `${new Date()}`,
       ipAddress: `${IPAddressService.getIPAddress(req)}`,
+      valid: validation?.valid,
+      complete: validation?.complete,
     };
     SubmissionsDynamoDbService.saveSubmission(submission);
     return submission;
@@ -77,7 +81,7 @@ class SudokuAPI {
         return;
       }
 
-      const response: SubmitSudokuResponse = {
+      const response: SubmitSudokuBasicResponse = {
         complete: (sudoku?.solution === submissionRequest.sudokuSubmission),
         valid: SudokuValidatorService.isSudokuSubmissionValid(
           sudoku?.puzzle || '',
@@ -85,6 +89,13 @@ class SudokuAPI {
           sudoku?.solution || '',
         ),
       };
+
+      SudokuAPI.createSubmission(
+        req,
+        sudoku,
+        submissionRequest.sudokuSubmission,
+        response,
+      );
 
       res.status(200).send(response);
     } catch (e) {

@@ -1,5 +1,6 @@
 import { SudokuId } from './sudoku';
 import SudokuPuzzle from './sudoku-puzzle';
+import SudokuValidation from './sudoku-validation';
 
 export type SubmissionId = string;
 
@@ -14,3 +15,5 @@ export interface Submission {
   dateSubmitted: string,
   ipAddress: string,
 }
+
+export interface ExtendedSubmission extends Partial<SudokuValidation>, Submission {}
