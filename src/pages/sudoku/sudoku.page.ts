@@ -11,7 +11,7 @@ import GetSudokuRequest from './requests/sudoku.get';
 class SudokuAPI {
   private static getSubmission(req: Request, sudoku: Sudoku) {
     const ip = IPAddressService.getIPAddress(req);
-    return `[IP] ${ip}: [SudokuId] ${sudoku.id}`;
+    return `[IP] ${ip}, [SudokuId] ${sudoku.id}, [Date] ${new Date()}`;
   }
 
   static async getSudoku(req: Request, res: Response): Promise<void> {
@@ -61,10 +61,10 @@ class SudokuAPI {
 
       const response: SubmitSudokuResponse = {
         complete: (sudoku?.solution === submissionRequest.sudokuSubmission),
-        valid: SudokuValidatorService.isSudokuSubmissionCorrect(
+        valid: SudokuValidatorService.isSudokuSubmissionValid(
           sudoku?.puzzle || '',
-          sudoku?.solution || '',
           submissionRequest.sudokuSubmission,
+          sudoku?.solution || '',
         ),
       };
 

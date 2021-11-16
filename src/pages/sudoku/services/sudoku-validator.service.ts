@@ -1,22 +1,26 @@
 import SudokuPuzzle from '../models/sudoku-puzzle';
 
 class SudokuValidatorService {
-  public static isSudokuSubmissionCorrect(
+  public static isSudokuSubmissionValid(
     originalPuzzle: SudokuPuzzle,
     submission: SudokuPuzzle,
     solution: SudokuPuzzle,
   ): boolean {
-    let correct = true;
+    let valid = true;
     const trOriginalPuzzle = originalPuzzle.trim();
     const trSubmission = submission.trim();
     const trSolution = solution.trim();
-    correct = (trSubmission.length === trSolution.length);
+    valid = (trSubmission.length === trSolution.length);
     for (let i = 0; i < trSubmission.length; i += 1) {
-      if (trOriginalPuzzle[i] !== '0' && trSubmission[i] !== trSolution[i]) {
-        correct = false;
+      console.log(i, trOriginalPuzzle[i], trSubmission[i], trSolution[i]);
+      if (trOriginalPuzzle[i] === '0' && trSubmission[i] !== '0') {
+        if (trSubmission[i] !== trSolution[i]) {
+          valid = false;
+          break;
+        }
       }
     }
-    return correct;
+    return valid;
   }
 }
 
