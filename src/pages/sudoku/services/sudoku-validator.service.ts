@@ -1,3 +1,4 @@
+import TamperingError from '../errors/tampering.error';
 import SudokuPuzzle from '../models/sudoku-puzzle';
 
 class SudokuValidatorService {
@@ -12,12 +13,13 @@ class SudokuValidatorService {
     const trSolution = solution.trim();
     valid = (trSubmission.length === trSolution.length);
     for (let i = 0; i < trSubmission.length; i += 1) {
-      console.log(i, trOriginalPuzzle[i], trSubmission[i], trSolution[i]);
       if (trOriginalPuzzle[i] === '0' && trSubmission[i] !== '0') {
         if (trSubmission[i] !== trSolution[i]) {
           valid = false;
           break;
         }
+      } else if (trOriginalPuzzle[i] !== '0' && (trSubmission[i] === '0' || trSubmission[i] !== trOriginalPuzzle[i])) {
+        throw new TamperingError('Original Sudoku puzzle has been changed');
       }
     }
     return valid;
