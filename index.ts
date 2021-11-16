@@ -24,4 +24,5 @@ app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
 app.get('/', homepage);
-app.get('/sudoku/:id', SudokuAPI.loadSudoku);
+app.get('/sudoku/:sudokuId', SudokuAPI.getSudoku);
+app.post('/sudoku/submit', SudokuAPI.postSubmission);
