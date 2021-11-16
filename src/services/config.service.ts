@@ -7,6 +7,14 @@ AWS.config.update({
 });
 
 export default class ConfigService {
+  static get SudokuSubmissionsDynamoDbTable(): string {
+    return process.env.SUDOKU_SUBMISSIONS_DYNAMO_DB_TABLE || '';
+  }
+
+  static get SudokuSolversDynamoDbTable(): string {
+    return process.env.SUDOKU_SOLVERS_DYNAMO_DB_TABLE || '';
+  }
+
   static get SudokuDynamoDbTable(): string {
     return process.env.SUDOKU_DYNAMO_DB_TABLE || '';
   }

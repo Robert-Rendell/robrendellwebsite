@@ -1,6 +1,6 @@
 import * as AWS from 'aws-sdk';
 import { AttributeMap, GetItemInput } from 'aws-sdk/clients/dynamodb';
-import ConfigService from './config-service';
+import ConfigService from './config.service';
 
 export default class DynamoDBService {
   static ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
