@@ -1,4 +1,4 @@
-import ConfigService from '../../../services/config-service';
+import ConfigService from '../../../services/config.service';
 import DynamoDBService from '../../../services/dynamo-db.service';
 import { Sudoku } from '../models/sudoku';
 import SudokuPuzzle from '../models/sudoku-puzzle';

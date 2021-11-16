@@ -1,12 +1,17 @@
 import ErrorResponse from '../../../responses/error.response';
 import { SudokuId } from '../models/sudoku';
+import SudokuValidation from '../models/sudoku-validation';
+import SudokuValidationIssue from '../models/sudoku-validation-issue';
 
-export interface SubmitSudokuResponse {
-  complete: boolean;
-  valid: boolean;
+/**
+ * Alias to meet Response pattern
+ */
+export interface SubmitSudokuBasicResponse extends SudokuValidation {}
+export interface ExtendedSubmitSudokuResponse extends SudokuValidation {
+  validationIssues: SudokuValidationIssue[],
 }
 
-export type SubmitSudokuErrorResponse = SubmitSudokuResponse & ErrorResponse;
+export type SubmitSudokuErrorResponse = SudokuValidation & ErrorResponse;
 
 export const SubmitSudokuNotFoundError = (
   sudokuId: SudokuId,

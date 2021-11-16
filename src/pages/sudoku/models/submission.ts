@@ -1,14 +1,19 @@
 import { SudokuId } from './sudoku';
+import SudokuPuzzle from './sudoku-puzzle';
+import SudokuValidation from './sudoku-validation';
 
 export type SubmissionId = string;
 
-/**
- * The DynamoDB object
- */
 export interface Submission {
-  id: SubmissionId,
-  sudoku: SudokuId,
-  sudokuSubmission: number[][],
+  submissionId: SubmissionId,
+  sudokuId: SudokuId,
+  /**
+   * Undefined if the system has created it when the puzzle has just been started
+   */
+  sudokuSubmission: SudokuPuzzle | undefined,
   timeTaken: number,
   dateSubmitted: string,
+  ipAddress: string,
 }
+
+export interface ExtendedSubmission extends Partial<SudokuValidation>, Submission {}
