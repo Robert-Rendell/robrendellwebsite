@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import IPAddressService from '../../services/ip-address.service';
 import { Sudoku } from './models/sudoku';
 import PostSubmissionRequest from './requests/submission.post';
@@ -7,11 +8,26 @@ import { SubmitSudokuResponse, SubmitSudokuInternalServerError, SubmitSudokuNotF
 import SudokuDynamoDBService from './services/sudoku-dynamodb.service';
 import SudokuValidatorService from './services/sudoku-validator.service';
 import GetSudokuRequest from './requests/sudoku.get';
+import { Submission } from './models/submission';
+import SudokuPuzzle from './models/sudoku-puzzle';
+import SubmissionsDynamoDbService from './services/submission-dynamodb.service';
 
 class SudokuAPI {
-  private static getSubmission(req: Request, sudoku: Sudoku) {
-    const ip = IPAddressService.getIPAddress(req);
-    return `[IP] ${ip}, [SudokuId] ${sudoku.id}, [Date] ${new Date()}`;
+  private static createSubmission(
+    req: Request,
+    sudoku: Sudoku,
+    submissionPuzzle?: SudokuPuzzle,
+  ): Submission {
+    const submission: Submission = {
+      submissionId: uuidv4(),
+      sudokuId: sudoku.id,
+      sudokuSubmission: submissionPuzzle,
+      timeTaken: 0,
+      dateSubmitted: `${new Date()}`,
+      ipAddress: `${IPAddressService.getIPAddress(req)}`,
+    };
+    SubmissionsDynamoDbService.saveSubmission(submission);
+    return submission;
   }
 
   static async getSudoku(req: Request, res: Response): Promise<void> {
@@ -30,10 +46,12 @@ class SudokuAPI {
         return;
       }
 
+      const submission = SudokuAPI.createSubmission(req, sudoku);
+
       const response: SudokuResponse = {
         sudokuId: sudoku.id,
         puzzle: JSON.parse(sudoku.puzzle),
-        submissionId: SudokuAPI.getSubmission(req, sudoku),
+        submissionId: submission.submissionId,
       };
 
       res.status(200).send(response);
