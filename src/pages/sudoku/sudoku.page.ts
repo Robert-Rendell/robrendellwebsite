@@ -19,6 +19,7 @@ class SudokuAPI {
     sudoku: Sudoku,
     submissionPuzzle?: SudokuPuzzle,
     validation?: SudokuValidation,
+    submitterName?: string,
   ): Submission {
     const submission: ExtendedSubmission = {
       submissionId: uuidv4(),
@@ -29,6 +30,7 @@ class SudokuAPI {
       ipAddress: `${IPAddressService.getIPAddress(req)}`,
       valid: validation?.valid,
       complete: validation?.complete,
+      submitterName: submitterName || '',
     };
     SubmissionsDynamoDbService.saveSubmission(submission);
     return submission;

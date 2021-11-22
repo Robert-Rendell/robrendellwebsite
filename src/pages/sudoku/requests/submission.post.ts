@@ -6,8 +6,10 @@ import { SudokuId } from '../models/sudoku';
 interface PostSubmissionRequest {
   sudokuId: SudokuId,
   sudokuSubmission: string,
+  sudokuSubmissionId: string,
   timeTaken: number,
   dateSubmitted: string,
+  submitterName: string,
 }
 
 export default PostSubmissionRequest;

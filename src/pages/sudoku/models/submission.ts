@@ -14,6 +14,7 @@ export interface Submission {
   timeTaken: number,
   dateSubmitted: string,
   ipAddress: string,
+  submitterName: string,
 }
 
 export interface ExtendedSubmission extends Partial<SudokuValidation>, Submission {}
