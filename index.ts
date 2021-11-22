@@ -40,5 +40,7 @@ app.listen(PORT, () => {
 
 // === Routes =========================================
 app.get('/', homepage);
-app.get('/sudoku/play/:sudokuId', SudokuAPI.getSudoku);
-app.post('/sudoku/submit', SudokuAPI.postSubmission);
+app.get(SudokuAPI.Routes.getSudoku, SudokuAPI.getSudoku);
+app.post(SudokuAPI.Routes.postSubmission, SudokuAPI.postSubmission);
+app.post(SudokuAPI.Routes.postGenerateSudoku, SudokuAPI.generateSudoku);
+app.post(SudokuAPI.Routes.postGenerateSudokuCallback, SudokuAPI.generateSudokuCallback);

@@ -6,9 +6,8 @@ import HomePageResponse from './response/home-page.response';
 
 const homepage = async (req: Request, res: Response) => {
   try {
-    const s3BucketService = new S3BucketService();
     const bucket = ConfigService.HomePageImageBucket;
-    const imageS3Urls = await s3BucketService.getDownloadLinks(bucket, S3ImagePrefix.Thumbnail);
+    const imageS3Urls = await S3BucketService.getDownloadLinks(bucket, S3ImagePrefix.Thumbnail);
     const response: HomePageResponse = {
       travelImages: imageS3Urls || [],
     };

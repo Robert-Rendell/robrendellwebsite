@@ -26,4 +26,8 @@ export default class ConfigService {
   static get HomePageImageBucket(): string {
     return process.env.IMAGE_BUCKET || '';
   }
+
+  static get SudokuGenerateJsonBucket(): string {
+    return process.env.SUDOKU_GEN_BUCKET_JSON || '';
+  }
 }
