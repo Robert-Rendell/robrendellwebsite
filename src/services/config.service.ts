@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk';
+import FeatureFlags from '../models/feature-flags';
 
 AWS.config.update({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -7,6 +8,12 @@ AWS.config.update({
 });
 
 export default class ConfigService {
+  static get FeatureFlags(): FeatureFlags {
+    return {
+      sudokuGenerationEnabled: (process.env.SUDOKU_GEN_FEATURE_ENABLED === 'true') || false,
+    };
+  }
+
   static get SudokuSubmissionsDynamoDbTable(): string {
     return process.env.SUDOKU_SUBMISSIONS_DYNAMO_DB_TABLE || '';
   }
@@ -25,5 +32,9 @@ export default class ConfigService {
 
   static get HomePageImageBucket(): string {
     return process.env.IMAGE_BUCKET || '';
+  }
+
+  static get SudokuGenerateJsonBucket(): string {
+    return process.env.SUDOKU_GEN_BUCKET_JSON || '';
   }
 }
