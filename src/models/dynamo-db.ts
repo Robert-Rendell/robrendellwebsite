@@ -1,5 +1,7 @@
-interface DynamoDBString {
+export interface DynamoDBString {
   S: string,
 }
 
-export { DynamoDBString as default };
+export interface DynamoDBNumber {
+  N: number,
+}
