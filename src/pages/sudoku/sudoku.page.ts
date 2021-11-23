@@ -16,6 +16,10 @@ import SudokuPuzzle from './models/sudoku-puzzle';
 import SudokuValidation from './models/sudoku-validation';
 import SudokuDifficulty from './enums/sudoku-difficulty';
 import ErrorResponse from '../../responses/error.response';
+import PostGenerateSudokuRequest from './requests/generate.post';
+import GenerateSudokuResponse from './response/generate.response';
+import PostGenerateSudokuCallbackRequest from './requests/generate-callback.post';
+import GenerateSudokuJson from './models/generate-sudoku-json';
 
 class SudokuAPI {
   static Routes = {
@@ -37,7 +41,7 @@ class SudokuAPI {
   ): Submission {
     const submission: ExtendedSubmission = {
       submissionId: uuidv4(),
-      sudokuId: sudoku.id,
+      sudokuId: sudoku.sudokuId,
       sudokuSubmission: submissionPuzzle,
       timeTaken: 0,
       dateSubmitted: `${new Date()}`,
@@ -72,7 +76,7 @@ class SudokuAPI {
       const submission = SudokuAPI.createSubmission(req, sudoku);
 
       const response: SudokuResponse = {
-        sudokuId: sudoku.id,
+        sudokuId: sudoku.sudokuId,
         puzzle: JSON.parse(sudoku.puzzle),
         submissionId: submission.submissionId,
       };
@@ -131,46 +135,85 @@ class SudokuAPI {
   static async generateSudoku(req: Request, res: Response): Promise<void> {
     console.log('POST generateSudoku');
     console.log(req.params, req.body);
+    const request = req.body as PostGenerateSudokuRequest;
 
-    if (req.body.roberto !== 'testing') {
-      const errorMessage = 'Error: Testing flag not set in message body: { "roberto": "testing" }';
-      console.error(errorMessage);
-      res.status(400).send({ errorMessage } as ErrorResponse);
+    if (request.roberto !== 'testing') {
+      SudokuAPI.badRequest('Error: Testing flag not set in message body: { "roberto": "testing" }', res);
       return;
     }
 
-    const difficulty = req.body.difficulty || SudokuDifficulty.Medium;
-    if (!Object.values(SudokuDifficulty).includes(difficulty)) {
-      const errorMessage = `Error: Sudoku generation difficulty not recognised: '${difficulty}'`;
-      console.error(errorMessage);
-      res.status(400).send({ errorMessage } as ErrorResponse);
+    const difficulty = request.difficulty || 'not specified';
+    if (!Object.values<string>(SudokuDifficulty).includes(difficulty)) {
+      SudokuAPI.badRequest(`Error: Sudoku generation difficulty not recognised: '${difficulty}'`, res);
       return;
     }
 
-    if (ConfigService.FeatureFlags.sudokuGenerationEnabled) {
-      const jsonBody = JSON.stringify({ difficulty });
-      console.log(`Triggering Sudoku Generation Lambda (Difficulty: ${difficulty})`);
-      S3BucketService.s3.putObject({
-        Bucket: ConfigService.SudokuGenerateJsonBucket,
-        Key: `${uuidv4()}.json`,
-        Body: jsonBody,
-      }).promise();
-      const response: any = {};
-      res.status(200).send(response);
+    if (!ConfigService.FeatureFlags.sudokuGenerationEnabled) {
+      const info = 'Sudoku Generation feature disabled, so lambda was not invoked.';
+      console.log(info);
+      res.status(200).send({ info });
       return;
     }
 
-    const info = 'Sudoku Generation feature disabled, so lambda was not invoked.';
-    console.log(info);
-    res.status(200).send({ info });
+    const generationJobId = uuidv4();
+    const generateSudokuJson: GenerateSudokuJson = {
+      difficulty,
+      generatorIPAddress: `${IPAddressService.getIPAddress(req)}`,
+      generatorUserName: request.generatorUserName || 'anonymous',
+      generationJobId,
+    };
+    console.log(`Triggering sudoku generation lambda (Difficulty: ${difficulty})`);
+    S3BucketService.s3.putObject({
+      Bucket: ConfigService.SudokuGenerateJsonBucket,
+      Key: `${generationJobId}.json`,
+      Body: JSON.stringify(generateSudokuJson),
+    }).promise();
+    const response: GenerateSudokuResponse = { generationJobId };
+    res.status(200).send(response);
   }
 
   static async generateSudokuCallback(req: Request, res: Response): Promise<void> {
     console.log('POST generateSudokuCallback');
     console.log(req.params, req.body);
-    res.status(200).send({
-      roberto: 'all good!',
-    });
+    const request = req.body as PostGenerateSudokuCallbackRequest;
+
+    if (!(request.puzzle && request.solution && request.difficulty)) {
+      SudokuAPI.badRequest("Error: Need to specify 'puzzle', 'solution' and 'difficulty'", res);
+      return;
+    }
+
+    if (!ConfigService.FeatureFlags.sudokuGenerationEnabled) {
+      const info = 'Sudoku Generation feature disabled, so sudoku was not created.';
+      console.log(info);
+      res.status(200).send({ info });
+      return;
+    }
+
+    try {
+      // Could do this whole step before the lambda executes and just update it.
+      const sudokuId = uuidv4();
+      console.log(`Inserting sudoku into db: ${sudokuId}`);
+      SudokuDynamoDBService.saveSudoku({
+        sudokuId,
+        puzzle: request.puzzle,
+        solution: request.solution,
+        dateGenerated: `${new Date()}`,
+        clues: request.clues,
+        difficulty: request.difficulty,
+        generatorIPAddress: request.generatorIPAddress,
+        generatorUserName: request.generatorUserName,
+        generationJobId: request.generationJobId,
+      });
+      // Don't really care what is sent back to the lambda
+      res.status(200).send({});
+    } catch (e) {
+      res.status(500).send({ errorMessage: e } as ErrorResponse);
+    }
+  }
+
+  static badRequest(errorMessage: string, res: Response): void {
+    console.error(errorMessage);
+    res.status(400).send({ errorMessage } as ErrorResponse);
   }
 }
 

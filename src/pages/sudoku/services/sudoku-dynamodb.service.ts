@@ -1,3 +1,4 @@
+import AWS from 'aws-sdk';
 import ConfigService from '../../../services/config.service';
 import DynamoDBService from '../../../services/dynamo-db.service';
 import { Sudoku } from '../models/sudoku';
@@ -6,6 +7,11 @@ import SudokuDynamoDB from '../models/sudoku.dynamodb';
 
 export default class SudokuDynamoDBService extends DynamoDBService {
   private static PartitionKey = 'sudokuId';
+
+  public static async saveSudoku(sudoku: Sudoku): Promise<void> {
+    const marshalled = AWS.DynamoDB.Converter.marshall(sudoku);
+    await super.save(ConfigService.SudokuDynamoDbTable, marshalled);
+  }
 
   public static async getSudoku(key: string): Promise<Sudoku | undefined> {
     const sudokuAttributeMap = await super.load(
@@ -28,7 +34,12 @@ export default class SudokuDynamoDBService extends DynamoDBService {
       dateGenerated,
       puzzle,
       solution: sudokuAttributeMap.solution.S,
-      id: sudokuAttributeMap.sudokuId.S,
+      sudokuId: sudokuAttributeMap.sudokuId.S,
+      clues: sudokuAttributeMap.clues?.N,
+      difficulty: sudokuAttributeMap.difficulty?.S,
+      generatorIPAddress: sudokuAttributeMap.generatorIPAddress?.S,
+      generatorUserName: sudokuAttributeMap.generatorUserName?.S,
+      generationJobId: sudokuAttributeMap.generatorJobId?.S,
     };
 
     return sudoku;

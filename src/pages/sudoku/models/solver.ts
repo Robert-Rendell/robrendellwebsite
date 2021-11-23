@@ -1,9 +1,9 @@
 import { SudokuId } from './sudoku';
 
 export interface Solver {
-  id: string,
+  solverId: string,
   who: string,
-  sudoku: SudokuId,
+  sudokuId: SudokuId,
   timeTaken: number,
   dateSolved: string,
 }
