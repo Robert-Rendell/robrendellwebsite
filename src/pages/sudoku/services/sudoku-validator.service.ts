@@ -8,9 +8,9 @@ class SudokuValidatorService {
     solution: SudokuPuzzle,
   ): boolean {
     let valid = true;
-    const trOriginalPuzzle = originalPuzzle.trim();
-    const trSubmission = submission.trim();
-    const trSolution = solution.trim();
+    const trOriginalPuzzle = SudokuValidatorService.strip(originalPuzzle);
+    const trSubmission = SudokuValidatorService.strip(submission);
+    const trSolution = SudokuValidatorService.strip(solution);
     valid = (trSubmission.length === trSolution.length);
     for (let i = 0; i < trSubmission.length; i += 1) {
       if (trOriginalPuzzle[i] === '0' && trSubmission[i] !== '0') {
@@ -23,6 +23,10 @@ class SudokuValidatorService {
       }
     }
     return valid;
+  }
+
+  private static strip(s: string): string {
+    return s.trim().replace(/ /g, '');
   }
 }
 

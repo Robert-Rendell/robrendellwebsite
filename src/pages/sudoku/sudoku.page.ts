@@ -83,6 +83,7 @@ class SudokuAPI {
 
       res.status(200).send(response);
     } catch (e) {
+      console.error(e);
       res.status(500).send(SudokuInternalServerError((e as Error).message));
     }
   }
@@ -125,6 +126,7 @@ class SudokuAPI {
 
       res.status(200).send(response);
     } catch (e) {
+      console.error(e);
       res.status(500).send(SubmitSudokuInternalServerError((e as Error).message));
     }
   }
@@ -207,6 +209,7 @@ class SudokuAPI {
       // Don't really care what is sent back to the lambda
       res.status(200).send({});
     } catch (e) {
+      console.error(e);
       res.status(500).send({ errorMessage: e } as ErrorResponse);
     }
   }
