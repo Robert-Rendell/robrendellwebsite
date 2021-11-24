@@ -20,10 +20,13 @@ import PostGenerateSudokuRequest from './requests/generate.post';
 import GenerateSudokuResponse from './response/generate.response';
 import PostGenerateSudokuCallbackRequest from './requests/generate-callback.post';
 import GenerateSudokuJson from './models/generate-sudoku-json';
+import { PostSudokuListRequest } from './requests/sudoku-list.post';
+import { SudokuListResponse } from './response/sudoku-list.response';
 
 class SudokuAPI {
   static Routes = {
     getSudoku: '/sudoku/play/:sudokuId',
+    postSudokuList: '/sudoku/list',
     postSubmission: '/sudoku/submit',
     postGenerateSudoku: '/sudoku/add',
     postGenerateSudokuCallback: '/sudoku/add/callback',
@@ -44,7 +47,7 @@ class SudokuAPI {
       sudokuId: sudoku.sudokuId,
       sudokuSubmission: submissionPuzzle,
       timeTaken: 0,
-      dateSubmitted: `${new Date()}`,
+      dateSubmitted: `${new Date().toISOString()}`,
       ipAddress: `${IPAddressService.getIPAddress(req)}`,
       valid: validation?.valid,
       complete: validation?.complete,
@@ -55,21 +58,41 @@ class SudokuAPI {
   }
 
   /**
+   * POST a list of sudokus using filters
+   */
+  static async postSudokuList(req: Request, res: Response): Promise<void> {
+    try {
+      console.log('POST postSudokuList');
+      const request = req.body as PostSudokuListRequest;
+
+      const sudokus: Sudoku[] = await SudokuDynamoDBService.listSudokus({
+        generatorJobId: request.filters?.generatorJobId,
+      });
+
+      console.log(sudokus);
+      res.status(200).send(sudokus as SudokuListResponse);
+    } catch (e) {
+      console.error(e);
+      res.status(500).send(SudokuInternalServerError((e as Error).message));
+    }
+  }
+
+  /**
    * GET a single sudoku using sudokuId
    */
   static async getSudoku(req: Request, res: Response): Promise<void> {
     try {
       console.log('GET getSudoku');
-      const sudokuRequest: GetSudokuRequest = req.params as any;
+      const request: GetSudokuRequest = req.params as any;
 
       const sudoku: Sudoku | undefined | void = await SudokuDynamoDBService.getSudoku(
-        sudokuRequest.sudokuId,
+        request.sudokuId,
       ).catch((e) => {
         console.error(e);
       });
 
       if (!sudoku) {
-        res.status(404).send(SudokuNotFoundResponse(sudokuRequest.sudokuId));
+        res.status(404).send(SudokuNotFoundResponse(request.sudokuId));
         return;
       }
 
@@ -199,7 +222,7 @@ class SudokuAPI {
         sudokuId,
         puzzle: request.puzzle,
         solution: request.solution,
-        dateGenerated: `${new Date()}`,
+        dateGenerated: `${new Date().toISOString()}`,
         clues: request.clues,
         difficulty: request.difficulty,
         generatorIPAddress: request.generatorIPAddress,

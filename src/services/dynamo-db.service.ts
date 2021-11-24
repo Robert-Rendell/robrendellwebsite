@@ -1,5 +1,9 @@
 import * as AWS from 'aws-sdk';
-import { AttributeMap, GetItemInput } from 'aws-sdk/clients/dynamodb';
+import {
+  AttributeMap,
+  ExpressionAttributeValueMap,
+  GetItemInput, ItemList, QueryInput,
+} from 'aws-sdk/clients/dynamodb';
 
 export default class DynamoDBService {
   static ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
@@ -30,14 +34,29 @@ export default class DynamoDBService {
       Key: {
         [primaryKeyName]: { S: key },
       },
-      // ProjectionExpression: 'ATTRIBUTE_NAME',
     };
     console.log(JSON.stringify(params));
-    const response = await DynamoDBService.ddb.getItem(params).promise().catch((e) => {
-      console.error(e);
-    });
+    const response = await DynamoDBService.ddb.getItem(params).promise();
     console.log(response);
     if (!response) return undefined;
     return response.Item;
+  }
+
+  public static async list(
+    tableName: string,
+    expressionAttributeValueMap: ExpressionAttributeValueMap,
+    filterExpression: string,
+  ): Promise<ItemList | undefined> {
+    console.log(`SCANNING DYNAMODB: ${tableName}`);
+    const params: QueryInput = {
+      ExpressionAttributeValues: expressionAttributeValueMap,
+      FilterExpression: filterExpression, // eg. 'contains (Subtitle, :topic)',
+      TableName: tableName,
+    };
+    console.log(JSON.stringify(params));
+    const response = await DynamoDBService.ddb.scan(params).promise();
+
+    if (!response) return undefined;
+    return response.Items;
   }
 }

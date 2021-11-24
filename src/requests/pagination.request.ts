@@ -1,8 +1,7 @@
-export interface Pagination {
-  page: number;
-  limit: number;
+interface PaginationRequest {
+  pagination: {
+      limit: number;
+  }
 }
 
-export interface PaginationRequest {
-  pagination: Pagination,
-}
+export { PaginationRequest as default };

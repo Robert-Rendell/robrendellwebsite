@@ -1,9 +1,22 @@
 import AWS from 'aws-sdk';
+import { ExpressionAttributeValueMap, QueryInput } from 'aws-sdk/clients/dynamodb';
 import ConfigService from '../../../services/config.service';
 import DynamoDBService from '../../../services/dynamo-db.service';
 import { Sudoku } from '../models/sudoku';
 import SudokuPuzzle from '../models/sudoku-puzzle';
 import SudokuDynamoDB from '../models/sudoku.dynamodb';
+
+export interface ListSudokuParams {
+  dateGenerated?: {
+    to: Date,
+    from: Date,
+  };
+  solved?: {
+    timesSolved: number
+  }
+  difficulty?: string;
+  generatorJobId?: string;
+}
 
 export default class SudokuDynamoDBService extends DynamoDBService {
   private static PartitionKey = 'sudokuId';
@@ -13,15 +26,57 @@ export default class SudokuDynamoDBService extends DynamoDBService {
     await super.save(ConfigService.SudokuDynamoDbTable, marshalled);
   }
 
+  /**
+   * KeyConditionExpression: 'Season = :s and Episode > :e',
+   * ProjectionExpression: 'Episode, Title, Subtitle',
+   * FilterExpression: 'contains (Subtitle, :topic)',
+   * {
+   *   ':s': { N: '2' },
+   *   ':e': { N: '09' },
+   *   ':topic': { S: 'PHRASE' },
+   * },
+   */
+  public static async listSudokus(params: ListSudokuParams): Promise<Sudoku[]> {
+    const expMap: ExpressionAttributeValueMap = {};
+    let filterExp = '';
+
+    if (!params.generatorJobId) {
+      console.log('Currently only supporting generatorJobId listSudokus');
+      return [];
+    }
+
+    if (params.generatorJobId) {
+      console.log('Found GeneratorJobId in query filters, prioritising it.');
+      filterExp = 'generationJobId = :jobId';
+      expMap[':jobId'] = { S: params.generatorJobId };
+    }
+
+    const l = await super.list(
+      ConfigService.SudokuDynamoDbTable,
+      expMap,
+      filterExp,
+    );
+
+    const sudokus = l?.map(
+      (s) => SudokuDynamoDBService.convertAttributeMap(
+        s as unknown as SudokuDynamoDB,
+      ),
+    );
+
+    return sudokus || [];
+  }
+
   public static async getSudoku(key: string): Promise<Sudoku | undefined> {
     const sudokuAttributeMap = await super.load(
       ConfigService.SudokuDynamoDbTable,
       SudokuDynamoDBService.PartitionKey,
       key,
     ) as unknown as SudokuDynamoDB;
-
     if (!sudokuAttributeMap) return undefined;
+    return SudokuDynamoDBService.convertAttributeMap(sudokuAttributeMap);
+  }
 
+  private static convertAttributeMap(sudokuAttributeMap: SudokuDynamoDB): Sudoku {
     const puzzle: SudokuPuzzle = sudokuAttributeMap.puzzle
       ? sudokuAttributeMap.puzzle.S
       : sudokuAttributeMap.problem.S;
@@ -30,7 +85,7 @@ export default class SudokuDynamoDBService extends DynamoDBService {
       ? sudokuAttributeMap.generatedDate.S
       : sudokuAttributeMap.dateGenerated.S;
 
-    const sudoku: Sudoku = {
+    return {
       dateGenerated,
       puzzle,
       solution: sudokuAttributeMap.solution.S,
@@ -41,7 +96,5 @@ export default class SudokuDynamoDBService extends DynamoDBService {
       generatorUserName: sudokuAttributeMap.generatorUserName?.S,
       generationJobId: sudokuAttributeMap.generatorJobId?.S,
     };
-
-    return sudoku;
   }
 }
