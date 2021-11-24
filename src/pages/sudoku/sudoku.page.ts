@@ -66,7 +66,7 @@ class SudokuAPI {
       const request = req.body as PostSudokuListRequest;
 
       const sudokus: Sudoku[] = await SudokuDynamoDBService.listSudokus({
-        generatorJobId: request.filters.generatorJobId,
+        generatorJobId: request.filters?.generatorJobId,
       });
 
       console.log(sudokus);
