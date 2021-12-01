@@ -20,8 +20,10 @@
     ],
     "rules": {
         "@typescript-eslint/no-empty-interface": "off",
+        "lines-between-class-members": "off",
         "no-console": "off",
         "no-shadow": "off",
+        "no-restricted-syntax": "off",
         "@typescript-eslint/no-shadow": ["error"],
         "import/extensions": [
             "error",

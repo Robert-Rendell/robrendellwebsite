@@ -1,5 +1,6 @@
 import AWS from 'aws-sdk';
 import FeatureFlags from '../models/feature-flags';
+import { UniDataEnvVars } from '../pages/technical-tests/uni-data-291121/models/uni-data-env-vars';
 
 AWS.config.update({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -11,6 +12,14 @@ export default class ConfigService {
   static get FeatureFlags(): FeatureFlags {
     return {
       sudokuGenerationEnabled: (process.env.SUDOKU_GEN_FEATURE_ENABLED === 'true') || false,
+    };
+  }
+
+  static get TechnicalTestUniDataConfig(): UniDataEnvVars {
+    return {
+      bucket: process.env.S3_BUCKET_TT_291121 || '',
+      submissionsFile: process.env.S3_BUCKET_FILE_TT_291121_SUBMISSIONS || '',
+      institutionsFile: process.env.S3_BUCKET_FILE_TT_291121_INSTITUTIONS || '',
     };
   }
 
