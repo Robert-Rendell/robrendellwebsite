@@ -2,9 +2,11 @@ import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { Request, Response } from 'express';
 import ConfigService from '../../../services/config.service';
 import S3BucketService from '../../../services/s3-bucket.service';
+import { Graph } from './models/graph';
 import { Institution } from './models/institution';
 import { Submission } from './models/submission';
 import { GetDashboardGraphsResponse } from './response/get-dashboard-graphs.response';
+import UniDataAnalyserService from './services/uni-data-analyser.service';
 
 class TechTestUniDataAPI {
   static Routes = {
@@ -36,13 +38,26 @@ class TechTestUniDataAPI {
       const s3Files: GetObjectOutput[] = await TechTestUniDataAPI.grabLatestS3Files();
       const institutionFile: GetObjectOutput = s3Files[0];
       const submissionsFile: GetObjectOutput = s3Files[1];
+      const institutions = JSON.parse(institutionFile.Body?.toString() || '') as Institution[];
+      const submissions = JSON.parse(submissionsFile.Body?.toString() || '') as Submission[];
+
+      const analyser = new UniDataAnalyserService(
+        institutions,
+        submissions,
+      );
+
+      // Decouple these two methods to allow for flexibility in the use of the data
+      const bestUnisForSubject: Graph = UniDataAnalyserService.getMeanUnisForSubjectsGraph(
+        analyser.bestUnisForSubject(),
+      );
 
       const response: GetDashboardGraphsResponse = {
         rawData: {
-          submissions: JSON.parse(submissionsFile.Body?.toString() || '') as Submission[],
-          institutions: JSON.parse(institutionFile.Body?.toString() || '') as Institution[],
+          institutions,
+          submissions,
         },
-        bestUnisForSubject: [],
+        bestUnisForSubjectRaw: analyser.bestUnisForSubject(),
+        bestUnisForSubject,
         submissionsPerYear: [],
         listOfSubjectsAndWhereToStudy: [],
         covid19CasesPerInstitution: [],
