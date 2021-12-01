@@ -58,7 +58,7 @@ class TechTestUniDataAPI {
         },
         bestUnisForSubjectRaw: analyser.bestUnisForSubject(),
         bestUnisForSubject,
-        submissionsPerYear: [],
+        submissionsPerYear: analyser.submissionsPerYear(),
         listOfSubjectsAndWhereToStudy: analyser.listOfSubjectsAndWhereToStudy(),
         covid19CasesPerInstitution: [],
       };

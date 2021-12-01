@@ -23,7 +23,7 @@ export interface GetDashboardGraphsResponse {
   /**
    * Display some submission data per institution for each year in either a table or chart
    */
-  submissionsPerYear: string[],
+  submissionsPerYear: Graph,
 
   /**
    * Show a list of subjects and which institutions you can study them at
