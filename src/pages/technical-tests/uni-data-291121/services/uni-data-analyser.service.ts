@@ -105,7 +105,7 @@ class UniDataAnalyserService {
     });
     graph.series.push({
       data: yearCounts,
-      name: 'Year',
+      name: 'No. of Submissions',
     });
     return graph;
   }
