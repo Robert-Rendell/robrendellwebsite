@@ -23,18 +23,12 @@ class UniDataAnalyserService {
     for (const [subject, bestUnisArrayForSubject] of Object.entries(bestUnisForSubject)) {
       const sumStudentRating: { [key: string]: number } = {};
       const totals: { [key: string]: number } = {};
-      console.log(subject);
 
       for (const item of bestUnisArrayForSubject) {
         if (!sumStudentRating[item.institution_name]) sumStudentRating[item.institution_name] = 0;
         if (!totals[item.institution_name]) totals[item.institution_name] = 0;
         sumStudentRating[item.institution_name] += item.student_rating;
         totals[item.institution_name] += 1;
-        console.log(
-          item.institution_name,
-          item.student_rating,
-          sumStudentRating[item.institution_name],
-        );
       }
 
       let maxAverage = 0;
@@ -91,6 +85,29 @@ class UniDataAnalyserService {
       });
     });
     return [...result];
+  }
+
+  public submissionsPerYear(): Graph {
+    const graph: Graph = {
+      xAxis: [],
+      series: [],
+    };
+    const years = [...new Set(this.submissions.map((sub: Submission) => sub.year))].sort();
+    const yearCounts: number[] = [];
+    graph.xAxis = years.map((y) => `${y}`);
+    years.forEach((year, i) => {
+      yearCounts.push(0);
+      this.submissions.forEach((sub, j) => {
+        if (sub.year === year) {
+          yearCounts[i] += 1;
+        }
+      });
+    });
+    graph.series.push({
+      data: yearCounts,
+      name: 'Year',
+    });
+    return graph;
   }
 
   private getInstitution(institutionId: string): Institution | undefined {
