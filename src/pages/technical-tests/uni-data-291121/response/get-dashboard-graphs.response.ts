@@ -1,3 +1,6 @@
+import { Institution } from '../models/institution';
+import { Submission } from '../models/submission';
+
 export interface GetDashboardGraphsResponse {
   /**
    * Expose the raw data as well for ease of debugging
@@ -5,8 +8,8 @@ export interface GetDashboardGraphsResponse {
    * which would mean the graphs load quicker on the front end
    */
   rawData: {
-    submissions: string;
-    institutions: string;
+    submissions: Submission[];
+    institutions: Institution[];
   };
 
   /**

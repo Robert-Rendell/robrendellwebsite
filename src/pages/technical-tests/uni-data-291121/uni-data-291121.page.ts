@@ -2,6 +2,8 @@ import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { Request, Response } from 'express';
 import ConfigService from '../../../services/config.service';
 import S3BucketService from '../../../services/s3-bucket.service';
+import { Institution } from './models/institution';
+import { Submission } from './models/submission';
 import { GetDashboardGraphsResponse } from './response/get-dashboard-graphs.response';
 
 class TechTestUniDataAPI {
@@ -37,8 +39,8 @@ class TechTestUniDataAPI {
 
       const response: GetDashboardGraphsResponse = {
         rawData: {
-          submissions: submissionsFile.Body?.toString() || '',
-          institutions: institutionFile.Body?.toString() || '',
+          submissions: JSON.parse(submissionsFile.Body?.toString() || '') as Submission[],
+          institutions: JSON.parse(institutionFile.Body?.toString() || '') as Institution[],
         },
         bestUnisForSubject: [],
         submissionsPerYear: [],
