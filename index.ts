@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import RateLimit from 'express-rate-limit';
 import homepage from './src/pages/home/home.page';
 import SudokuAPI from './src/pages/sudoku/sudoku.page';
+import TechTestUniDataAPI from './src/pages/technical-tests/uni-data-291121/uni-data-291121.page';
 
 dotenv.config();
 
@@ -45,3 +46,5 @@ app.post(SudokuAPI.Routes.postSudokuList, SudokuAPI.postSudokuList);
 app.post(SudokuAPI.Routes.postSubmission, SudokuAPI.postSubmission);
 app.post(SudokuAPI.Routes.postGenerateSudoku, SudokuAPI.generateSudoku);
 app.post(SudokuAPI.Routes.postGenerateSudokuCallback, SudokuAPI.generateSudokuCallback);
+
+app.get(TechTestUniDataAPI.Routes.getDashboardGraphs, TechTestUniDataAPI.getDashboardGraphs);
