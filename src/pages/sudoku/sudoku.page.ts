@@ -202,6 +202,10 @@ class SudokuAPI {
     console.log(req.params, req.body);
     const request = req.body as PostGenerateSudokuCallbackRequest;
 
+    if (request.sudokuInsertionSecurityKey !== ConfigService.SudokuGenSecurityKey) {
+      SudokuAPI.unauthorised("Error: SUDOKU_GEN_SECURITY_KEY env var not matching for 'sudokuInsertionSecurityKey' in body", res);
+      return;
+    }
     if (!(request.puzzle && request.solution && request.difficulty)) {
       SudokuAPI.badRequest("Error: Need to specify 'puzzle', 'solution' and 'difficulty'", res);
       return;
@@ -240,6 +244,11 @@ class SudokuAPI {
   static badRequest(errorMessage: string, res: Response): void {
     console.error(errorMessage);
     res.status(400).send({ errorMessage } as ErrorResponse);
+  }
+
+  static unauthorised(errorMessage: string, res: Response): void {
+    console.error(errorMessage);
+    res.status(401).send({ errorMessage } as ErrorResponse);
   }
 }
 
