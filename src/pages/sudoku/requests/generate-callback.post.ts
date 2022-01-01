@@ -17,6 +17,10 @@ interface PostGenerateSudokuCallbackRequest {
    * Daisy chained currently from lambda invocation
    */
   generationJobId: string,
+  /**
+   * The lambda and the back end share a security key for sudoku adding
+   */
+  sudokuInsertionSecurityKey: string,
 }
 
 export { PostGenerateSudokuCallbackRequest as default };

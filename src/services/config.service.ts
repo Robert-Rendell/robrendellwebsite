@@ -23,6 +23,10 @@ export default class ConfigService {
     };
   }
 
+  static get SudokuGenSecurityKey(): string {
+    return process.env.SUDOKU_GEN_SECURITY_KEY || '';
+  }
+
   static get SudokuSubmissionsDynamoDbTable(): string {
     return process.env.SUDOKU_SUBMISSIONS_DYNAMO_DB_TABLE || '';
   }
