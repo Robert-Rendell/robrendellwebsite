@@ -1,22 +1,11 @@
 import AWS from 'aws-sdk';
-import { ExpressionAttributeValueMap, QueryInput } from 'aws-sdk/clients/dynamodb';
+import { ExpressionAttributeValueMap } from 'aws-sdk/clients/dynamodb';
 import ConfigService from '../../../services/config.service';
 import DynamoDBService from '../../../services/dynamo-db.service';
+import { ListSudokuParams } from '../models/params/list-sudoku-params';
 import { Sudoku } from '../models/sudoku';
 import SudokuPuzzle from '../models/sudoku-puzzle';
 import SudokuDynamoDB from '../models/sudoku.dynamodb';
-
-export interface ListSudokuParams {
-  dateGenerated?: {
-    to: Date,
-    from: Date,
-  };
-  solved?: {
-    timesSolved: number
-  }
-  difficulty?: string;
-  generatorJobId?: string;
-}
 
 export default class SudokuDynamoDBService extends DynamoDBService {
   private static PartitionKey = 'sudokuId';
@@ -40,8 +29,8 @@ export default class SudokuDynamoDBService extends DynamoDBService {
     const expMap: ExpressionAttributeValueMap = {};
     let filterExp = '';
 
-    if (!params.generatorJobId) {
-      console.log('Currently only supporting generatorJobId listSudokus');
+    if (!params.generatorJobId && !params.dateGenerated) {
+      console.log('Currently only supporting generatorJobId or dateGenerated listSudokus');
       return [];
     }
 
@@ -49,6 +38,12 @@ export default class SudokuDynamoDBService extends DynamoDBService {
       console.log('Found GeneratorJobId in query filters, prioritising it.');
       filterExp = 'generationJobId = :jobId';
       expMap[':jobId'] = { S: params.generatorJobId };
+    }
+
+    if (params.dateGenerated) {
+      filterExp = 'dateGenerated >= :dateFrom and dateGenerated <= :dateTo';
+      expMap[':dateFrom'] = { S: params.dateGenerated.from.toISOString() };
+      expMap[':dateTo'] = { S: params.dateGenerated.to.toISOString() };
     }
 
     const l = await super.list(
