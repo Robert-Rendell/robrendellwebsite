@@ -22,6 +22,7 @@ import PostGenerateSudokuCallbackRequest from './requests/generate-callback.post
 import GenerateSudokuJson from './models/generate-sudoku-json';
 import { PostSudokuListRequest } from './requests/sudoku-list.post';
 import { SudokuListResponse } from './response/sudoku-list.response';
+import { ListSudokuParams } from './models/params/list-sudoku-params';
 
 class SudokuAPI {
   static Routes = {
@@ -63,11 +64,27 @@ class SudokuAPI {
   static async postSudokuList(req: Request, res: Response): Promise<void> {
     try {
       console.log('POST postSudokuList');
+      console.log(req.body);
       const request = req.body as PostSudokuListRequest;
 
-      const sudokus: Sudoku[] = await SudokuDynamoDBService.listSudokus({
+      const params: ListSudokuParams = {
         generatorJobId: request.filters?.generatorJobId,
-      });
+      };
+
+      if (request.filters?.dateGenerated) {
+        const fromDate = new Date();
+        fromDate.setDate(new Date().getDate() - (request.filters.dateGenerated.days || 5));
+        params.dateGenerated = {
+          to: new Date(),
+          from: fromDate,
+        };
+      }
+
+      let sudokus: Sudoku[] = await SudokuDynamoDBService.listSudokus(params);
+
+      if (request.pagination) {
+        sudokus = sudokus.splice(0, request.pagination.limit || 5);
+      }
 
       console.log(sudokus);
       res.status(200).send(sudokus as SudokuListResponse);

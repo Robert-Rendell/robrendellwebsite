@@ -1,5 +1,5 @@
 import PaginationRequest from '../../../requests/pagination.request';
-import { ListSudokuParams } from '../services/sudoku-dynamodb.service';
+import { ListSudokuParams } from '../models/params/list-sudoku-params';
 
 /**
  * The POST request params received from the front end
