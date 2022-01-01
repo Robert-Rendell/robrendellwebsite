@@ -83,10 +83,11 @@ class SudokuAPI {
       let sudokus: Sudoku[] = await SudokuDynamoDBService.listSudokus(params);
 
       if (request.pagination) {
-        sudokus = sudokus.splice(0, request.pagination.limit || 5);
+        sudokus = sudokus.sort(
+          (a, b) => (+(new Date(b.dateGenerated)) - +(new Date(a.dateGenerated))),
+        ).splice(0, request.pagination.limit || 5);
       }
 
-      console.log(sudokus);
       res.status(200).send(sudokus as SudokuListResponse);
     } catch (e) {
       console.error(e);
