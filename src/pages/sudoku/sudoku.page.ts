@@ -23,10 +23,13 @@ import GenerateSudokuJson from './models/generate-sudoku-json';
 import { PostSudokuListRequest } from './requests/sudoku-list.post';
 import { SudokuListResponse } from './response/sudoku-list.response';
 import { ListSudokuParams } from './models/params/list-sudoku-params';
+import GetSudokuLeaderboardRequest from './requests/sudoku-leaderboard.get';
+import { SudokuLeaderboardResponse } from './response/sudoku-leaderboard.response';
 
 class SudokuAPI {
   static Routes = {
     getSudoku: '/sudoku/play/:sudokuId',
+    getSudokuLeaderboard: '/sudoku/leaderboard/:sudokuId',
     postSudokuList: '/sudoku/list',
     postSubmission: '/sudoku/submit',
     postGenerateSudoku: '/sudoku/add',
@@ -39,20 +42,23 @@ class SudokuAPI {
   private static createSubmission(
     req: Request,
     sudoku: Sudoku,
-    submissionPuzzle?: SudokuPuzzle,
-    validation?: SudokuValidation,
-    submitterName?: string,
+    opts?: {
+      submissionPuzzle?: SudokuPuzzle,
+      validation?: SudokuValidation,
+      submitterName?: string,
+      timeTakenMs?: number,
+    },
   ): Submission {
     const submission: ExtendedSubmission = {
       submissionId: uuidv4(),
       sudokuId: sudoku.sudokuId,
-      sudokuSubmission: submissionPuzzle,
-      timeTaken: 0,
+      sudokuSubmission: opts?.submissionPuzzle,
+      timeTakenMs: opts?.timeTakenMs || 0,
       dateSubmitted: `${new Date().toISOString()}`,
       ipAddress: `${IPAddressService.getIPAddress(req)}`,
-      valid: validation?.valid,
-      complete: validation?.complete,
-      submitterName: submitterName || '',
+      valid: opts?.validation?.valid,
+      complete: opts?.validation?.complete,
+      submitterName: opts?.submitterName || '',
     };
     SubmissionsDynamoDbService.saveSubmission(submission);
     return submission;
@@ -130,6 +136,33 @@ class SudokuAPI {
   }
 
   /**
+   * GET a sudoku leaderboard using sudokuId
+   */
+  public static async getSudokuLeaderboard(req: Request, res: Response): Promise<void> {
+    try {
+      console.log('GET getSudokuLeaderboard');
+      const request: GetSudokuLeaderboardRequest = req.params as any;
+
+      const leaderboard = await SubmissionsDynamoDbService.getCompletedSubmissionsForSudoku(
+        request.sudokuId,
+      );
+
+      const response: SudokuLeaderboardResponse = {
+        leaderboard: leaderboard?.filter(
+          (item) => item.timeTakenMs,
+        ).sort(
+          (a, b) => a.timeTakenMs - b.timeTakenMs,
+        ) || [],
+      };
+
+      res.status(200).send(response);
+    } catch (e) {
+      console.error(e);
+      res.status(500).send(SudokuInternalServerError((e as Error).message));
+    }
+  }
+
+  /**
    * POST Submit a partial or complete solution to a sudoku puzzle
    */
   static async postSubmission(req: Request, res: Response): Promise<void> {
@@ -158,11 +191,26 @@ class SudokuAPI {
         ),
       };
 
+      if (response.complete) {
+        const startSubmission = await SubmissionsDynamoDbService.getSubmission(
+          submissionRequest.sudokuSubmissionId,
+        );
+        if (startSubmission?.dateSubmitted) {
+          response.timeTakenMs = (+(new Date()) - +(new Date(startSubmission?.dateSubmitted)));
+        }
+      }
+
       SudokuAPI.createSubmission(
         req,
         sudoku,
-        submissionRequest.sudokuSubmission,
-        response,
+        {
+          submissionPuzzle: submissionRequest.sudokuSubmission,
+          validation: {
+            complete: response.complete,
+            valid: response.valid,
+          },
+          timeTakenMs: response.timeTakenMs,
+        },
       );
 
       res.status(200).send(response);
