@@ -23,10 +23,13 @@ import GenerateSudokuJson from './models/generate-sudoku-json';
 import { PostSudokuListRequest } from './requests/sudoku-list.post';
 import { SudokuListResponse } from './response/sudoku-list.response';
 import { ListSudokuParams } from './models/params/list-sudoku-params';
+import GetSudokuLeaderboardRequest from './requests/sudoku-leaderboard.get';
+import { SudokuLeaderboardResponse } from './response/sudoku-leaderboard.response';
 
 class SudokuAPI {
   static Routes = {
     getSudoku: '/sudoku/play/:sudokuId',
+    getSudokuLeaderboard: '/sudoku/leaderboard/:sudokuId',
     postSudokuList: '/sudoku/list',
     postSubmission: '/sudoku/submit',
     postGenerateSudoku: '/sudoku/add',
@@ -123,6 +126,33 @@ class SudokuAPI {
         sudokuId: sudoku.sudokuId,
         puzzle: JSON.parse(sudoku.puzzle),
         submissionId: submission.submissionId,
+      };
+
+      res.status(200).send(response);
+    } catch (e) {
+      console.error(e);
+      res.status(500).send(SudokuInternalServerError((e as Error).message));
+    }
+  }
+
+  /**
+   * GET a sudoku leaderboard using sudokuId
+   */
+  public static async getSudokuLeaderboard(req: Request, res: Response): Promise<void> {
+    try {
+      console.log('GET getSudokuLeaderboard');
+      const request: GetSudokuLeaderboardRequest = req.params as any;
+
+      const leaderboard = await SubmissionsDynamoDbService.getCompletedSubmissionsForSudoku(
+        request.sudokuId,
+      );
+
+      const response: SudokuLeaderboardResponse = {
+        leaderboard: leaderboard?.filter(
+          (item) => item.timeTakenMs,
+        ).sort(
+          (a, b) => a.timeTakenMs - b.timeTakenMs,
+        ) || [],
       };
 
       res.status(200).send(response);
