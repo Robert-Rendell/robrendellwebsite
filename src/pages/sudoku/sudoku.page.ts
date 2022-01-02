@@ -183,7 +183,7 @@ class SudokuAPI {
       }
 
       const response: SubmitSudokuBasicResponse = {
-        complete: (sudoku?.solution === submissionRequest.sudokuSubmission),
+        complete: (sudoku?.solution.replace(/ /g, '') === submissionRequest.sudokuSubmission),
         valid: SudokuValidatorService.isSudokuSubmissionValid(
           sudoku?.puzzle || '',
           submissionRequest.sudokuSubmission,
