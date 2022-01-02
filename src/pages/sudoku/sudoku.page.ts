@@ -210,6 +210,7 @@ class SudokuAPI {
             valid: response.valid,
           },
           timeTakenMs: response.timeTakenMs,
+          submitterName: submissionRequest.submitterName,
         },
       );
 
