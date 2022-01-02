@@ -39,20 +39,23 @@ class SudokuAPI {
   private static createSubmission(
     req: Request,
     sudoku: Sudoku,
-    submissionPuzzle?: SudokuPuzzle,
-    validation?: SudokuValidation,
-    submitterName?: string,
+    opts?: {
+      submissionPuzzle?: SudokuPuzzle,
+      validation?: SudokuValidation,
+      submitterName?: string,
+      timeTakenMs?: number,
+    },
   ): Submission {
     const submission: ExtendedSubmission = {
       submissionId: uuidv4(),
       sudokuId: sudoku.sudokuId,
-      sudokuSubmission: submissionPuzzle,
-      timeTaken: 0,
+      sudokuSubmission: opts?.submissionPuzzle,
+      timeTakenMs: opts?.timeTakenMs || 0,
       dateSubmitted: `${new Date().toISOString()}`,
       ipAddress: `${IPAddressService.getIPAddress(req)}`,
-      valid: validation?.valid,
-      complete: validation?.complete,
-      submitterName: submitterName || '',
+      valid: opts?.validation?.valid,
+      complete: opts?.validation?.complete,
+      submitterName: opts?.submitterName || '',
     };
     SubmissionsDynamoDbService.saveSubmission(submission);
     return submission;
@@ -158,11 +161,26 @@ class SudokuAPI {
         ),
       };
 
+      if (response.complete) {
+        const startSubmission = await SubmissionsDynamoDbService.getSubmission(
+          submissionRequest.sudokuSubmissionId,
+        );
+        if (startSubmission?.dateSubmitted) {
+          response.timeTakenMs = (+(new Date()) - +(new Date(startSubmission?.dateSubmitted)));
+        }
+      }
+
       SudokuAPI.createSubmission(
         req,
         sudoku,
-        submissionRequest.sudokuSubmission,
-        response,
+        {
+          submissionPuzzle: submissionRequest.sudokuSubmission,
+          validation: {
+            complete: response.complete,
+            valid: response.valid,
+          },
+          timeTakenMs: response.timeTakenMs,
+        },
       );
 
       res.status(200).send(response);

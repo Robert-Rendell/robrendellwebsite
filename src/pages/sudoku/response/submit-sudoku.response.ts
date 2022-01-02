@@ -6,7 +6,9 @@ import SudokuValidationIssue from '../models/sudoku-validation-issue';
 /**
  * Alias to meet Response pattern
  */
-export interface SubmitSudokuBasicResponse extends SudokuValidation {}
+export interface SubmitSudokuBasicResponse extends SudokuValidation {
+  timeTakenMs?: number;
+}
 export interface ExtendedSubmitSudokuResponse extends SudokuValidation {
   validationIssues: SudokuValidationIssue[],
 }
