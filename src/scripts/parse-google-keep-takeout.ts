@@ -3,6 +3,11 @@ import path from 'path';
 import AWS from 'aws-sdk';
 import { KeepNote, KeepNoteLabel } from './typing/parse-google-keep-takeout.models';
 /**
+ * Overview:
+ * - Google Keep API is only for enterprise level users
+ * - As a result I've had to use Google Takeout to export Google Keep notes / images
+ * - This script parses the unzipped takeout folders and uploads the json keep notes and the images
+ *   associated with the notes.
  * Instructions:
  * - Use Google Takeout to export Google Keep
  * - Download the zip(s)
