@@ -1,4 +1,4 @@
-import ImageUrl from '../models/image-s3-url';
+import ImageUrl from '../../../models/image-s3-url';
 
 interface HomePageResponse {
   travelImages: ImageUrl[];

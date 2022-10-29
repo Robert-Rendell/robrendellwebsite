@@ -4,9 +4,14 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import RateLimit from 'express-rate-limit';
-import homepage from './src/pages/home/home.page';
+import { HomePage } from './src/pages/home/home.page';
 import SudokuAPI from './src/pages/sudoku/sudoku.page';
 import TechTestUniDataAPI from './src/pages/technical-tests/uni-data-291121/uni-data-291121.page';
+import { NatureRouting } from './src/pages/photos-ive-taken/nature/nature.routing';
+import { WildFlowersPage } from './src/pages/photos-ive-taken/nature/pages/wild-flowers.page';
+import { ArachnidsPage } from './src/pages/photos-ive-taken/nature/pages/arachnids.page';
+import { InsectsPage } from './src/pages/photos-ive-taken/nature/pages/insects.page';
+import { LichenPage } from './src/pages/photos-ive-taken/nature/pages/lichen.page';
 
 dotenv.config();
 
@@ -40,7 +45,15 @@ app.listen(PORT, () => {
 });
 
 // === Routes =========================================
-app.get('/', homepage);
+app.get('/', HomePage);
+
+app.get('/', HomePage);
+
+app.get(NatureRouting.WildFlowers, WildFlowersPage);
+app.get(NatureRouting.Arachnids, ArachnidsPage);
+app.get(NatureRouting.Insects, InsectsPage);
+app.get(NatureRouting.Lichen, LichenPage);
+
 app.get(SudokuAPI.Routes.getSudoku, SudokuAPI.getSudoku);
 app.get(SudokuAPI.Routes.getSudokuLeaderboard, SudokuAPI.getSudokuLeaderboard);
 app.post(SudokuAPI.Routes.postSudokuList, SudokuAPI.postSudokuList);
