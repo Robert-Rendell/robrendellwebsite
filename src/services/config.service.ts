@@ -47,6 +47,10 @@ export default class ConfigService {
     return process.env.IMAGE_BUCKET || '';
   }
 
+  static get PhotosIveTakenImageBucket(): string {
+    return process.env.PHOTOS_TAKEN_IMAGE_BUCKET || '';
+  }
+
   static get SudokuGenerateJsonBucket(): string {
     return process.env.SUDOKU_GEN_BUCKET_JSON || '';
   }

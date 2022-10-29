@@ -8,7 +8,7 @@ export const NaturePage = async (
   opts: {req: Request, res: Response, s3ImagePrefix: S3ImagePrefix },
 ) => {
   try {
-    const bucket = ConfigService.HomePageImageBucket;
+    const bucket = ConfigService.PhotosIveTakenImageBucket;
     console.log('Getting s3 urls for:', bucket, opts.s3ImagePrefix);
     const s3ImageUrls = await S3BucketService.getDownloadLinks(bucket, opts.s3ImagePrefix);
     const responseBody: S3ImagePageResponse = { s3ImageUrls };
