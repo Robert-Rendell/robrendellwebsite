@@ -17,6 +17,7 @@ import {
   SudokuPuzzle,
   SudokuResponse,
 } from 'robrendellwebsite-common';
+import ErrorResponse from 'robrendellwebsite-common/src/contract/common/response/error.response';
 import { ListSudokuParams } from 'robrendellwebsite-common/src/models/sudoku/list-sudoku-params';
 import GetSudokuRequest from 'robrendellwebsite-common/src/contract/sudoku/request/sudoku.get';
 import GetSudokuLeaderboardRequest from 'robrendellwebsite-common/src/contract/sudoku/request/sudoku-leaderboard.get';
@@ -30,7 +31,6 @@ import SudokuValidatorService from './services/sudoku-validator.service';
 import SubmissionsDynamoDbService from './services/submission-dynamodb.service';
 import ConfigService from '../../services/config.service';
 import SudokuDifficulty from './enums/sudoku-difficulty';
-import { ErrorResponse } from '../../responses/error.response';
 
 class SudokuAPI {
   static Routes = {
