@@ -113,7 +113,7 @@ class SudokuAPI {
   static async getSudoku(req: Request, res: Response): Promise<void> {
     try {
       console.log('GET getSudoku');
-      const request: GetSudokuRequest = req.params as any;
+      const request = req.params as unknown as GetSudokuRequest;
 
       const sudoku: Sudoku | undefined | void = await SudokuDynamoDBService.getSudoku(
         request.sudokuId,
@@ -147,7 +147,7 @@ class SudokuAPI {
   public static async getSudokuLeaderboard(req: Request, res: Response): Promise<void> {
     try {
       console.log('GET getSudokuLeaderboard');
-      const request: GetSudokuLeaderboardRequest = req.params as any;
+      const request = req.params as unknown as GetSudokuLeaderboardRequest;
 
       const leaderboard = await SubmissionsDynamoDbService.getCompletedSubmissionsForSudoku(
         request.sudokuId,
