@@ -4,5 +4,6 @@ export enum S3ImagePrefix {
   WildFlowers = 'nature/wild-flowers',
   Lichen = 'nature/lichen',
   Arachnids = 'nature/arachnids',
-  Insects = 'nature/insects'
+  Insects = 'nature/insects',
+  Fungi = 'nature/fungi',
 }

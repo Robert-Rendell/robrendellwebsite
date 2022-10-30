@@ -13,14 +13,15 @@ import { KeepNote, KeepNoteLabel } from './typing/parse-google-keep-takeout.mode
  * - Download the zip(s)
  * - Run:
  *   - $ npx ts-node ./src/scripts/parse-google-keep-takeout.ts
+ * - The job hangs while all the HTTP request to S3 finish.
  */
 const executeS3UploadEnabled = true;
 const logFilenames = false;
 const targetDir = '/home/rob/Downloads';
 const targetBucket = 'robrendellwebsite-photosivetaken';
-const targetKeyPrefix = 'nature/wild-flowers';
+const targetKeyPrefix = 'nature/arachnids';
 const targetLabel: KeepNoteLabel = {
-  name: 'AAA Flowers',
+  name: 'Arachnids',
 };
 
 AWS.config.update({
@@ -74,7 +75,13 @@ const resolveAttachments = (opts: {
         getRawKeepNote(otherFolders[0], fixedFileExtensioFilename);
         return { resolvedFolder: otherFolders[0], filename: fixedFileExtensioFilename };
       } catch (error2) {
-        errors.push(d);
+        try {
+          const fixedPngFilename = fixedFileExtensioFilename.replace('.png', '.jpg');
+          getRawKeepNote(otherFolders[0], fixedPngFilename);
+          return { resolvedFolder: otherFolders[0], filename: fixedPngFilename };
+        } catch (error3) {
+          errors.push(d);
+        }
       }
     }
     throw Error('Should have found the file by now, only using otherFolders[0] just now.');
@@ -126,7 +133,7 @@ takeoutFolders.forEach((folder: string) => {
   });
 
   if (executeS3UploadEnabled) {
-    // Only works for one folder just now
+    // Only works for one folder just now, so if the jsons are split between two, there's a problem
     const jsonPromises = jsonNoteFilenames.map(
       (filename) => {
         console.log('Uploading: ', folder, filename);
@@ -134,23 +141,30 @@ takeoutFolders.forEach((folder: string) => {
           Bucket: targetBucket,
           Key: `${targetKeyPrefix}/jsons/${filename}`,
           Body: getRawKeepNote(folder, filename),
-        }).promise();
+        }).promise().then(() => {
+          console.log('SUCCESS uploaded: ', folder, filename);
+        }).catch((error) => {
+          console.error('FAILED upload: ', folder, filename, error);
+        });
       },
     );
 
     const imgPromises = resolvedAttachmentFilenames.map(
-      ({ resolvedFolder, filename }) => {
+      async ({ resolvedFolder, filename }) => {
         console.log('Uploading: ', resolvedFolder, filename);
         return s3.upload({
           Bucket: targetBucket,
           Key: `${targetKeyPrefix}/${filename}`,
           Body: getRawKeepNote(resolvedFolder, filename),
-        }).promise();
+        }).promise().then(() => {
+          console.log('SUCCESS uploaded: ', resolvedFolder, filename);
+        }).catch((error) => {
+          console.error('FAILED upload: ', resolvedFolder, filename, error);
+        });
       },
     );
-
     Promise.all([...jsonPromises, ...imgPromises]).then(() => {
-      console.log('Success!', jsonPromises.length + imgPromises.length, 'file(s) uploaded to S3');
+      console.log(`Success! [Folder: ${folder.slice(-1)[0]}]`, jsonNoteFilenames.length + resolvedAttachmentFilenames.length, 'file(s) uploaded to S3');
     }).catch((error) => {
       console.log('Error!', error);
     });
