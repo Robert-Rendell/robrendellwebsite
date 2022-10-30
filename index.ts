@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
-import express from 'express';
-// import cors from 'cors';
+import express, { Request, Response } from 'express';
+import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import RateLimit from 'express-rate-limit';
@@ -25,7 +25,6 @@ const PORT = process.env.PORT || 80;
 
 const app = express();
 app.use(helmet());
-// app.use(cors());
 app.use(morgan('combined'));
 app.use(express.json());
 // === Rate Limiting =======================
@@ -35,6 +34,12 @@ app.enable('trust proxy');
 const limiter = RateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
+});
+
+app.use(() => (req: Request, res: Response, next: any) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
 });
 
 // apply to all requests
