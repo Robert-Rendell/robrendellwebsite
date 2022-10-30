@@ -1,30 +1,36 @@
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { Sudoku } from 'robrendellwebsite-common/src/models/sudoku/sudoku';
+import SudokuValidation from 'robrendellwebsite-common/src/models/sudoku/sudoku-validation';
+import { ExtendedSubmission, Submission } from 'robrendellwebsite-common/src/models/sudoku/submission';
+import {
+  GenerateSudokuJson,
+  PostGenerateSudokuCallbackRequest,
+  PostSudokuListRequest,
+  SubmitSudokuBasicResponse,
+  SubmitSudokuInternalServerError,
+  SubmitSudokuNotFoundError,
+  SudokuInternalServerError,
+  SudokuLeaderboardResponse,
+  SudokuListResponse,
+  SudokuNotFoundResponse,
+  SudokuPuzzle,
+  SudokuResponse,
+} from 'robrendellwebsite-common';
+import ErrorResponse from 'robrendellwebsite-common/src/contract/common/response/error.response';
+import { ListSudokuParams } from 'robrendellwebsite-common/src/models/sudoku/list-sudoku-params';
+import GetSudokuRequest from 'robrendellwebsite-common/src/contract/sudoku/request/sudoku.get';
+import GetSudokuLeaderboardRequest from 'robrendellwebsite-common/src/contract/sudoku/request/sudoku-leaderboard.get';
+import PostSubmissionRequest from 'robrendellwebsite-common/src/contract/sudoku/request/submission.post';
+import PostGenerateSudokuRequest from 'robrendellwebsite-common/src/contract/sudoku/request/generate.post';
+import GenerateSudokuResponse from 'robrendellwebsite-common/src/contract/sudoku/response/generate.response';
 import IPAddressService from '../../services/ip-address.service';
 import S3BucketService from '../../services/s3-bucket.service';
 import SudokuDynamoDBService from './services/sudoku-dynamodb.service';
 import SudokuValidatorService from './services/sudoku-validator.service';
 import SubmissionsDynamoDbService from './services/submission-dynamodb.service';
 import ConfigService from '../../services/config.service';
-import { Sudoku } from './models/sudoku';
-import PostSubmissionRequest from './requests/submission.post';
-import { SudokuResponse, SudokuNotFoundResponse, SudokuInternalServerError } from './response/sudoku.response';
-import { SubmitSudokuBasicResponse, SubmitSudokuInternalServerError, SubmitSudokuNotFoundError } from './response/submit-sudoku.response';
-import GetSudokuRequest from './requests/sudoku.get';
-import { ExtendedSubmission, Submission } from './models/submission';
-import SudokuPuzzle from './models/sudoku-puzzle';
-import SudokuValidation from './models/sudoku-validation';
 import SudokuDifficulty from './enums/sudoku-difficulty';
-import ErrorResponse from '../../responses/error.response';
-import PostGenerateSudokuRequest from './requests/generate.post';
-import GenerateSudokuResponse from './response/generate.response';
-import PostGenerateSudokuCallbackRequest from './requests/generate-callback.post';
-import GenerateSudokuJson from './models/generate-sudoku-json';
-import { PostSudokuListRequest } from './requests/sudoku-list.post';
-import { SudokuListResponse } from './response/sudoku-list.response';
-import { ListSudokuParams } from './models/params/list-sudoku-params';
-import GetSudokuLeaderboardRequest from './requests/sudoku-leaderboard.get';
-import { SudokuLeaderboardResponse } from './response/sudoku-leaderboard.response';
 
 class SudokuAPI {
   static Routes = {
@@ -107,7 +113,7 @@ class SudokuAPI {
   static async getSudoku(req: Request, res: Response): Promise<void> {
     try {
       console.log('GET getSudoku');
-      const request: GetSudokuRequest = req.params as any;
+      const request = req.params as unknown as GetSudokuRequest;
 
       const sudoku: Sudoku | undefined | void = await SudokuDynamoDBService.getSudoku(
         request.sudokuId,
@@ -141,7 +147,7 @@ class SudokuAPI {
   public static async getSudokuLeaderboard(req: Request, res: Response): Promise<void> {
     try {
       console.log('GET getSudokuLeaderboard');
-      const request: GetSudokuLeaderboardRequest = req.params as any;
+      const request = req.params as unknown as GetSudokuLeaderboardRequest;
 
       const leaderboard = await SubmissionsDynamoDbService.getCompletedSubmissionsForSudoku(
         request.sudokuId,

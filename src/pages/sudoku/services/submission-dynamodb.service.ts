@@ -1,9 +1,9 @@
 import AWS from 'aws-sdk';
 import { QueryInput } from 'aws-sdk/clients/dynamodb';
+import { Submission } from 'robrendellwebsite-common/src/models/sudoku/submission';
+import { SudokuId } from 'robrendellwebsite-common/src/models/sudoku/sudoku';
 import ConfigService from '../../../services/config.service';
 import DynamoDBService from '../../../services/dynamo-db.service';
-import { Submission } from '../models/submission';
-import { SudokuId } from '../models/sudoku';
 
 export default class SubmissionsDynamoDbService extends DynamoDBService {
   private static PartitionKey = 'submissionId';
