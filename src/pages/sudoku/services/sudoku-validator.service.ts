@@ -1,5 +1,5 @@
+import { SudokuPuzzle } from 'robrendellwebsite-common';
 import TamperingError from '../errors/tampering.error';
-import SudokuPuzzle from '../models/sudoku-puzzle';
 
 class SudokuValidatorService {
   public static isSudokuSubmissionValid(

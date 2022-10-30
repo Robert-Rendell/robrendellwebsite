@@ -1,5 +1,3 @@
-interface ErrorResponse {
+export interface ErrorResponse {
   errorMessage: string,
 }
-
-export { ErrorResponse as default };

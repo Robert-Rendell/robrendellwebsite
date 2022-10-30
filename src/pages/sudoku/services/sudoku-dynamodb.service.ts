@@ -1,11 +1,11 @@
 import AWS from 'aws-sdk';
 import { ExpressionAttributeValueMap } from 'aws-sdk/clients/dynamodb';
+import { SudokuPuzzle } from 'robrendellwebsite-common';
+import { ListSudokuParams } from 'robrendellwebsite-common/src/models/sudoku/list-sudoku-params';
+import { Sudoku } from 'robrendellwebsite-common/src/models/sudoku/sudoku';
 import ConfigService from '../../../services/config.service';
 import DynamoDBService from '../../../services/dynamo-db.service';
-import { ListSudokuParams } from '../models/params/list-sudoku-params';
-import { Sudoku } from '../models/sudoku';
-import SudokuPuzzle from '../models/sudoku-puzzle';
-import SudokuDynamoDB from '../models/sudoku.dynamodb';
+import { SudokuDynamoDB } from '../db-models/sudoku.dynamodb';
 
 export default class SudokuDynamoDBService extends DynamoDBService {
   private static PartitionKey = 'sudokuId';
