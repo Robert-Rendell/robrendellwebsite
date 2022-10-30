@@ -1,3 +1,1 @@
-type ImageUrl = string;
-
-export { ImageUrl as default };
+export type ImageUrl = string;
