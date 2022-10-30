@@ -13,7 +13,6 @@ export const HomePage = async (req: Request, res: Response) => {
     const originalImageS3Urls = await S3BucketService.getDownloadLinks(
       bucket, S3ImagePrefix.Original,
     );
-    console.log(originalImageS3Urls);
 
     const response: HomePageResponse = {
       travelImages: thumbnailS3Urls || [],
