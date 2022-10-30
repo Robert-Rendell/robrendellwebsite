@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import express from 'express';
-import cors from 'cors';
+// import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import RateLimit from 'express-rate-limit';
@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 80;
 
 const app = express();
 app.use(helmet());
-app.use(cors());
+// app.use(cors());
 app.use(morgan('combined'));
 app.use(express.json());
 // === Rate Limiting =======================
