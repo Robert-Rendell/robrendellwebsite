@@ -11,7 +11,7 @@ import UniDataAnalyserService from './services/uni-data-analyser.service';
 class TechTestUniDataAPI {
   static Routes = {
     getDashboardGraphs: '/tech-tests/291121/getDashboardGraphs',
-  }
+  };
 
   private static async grabLatestS3Files(): Promise<any> {
     const institutionsFilePromise = S3BucketService.s3.getObject({
