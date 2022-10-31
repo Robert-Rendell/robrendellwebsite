@@ -1,4 +1,3 @@
-import { cloneDeep } from 'lodash';
 import { BestUnisForSubject, BestUnisForSubjectObject } from '../models/best-unis-for-subject';
 import { Graph } from '../models/graph';
 import { Institution } from '../models/institution';
@@ -55,7 +54,7 @@ class UniDataAnalyserService {
     this.submissions.forEach((submission: Submission) => {
       submission.subjects.forEach((subject: UniversitySubject) => {
         if (!result[subject.name]) result[subject.name] = [];
-        const subj: Partial<BestUnisForSubject> = cloneDeep(subject);
+        const subj: Partial<BestUnisForSubject> = JSON.parse(JSON.stringify(subject));
         const institution: Institution | undefined = this.getInstitution(submission.institution_id);
         subj.institution_name = institution?.name;
         subj.institution_id = submission.institution_id;

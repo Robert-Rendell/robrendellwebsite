@@ -9,7 +9,7 @@ export default class SubmissionsDynamoDbService extends DynamoDBService {
   private static PartitionKey = 'submissionId';
   private static GSI = {
     SudokuId: 'sudokuId-index',
-  }
+  };
 
   public static async saveSubmission(submission: Submission): Promise<void> {
     const marshalled = AWS.DynamoDB.Converter.marshall(submission);

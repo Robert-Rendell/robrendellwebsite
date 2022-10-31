@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { Sudoku } from 'robrendellwebsite-common/src/models/sudoku/sudoku';
-import SudokuValidation from 'robrendellwebsite-common/src/models/sudoku/sudoku-validation';
 import { ExtendedSubmission, Submission } from 'robrendellwebsite-common/src/models/sudoku/submission';
 import {
   GenerateSudokuJson,
@@ -16,14 +15,15 @@ import {
   SudokuNotFoundResponse,
   SudokuPuzzle,
   SudokuResponse,
+  ErrorResponse,
+  PostGenerateSudokuRequest,
+  GenerateSudokuResponse,
+  SudokuValidation,
 } from 'robrendellwebsite-common';
-import ErrorResponse from 'robrendellwebsite-common/src/contract/common/response/error.response';
 import { ListSudokuParams } from 'robrendellwebsite-common/src/models/sudoku/list-sudoku-params';
 import GetSudokuRequest from 'robrendellwebsite-common/src/contract/sudoku/request/sudoku.get';
 import GetSudokuLeaderboardRequest from 'robrendellwebsite-common/src/contract/sudoku/request/sudoku-leaderboard.get';
 import PostSubmissionRequest from 'robrendellwebsite-common/src/contract/sudoku/request/submission.post';
-import PostGenerateSudokuRequest from 'robrendellwebsite-common/src/contract/sudoku/request/generate.post';
-import GenerateSudokuResponse from 'robrendellwebsite-common/src/contract/sudoku/response/generate.response';
 import IPAddressService from '../../services/ip-address.service';
 import S3BucketService from '../../services/s3-bucket.service';
 import SudokuDynamoDBService from './services/sudoku-dynamodb.service';
@@ -40,7 +40,7 @@ class SudokuAPI {
     postSubmission: '/sudoku/submit',
     postGenerateSudoku: '/sudoku/add',
     postGenerateSudokuCallback: '/sudoku/add/callback',
-  }
+  };
 
   /**
    * Use DynamoDB Service to create a sudoku submission in DynamoDB
