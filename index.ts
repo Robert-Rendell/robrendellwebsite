@@ -12,6 +12,7 @@ import { WildFlowersPage } from './src/pages/photos-ive-taken/nature/pages/wild-
 import { ArachnidsPage } from './src/pages/photos-ive-taken/nature/pages/arachnids.page';
 import { InsectsPage } from './src/pages/photos-ive-taken/nature/pages/insects.page';
 import { LichenPage } from './src/pages/photos-ive-taken/nature/pages/lichen.page';
+import { FungiPage } from './src/pages/photos-ive-taken/nature/pages/fungi.page';
 
 dotenv.config();
 
@@ -53,6 +54,7 @@ app.get(NatureRouting.WildFlowers, WildFlowersPage);
 app.get(NatureRouting.Arachnids, ArachnidsPage);
 app.get(NatureRouting.Insects, InsectsPage);
 app.get(NatureRouting.Lichen, LichenPage);
+app.get(NatureRouting.Fungi, FungiPage);
 
 app.get(SudokuAPI.Routes.getSudoku, SudokuAPI.getSudoku);
 app.get(SudokuAPI.Routes.getSudokuLeaderboard, SudokuAPI.getSudokuLeaderboard);

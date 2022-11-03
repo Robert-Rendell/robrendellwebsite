@@ -5,4 +5,5 @@ export const NatureRouting = {
   Insects: `${PhotosIveTakenRoutes.Nature}/insects`,
   Arachnids: `${PhotosIveTakenRoutes.Nature}/arachnids`,
   Lichen: `${PhotosIveTakenRoutes.Nature}/lichen`,
+  Fungi: `${PhotosIveTakenRoutes.Nature}/fungi`,
 };
