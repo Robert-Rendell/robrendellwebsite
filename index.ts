@@ -42,8 +42,6 @@ app.listen(PORT, () => {
 // === Routes =========================================
 app.get('/', HomePage);
 
-app.get('/', HomePage);
-
 app.get(NatureRouting.WildFlowers, WildFlowersPage);
 app.get(NatureRouting.Arachnids, ArachnidsPage);
 app.get(NatureRouting.Insects, InsectsPage);
