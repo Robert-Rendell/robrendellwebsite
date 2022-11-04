@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
 import { ExpressionAttributeValueMap } from 'aws-sdk/clients/dynamodb';
-import ConfigService from '../../../services/config.service';
+import { ConfigService } from '../../../services/config.service';
 import DynamoDBService from '../../../services/dynamo-db.service';
 import { ListSudokuParams } from '../models/params/list-sudoku-params';
 import { Sudoku } from '../models/sudoku';

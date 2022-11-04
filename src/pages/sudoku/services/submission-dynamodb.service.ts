@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
 import { QueryInput } from 'aws-sdk/clients/dynamodb';
-import ConfigService from '../../../services/config.service';
+import { ConfigService } from '../../../services/config.service';
 import DynamoDBService from '../../../services/dynamo-db.service';
 import { Submission } from '../models/submission';
 import { SudokuId } from '../models/sudoku';
