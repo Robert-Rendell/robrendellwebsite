@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import ConfigService from '../../services/config.service';
+import { ConfigService } from '../../services/config.service';
 import S3BucketService from '../../services/s3-bucket.service';
 import { S3ImagePrefix } from '../../enums/s3-image-prefix.enum';
 import HomePageResponse from './response/home-page.response';

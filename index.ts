@@ -1,4 +1,3 @@
-import * as dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -13,15 +12,10 @@ import { ArachnidsPage } from './src/pages/photos-ive-taken/nature/pages/arachni
 import { InsectsPage } from './src/pages/photos-ive-taken/nature/pages/insects.page';
 import { LichenPage } from './src/pages/photos-ive-taken/nature/pages/lichen.page';
 import { FungiPage } from './src/pages/photos-ive-taken/nature/pages/fungi.page';
-
-dotenv.config();
-
-if (!process.env.PORT) {
-  process.exit(1);
-}
+import { ConfigService } from './src/services/config.service';
 
 // Heroku exposes PORT env var by default
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || ConfigService.Port || 80;
 
 const app = express();
 app.use(helmet());
