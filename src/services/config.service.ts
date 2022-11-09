@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk';
+import { EnvVar } from '../enums/env-vars.enum';
 import FeatureFlags from '../models/feature-flags';
 import { UniDataEnvVars } from '../pages/technical-tests/uni-data-291121/models/uni-data-env-vars';
 
@@ -7,51 +8,70 @@ AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY,
   region: process.env.AWS_REGION || 'eu-west-1',
 });
-
-export default class ConfigService {
+export class ConfigService {
   static get FeatureFlags(): FeatureFlags {
     return {
       sudokuGenerationEnabled: (process.env.SUDOKU_GEN_FEATURE_ENABLED === 'true') || false,
     };
   }
 
+  private static GetEnvVar(envVar: EnvVar) {
+    const envVarName = EnvVar[envVar];
+    const envVarValue = process.env[envVarName];
+    if (typeof envVarValue !== 'undefined') return envVarValue;
+    console.error('--------------------------------------');
+    console.error('[ERROR] Missing env var:', envVarName);
+    console.error('--------------------------------------');
+    console.error('Stopped the server... press [Ctrl] + [C] to exit.');
+    return process.exit(1);
+  }
+
   static get TechnicalTestUniDataConfig(): UniDataEnvVars {
     return {
-      bucket: process.env.S3_BUCKET_TT_291121 || '',
-      submissionsFile: process.env.S3_BUCKET_FILE_TT_291121_SUBMISSIONS || '',
-      institutionsFile: process.env.S3_BUCKET_FILE_TT_291121_INSTITUTIONS || '',
+      bucket: ConfigService.GetEnvVar(
+        EnvVar.S3_BUCKET_TT_291121,
+      ),
+      submissionsFile: ConfigService.GetEnvVar(
+        EnvVar.S3_BUCKET_FILE_TT_291121_SUBMISSIONS,
+      ),
+      institutionsFile: ConfigService.GetEnvVar(
+        EnvVar.S3_BUCKET_FILE_TT_291121_INSTITUTIONS,
+      ),
     };
   }
 
+  static get Port(): string {
+    return ConfigService.GetEnvVar(EnvVar.PORT);
+  }
   static get SudokuGenSecurityKey(): string {
-    return process.env.SUDOKU_GEN_SECURITY_KEY || '';
+    return ConfigService.GetEnvVar(EnvVar.SUDOKU_GEN_SECURITY_KEY);
   }
 
   static get SudokuSubmissionsDynamoDbTable(): string {
-    return process.env.SUDOKU_SUBMISSIONS_DYNAMO_DB_TABLE || '';
+    return ConfigService.GetEnvVar(EnvVar.SUDOKU_SUBMISSIONS_DYNAMO_DB_TABLE);
   }
 
   static get SudokuSolversDynamoDbTable(): string {
-    return process.env.SUDOKU_SOLVERS_DYNAMO_DB_TABLE || '';
+    return ConfigService.GetEnvVar(EnvVar.SUDOKU_SOLVERS_DYNAMO_DB_TABLE);
   }
 
   static get SudokuDynamoDbTable(): string {
-    return process.env.SUDOKU_DYNAMO_DB_TABLE || '';
+    return ConfigService.GetEnvVar(EnvVar.SUDOKU_DYNAMO_DB_TABLE);
   }
 
   static get HomePageDynamoDbTable(): string {
-    return process.env.HOME_PAGE_DYNAMO_DB_TABLE || '';
+    return ConfigService.GetEnvVar(EnvVar.HOME_PAGE_DYNAMO_DB_TABLE);
   }
 
   static get HomePageImageBucket(): string {
-    return process.env.IMAGE_BUCKET || '';
+    return ConfigService.GetEnvVar(EnvVar.IMAGE_BUCKET);
   }
 
   static get PhotosIveTakenImageBucket(): string {
-    return process.env.PHOTOS_TAKEN_IMAGE_BUCKET || '';
+    return ConfigService.GetEnvVar(EnvVar.PHOTOS_TAKEN_IMAGE_BUCKET);
   }
 
   static get SudokuGenerateJsonBucket(): string {
-    return process.env.SUDOKU_GEN_BUCKET_JSON || '';
+    return ConfigService.GetEnvVar(EnvVar.SUDOKU_GEN_BUCKET_JSON);
   }
 }

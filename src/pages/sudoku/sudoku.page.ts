@@ -5,7 +5,7 @@ import S3BucketService from '../../services/s3-bucket.service';
 import SudokuDynamoDBService from './services/sudoku-dynamodb.service';
 import SudokuValidatorService from './services/sudoku-validator.service';
 import SubmissionsDynamoDbService from './services/submission-dynamodb.service';
-import ConfigService from '../../services/config.service';
+import { ConfigService } from '../../services/config.service';
 import { Sudoku } from './models/sudoku';
 import PostSubmissionRequest from './requests/submission.post';
 import { SudokuResponse, SudokuNotFoundResponse, SudokuInternalServerError } from './response/sudoku.response';

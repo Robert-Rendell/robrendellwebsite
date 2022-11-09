@@ -1,8 +1,8 @@
-import * as dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import { config } from 'dotenv';
 import RateLimit from 'express-rate-limit';
 import { HomePage } from './src/pages/home/home.page';
 import SudokuAPI from './src/pages/sudoku/sudoku.page';
@@ -13,15 +13,11 @@ import { ArachnidsPage } from './src/pages/photos-ive-taken/nature/pages/arachni
 import { InsectsPage } from './src/pages/photos-ive-taken/nature/pages/insects.page';
 import { LichenPage } from './src/pages/photos-ive-taken/nature/pages/lichen.page';
 import { FungiPage } from './src/pages/photos-ive-taken/nature/pages/fungi.page';
+import { ConfigService } from './src/services/config.service';
 
-dotenv.config();
-
-if (!process.env.PORT) {
-  process.exit(1);
-}
-
+config();
 // Heroku exposes PORT env var by default
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || ConfigService.Port || 80;
 
 const app = express();
 app.use(helmet());
@@ -46,8 +42,6 @@ app.listen(PORT, () => {
 });
 
 // === Routes =========================================
-app.get('/', HomePage);
-
 app.get('/', HomePage);
 
 app.get(NatureRouting.WildFlowers, WildFlowersPage);
