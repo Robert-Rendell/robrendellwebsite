@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-class IPAddressService {
+export class IPAddressService {
   /**
    * https://stackoverflow.com/questions/10849687/express-js-how-to-get-remote-client-address
    * If you are running behind a proxy like NGiNX or what have you, only then you should
@@ -15,5 +15,3 @@ class IPAddressService {
     return ip;
   }
 }
-
-export { IPAddressService as default };
