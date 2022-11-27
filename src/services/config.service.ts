@@ -67,6 +67,10 @@ export class ConfigService {
     return ConfigService.GetEnvVar(EnvVar.IMAGE_BUCKET);
   }
 
+  static get PageViewsDynamoDbTable(): string {
+    return ConfigService.GetEnvVar(EnvVar.PAGE_VIEWS_DYNAMO_DB_TABLE);
+  }
+
   static get PhotosIveTakenImageBucket(): string {
     return ConfigService.GetEnvVar(EnvVar.PHOTOS_TAKEN_IMAGE_BUCKET);
   }

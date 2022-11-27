@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import IPAddressService from '../../services/ip-address.service';
+import { IPAddressService } from '../../services/ip-address.service';
 import S3BucketService from '../../services/s3-bucket.service';
 import SudokuDynamoDBService from './services/sudoku-dynamodb.service';
 import SudokuValidatorService from './services/sudoku-validator.service';
