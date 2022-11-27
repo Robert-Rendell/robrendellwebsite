@@ -6,6 +6,7 @@ import { PageViewsDynamoDbService } from '../services/page-views-dynamodb.servic
 export const SavePageView = async (req: Request, res: Response) => {
   try {
     const unsafeTypedRequest: PageViewerDocument = req.body;
+    if (!unsafeTypedRequest.pageUrl) throw new Error('PageUrl not given in request');
     unsafeTypedRequest.ipAddress = `${IPAddressService.getIPAddress(req)}`;
     unsafeTypedRequest.dateTime = String(new Date());
     delete unsafeTypedRequest.headers;
