@@ -43,6 +43,11 @@ export class ConfigService {
   static get Port(): string {
     return ConfigService.GetEnvVar(EnvVar.PORT);
   }
+
+  static get AppHost(): string {
+    return ConfigService.GetEnvVar(EnvVar.APP_HOST);
+  }
+
   static get SudokuGenSecurityKey(): string {
     return ConfigService.GetEnvVar(EnvVar.SUDOKU_GEN_SECURITY_KEY);
   }
