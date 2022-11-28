@@ -1,41 +1,40 @@
-import AWS from 'aws-sdk';
-import { EnvVar } from '../enums/env-vars.enum';
-import FeatureFlags from '../models/feature-flags';
-import { UniDataEnvVars } from '../pages/technical-tests/uni-data-291121/models/uni-data-env-vars';
+import AWS from "aws-sdk";
+import { EnvVar } from "../enums/env-vars.enum";
+import FeatureFlags from "../models/feature-flags";
+import { UniDataEnvVars } from "../pages/technical-tests/uni-data-291121/models/uni-data-env-vars";
 
 AWS.config.update({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   accessKeyId: process.env.AWS_ACCESS_KEY,
-  region: process.env.AWS_REGION || 'eu-west-1',
+  region: process.env.AWS_REGION || "eu-west-1",
 });
 export class ConfigService {
   static get FeatureFlags(): FeatureFlags {
     return {
-      sudokuGenerationEnabled: (process.env.SUDOKU_GEN_FEATURE_ENABLED === 'true') || false,
+      sudokuGenerationEnabled:
+        process.env.SUDOKU_GEN_FEATURE_ENABLED === "true" || false,
     };
   }
 
   private static GetEnvVar(envVar: EnvVar) {
     const envVarName = EnvVar[envVar];
     const envVarValue = process.env[envVarName];
-    if (typeof envVarValue !== 'undefined') return envVarValue;
-    console.error('--------------------------------------');
-    console.error('[ERROR] Missing env var:', envVarName);
-    console.error('--------------------------------------');
-    console.error('Stopped the server... press [Ctrl] + [C] to exit.');
+    if (typeof envVarValue !== "undefined") return envVarValue;
+    console.error("--------------------------------------");
+    console.error("[ERROR] Missing env var:", envVarName);
+    console.error("--------------------------------------");
+    console.error("Stopped the server... press [Ctrl] + [C] to exit.");
     return process.exit(1);
   }
 
   static get TechnicalTestUniDataConfig(): UniDataEnvVars {
     return {
-      bucket: ConfigService.GetEnvVar(
-        EnvVar.S3_BUCKET_TT_291121,
-      ),
+      bucket: ConfigService.GetEnvVar(EnvVar.S3_BUCKET_TT_291121),
       submissionsFile: ConfigService.GetEnvVar(
-        EnvVar.S3_BUCKET_FILE_TT_291121_SUBMISSIONS,
+        EnvVar.S3_BUCKET_FILE_TT_291121_SUBMISSIONS
       ),
       institutionsFile: ConfigService.GetEnvVar(
-        EnvVar.S3_BUCKET_FILE_TT_291121_INSTITUTIONS,
+        EnvVar.S3_BUCKET_FILE_TT_291121_INSTITUTIONS
       ),
     };
   }

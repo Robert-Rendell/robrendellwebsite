@@ -1,7 +1,7 @@
-import { BestUnisForSubjectObject } from '../models/best-unis-for-subject';
-import { Graph } from '../models/graph';
-import { Institution } from '../models/institution';
-import { Submission } from '../models/submission';
+import { BestUnisForSubjectObject } from "../models/best-unis-for-subject";
+import { Graph } from "../models/graph";
+import { Institution } from "../models/institution";
+import { Submission } from "../models/submission";
 
 export interface GetDashboardGraphsResponse {
   /**
@@ -23,7 +23,7 @@ export interface GetDashboardGraphsResponse {
   /**
    * Display some submission data per institution for each year in either a table or chart
    */
-  submissionsPerYear: Graph,
+  submissionsPerYear: Graph;
 
   /**
    * Show a list of subjects and which institutions you can study them at

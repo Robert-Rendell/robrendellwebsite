@@ -1,14 +1,14 @@
-import AWS from 'aws-sdk';
-import { ExpressionAttributeValueMap } from 'aws-sdk/clients/dynamodb';
-import { ConfigService } from '../../../services/config.service';
-import DynamoDBService from '../../../services/dynamo-db.service';
-import { ListSudokuParams } from '../models/params/list-sudoku-params';
-import { Sudoku } from '../models/sudoku';
-import SudokuPuzzle from '../models/sudoku-puzzle';
-import SudokuDynamoDB from '../models/sudoku.dynamodb';
+import AWS from "aws-sdk";
+import { ExpressionAttributeValueMap } from "aws-sdk/clients/dynamodb";
+import { ConfigService } from "../../../services/config.service";
+import DynamoDBService from "../../../services/dynamo-db.service";
+import { ListSudokuParams } from "../models/params/list-sudoku-params";
+import { Sudoku } from "../models/sudoku";
+import SudokuPuzzle from "../models/sudoku-puzzle";
+import SudokuDynamoDB from "../models/sudoku.dynamodb";
 
 export default class SudokuDynamoDBService extends DynamoDBService {
-  private static PartitionKey = 'sudokuId';
+  private static PartitionKey = "sudokuId";
 
   public static async saveSudoku(sudoku: Sudoku): Promise<void> {
     const marshalled = AWS.DynamoDB.Converter.marshall(sudoku);
@@ -27,51 +27,53 @@ export default class SudokuDynamoDBService extends DynamoDBService {
    */
   public static async listSudokus(params: ListSudokuParams): Promise<Sudoku[]> {
     const expMap: ExpressionAttributeValueMap = {};
-    let filterExp = '';
+    let filterExp = "";
 
     if (!params.generatorJobId && !params.dateGenerated) {
-      console.log('Currently only supporting generatorJobId or dateGenerated listSudokus');
+      console.log(
+        "Currently only supporting generatorJobId or dateGenerated listSudokus"
+      );
       return [];
     }
 
     if (params.generatorJobId) {
-      console.log('Found GeneratorJobId in query filters, prioritising it.');
-      filterExp = 'generationJobId = :jobId';
-      expMap[':jobId'] = { S: params.generatorJobId };
+      console.log("Found GeneratorJobId in query filters, prioritising it.");
+      filterExp = "generationJobId = :jobId";
+      expMap[":jobId"] = { S: params.generatorJobId };
     }
 
     if (params.dateGenerated) {
-      filterExp = 'dateGenerated >= :dateFrom and dateGenerated <= :dateTo';
-      expMap[':dateFrom'] = { S: params.dateGenerated.from.toISOString() };
-      expMap[':dateTo'] = { S: params.dateGenerated.to.toISOString() };
+      filterExp = "dateGenerated >= :dateFrom and dateGenerated <= :dateTo";
+      expMap[":dateFrom"] = { S: params.dateGenerated.from.toISOString() };
+      expMap[":dateTo"] = { S: params.dateGenerated.to.toISOString() };
     }
 
     const l = await super.list(
       ConfigService.SudokuDynamoDbTable,
       expMap,
-      filterExp,
+      filterExp
     );
 
-    const sudokus = l?.map(
-      (s) => SudokuDynamoDBService.convertAttributeMap(
-        s as unknown as SudokuDynamoDB,
-      ),
+    const sudokus = l?.map((s) =>
+      SudokuDynamoDBService.convertAttributeMap(s as unknown as SudokuDynamoDB)
     );
 
     return sudokus || [];
   }
 
   public static async getSudoku(key: string): Promise<Sudoku | undefined> {
-    const sudokuAttributeMap = await super.load(
+    const sudokuAttributeMap = (await super.load(
       ConfigService.SudokuDynamoDbTable,
       SudokuDynamoDBService.PartitionKey,
-      key,
-    ) as unknown as SudokuDynamoDB;
+      key
+    )) as unknown as SudokuDynamoDB;
     if (!sudokuAttributeMap) return undefined;
     return SudokuDynamoDBService.convertAttributeMap(sudokuAttributeMap);
   }
 
-  private static convertAttributeMap(sudokuAttributeMap: SudokuDynamoDB): Sudoku {
+  private static convertAttributeMap(
+    sudokuAttributeMap: SudokuDynamoDB
+  ): Sudoku {
     const puzzle: SudokuPuzzle = sudokuAttributeMap.puzzle
       ? sudokuAttributeMap.puzzle.S
       : sudokuAttributeMap.problem.S;

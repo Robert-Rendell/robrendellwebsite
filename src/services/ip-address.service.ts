@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { Request } from "express";
 
 export class IPAddressService {
   /**
@@ -10,7 +10,10 @@ export class IPAddressService {
    * because it can be spoofed.
    */
   public static getIPAddress(req: Request): string | string[] {
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown IP';
+    const ip =
+      req.headers["x-forwarded-for"] ||
+      req.socket.remoteAddress ||
+      "unknown IP";
     console.log(ip);
     return ip;
   }

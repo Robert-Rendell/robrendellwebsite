@@ -1,3 +1,3 @@
 export enum PhotosIveTakenRoutes {
-  Nature = '/photos-ive-taken/nature'
+  Nature = "/photos-ive-taken/nature",
 }

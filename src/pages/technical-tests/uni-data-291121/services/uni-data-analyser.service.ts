@@ -1,9 +1,12 @@
-import { cloneDeep } from 'lodash';
-import { BestUnisForSubject, BestUnisForSubjectObject } from '../models/best-unis-for-subject';
-import { Graph } from '../models/graph';
-import { Institution } from '../models/institution';
-import { UniversitySubject } from '../models/subject';
-import { Submission } from '../models/submission';
+import { cloneDeep } from "lodash";
+import {
+  BestUnisForSubject,
+  BestUnisForSubjectObject,
+} from "../models/best-unis-for-subject";
+import { Graph } from "../models/graph";
+import { Institution } from "../models/institution";
+import { UniversitySubject } from "../models/subject";
+import { Submission } from "../models/submission";
 
 class UniDataAnalyserService {
   private institutions: Institution[];
@@ -14,26 +17,33 @@ class UniDataAnalyserService {
     this.submissions = submissions;
   }
 
-  public static getMeanUnisForSubjectsGraph(bestUnisForSubject: BestUnisForSubjectObject): Graph {
+  public static getMeanUnisForSubjectsGraph(
+    bestUnisForSubject: BestUnisForSubjectObject
+  ): Graph {
     const graph: Graph = {
       xAxis: [],
       series: [],
     };
 
-    for (const [subject, bestUnisArrayForSubject] of Object.entries(bestUnisForSubject)) {
+    for (const [subject, bestUnisArrayForSubject] of Object.entries(
+      bestUnisForSubject
+    )) {
       const sumStudentRating: { [key: string]: number } = {};
       const totals: { [key: string]: number } = {};
 
       for (const item of bestUnisArrayForSubject) {
-        if (!sumStudentRating[item.institution_name]) sumStudentRating[item.institution_name] = 0;
+        if (!sumStudentRating[item.institution_name])
+          sumStudentRating[item.institution_name] = 0;
         if (!totals[item.institution_name]) totals[item.institution_name] = 0;
         sumStudentRating[item.institution_name] += item.student_rating;
         totals[item.institution_name] += 1;
       }
 
       let maxAverage = 0;
-      let institutionName = '';
-      for (const [iName, studentRatingTotals] of Object.entries(sumStudentRating)) {
+      let institutionName = "";
+      for (const [iName, studentRatingTotals] of Object.entries(
+        sumStudentRating
+      )) {
         const totalNumberOfRatings = totals[iName];
         const average = studentRatingTotals / totalNumberOfRatings;
         if (average > maxAverage) {
@@ -56,7 +66,9 @@ class UniDataAnalyserService {
       submission.subjects.forEach((subject: UniversitySubject) => {
         if (!result[subject.name]) result[subject.name] = [];
         const subj: Partial<BestUnisForSubject> = cloneDeep(subject);
-        const institution: Institution | undefined = this.getInstitution(submission.institution_id);
+        const institution: Institution | undefined = this.getInstitution(
+          submission.institution_id
+        );
         subj.institution_name = institution?.name;
         subj.institution_id = submission.institution_id;
         result[subject.name].push(subj);
@@ -73,7 +85,8 @@ class UniDataAnalyserService {
         const instName = this.getInstitution(submission.institution_id)?.name;
         permutations.add(`${subject.name}: ${instName}`);
         const i = result.findIndex(
-          (value: string, index: number, obj: string[]) => value.includes(subject.name),
+          (value: string, index: number, obj: string[]) =>
+            value.includes(subject.name)
         );
         if (i >= 0) {
           if (instName && !result[i].includes(instName)) {
@@ -92,7 +105,9 @@ class UniDataAnalyserService {
       xAxis: [],
       series: [],
     };
-    const years = [...new Set(this.submissions.map((sub: Submission) => sub.year))].sort();
+    const years = [
+      ...new Set(this.submissions.map((sub: Submission) => sub.year)),
+    ].sort();
     const yearCounts: number[] = [];
     graph.xAxis = years.map((y) => `${y}`);
     years.forEach((year, i) => {
@@ -105,14 +120,15 @@ class UniDataAnalyserService {
     });
     graph.series.push({
       data: yearCounts,
-      name: 'No. of Submissions',
+      name: "No. of Submissions",
     });
     return graph;
   }
 
   private getInstitution(institutionId: string): Institution | undefined {
     return this.institutions.find(
-      (value: Institution, index: number, obj: Institution[]) => value.id === institutionId,
+      (value: Institution, index: number, obj: Institution[]) =>
+        value.id === institutionId
     );
   }
 }

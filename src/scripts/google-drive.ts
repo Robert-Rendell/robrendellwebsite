@@ -1,10 +1,13 @@
-import { google, Auth } from 'googleapis';
+import { google, Auth } from "googleapis";
 
 const auth = new Auth.GoogleAuth({
-  keyFilename: './src/scripts/robrendellwebsite-f2eb9ef8f812.json',
-  scopes: ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file'],
+  keyFilename: "./src/scripts/robrendellwebsite-f2eb9ef8f812.json",
+  scopes: [
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/drive.file",
+  ],
 });
-const service = google.drive({ version: 'v3', auth });
+const service = google.drive({ version: "v3", auth });
 
 async function downloadFile(realFileId: string) {
   console.log(await service.files.list());
@@ -33,8 +36,10 @@ async function downloadFile(realFileId: string) {
 //   });
 // }
 
-downloadFile('Word').then((result) => {
-  console.log('Finished running');
-}).catch((error) => {
-  console.error(error);
-});
+downloadFile("Word")
+  .then((result) => {
+    console.log("Finished running");
+  })
+  .catch((error) => {
+    console.error(error);
+  });

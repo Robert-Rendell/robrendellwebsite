@@ -1,7 +1,7 @@
 interface PaginationRequest {
   pagination: {
-      limit: number;
-  }
+    limit: number;
+  };
 }
 
 export { PaginationRequest as default };

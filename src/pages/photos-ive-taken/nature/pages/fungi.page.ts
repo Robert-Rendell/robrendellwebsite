@@ -1,7 +1,6 @@
-import { Request, Response } from 'express';
-import { S3ImagePrefix } from '../../../../enums/s3-image-prefix.enum';
-import { NaturePage } from './nature-page';
+import { Request, Response } from "express";
+import { S3ImagePrefix } from "../../../../enums/s3-image-prefix.enum";
+import { NaturePage } from "./nature-page";
 
-export const FungiPage = (req: Request, res: Response) => NaturePage(
-  { req, res, s3ImagePrefix: S3ImagePrefix.Fungi },
-);
+export const FungiPage = (req: Request, res: Response) =>
+  NaturePage({ req, res, s3ImagePrefix: S3ImagePrefix.Fungi });

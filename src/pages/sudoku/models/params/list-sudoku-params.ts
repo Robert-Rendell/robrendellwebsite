@@ -1,12 +1,12 @@
 export interface ListSudokuParams {
   dateGenerated?: {
-    to: Date,
-    from: Date,
-    days?: number,
+    to: Date;
+    from: Date;
+    days?: number;
   };
   solved?: {
-    timesSolved: number
-  }
+    timesSolved: number;
+  };
   difficulty?: string;
   generatorJobId?: string;
 }
