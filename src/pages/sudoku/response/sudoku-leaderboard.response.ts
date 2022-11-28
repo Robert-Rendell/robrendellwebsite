@@ -1,5 +1,5 @@
-import { LeaderboardEntry } from '../models/leaderboard-entry';
+import { LeaderboardEntry } from "../models/leaderboard-entry";
 
 export interface SudokuLeaderboardResponse {
-  leaderboard: LeaderboardEntry[]
+  leaderboard: LeaderboardEntry[];
 }

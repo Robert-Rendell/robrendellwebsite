@@ -1,5 +1,5 @@
 export interface UniDataEnvVars {
-  bucket: string
+  bucket: string;
   submissionsFile: string;
   institutionsFile: string;
 }

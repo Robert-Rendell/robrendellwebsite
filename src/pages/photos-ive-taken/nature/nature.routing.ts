@@ -1,4 +1,4 @@
-import { PhotosIveTakenRoutes } from '../photos-ive-taken.routing';
+import { PhotosIveTakenRoutes } from "../photos-ive-taken.routing";
 
 export const NatureRouting = {
   WildFlowers: `${PhotosIveTakenRoutes.Nature}/wild-flowers`,

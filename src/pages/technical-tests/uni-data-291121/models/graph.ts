@@ -4,6 +4,6 @@ export interface GraphSeries {
 }
 
 export interface Graph {
-  series: GraphSeries[]
-  xAxis: string[],
+  series: GraphSeries[];
+  xAxis: string[];
 }

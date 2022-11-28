@@ -1,7 +1,7 @@
 export interface DynamoDBString {
-  S: string,
+  S: string;
 }
 
 export interface DynamoDBNumber {
-  N: number,
+  N: number;
 }

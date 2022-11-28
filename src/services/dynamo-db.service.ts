@@ -1,12 +1,14 @@
-import * as AWS from 'aws-sdk';
+import * as AWS from "aws-sdk";
 import {
   AttributeMap,
   ExpressionAttributeValueMap,
-  GetItemInput, ItemList, QueryInput,
-} from 'aws-sdk/clients/dynamodb';
+  GetItemInput,
+  ItemList,
+  QueryInput,
+} from "aws-sdk/clients/dynamodb";
 
 export default class DynamoDBService {
-  static ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
+  static ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
   public static async save(tableName: string, item: AttributeMap) {
     const params = {
@@ -16,7 +18,10 @@ export default class DynamoDBService {
 
     DynamoDBService.ddb.putItem(params, (err, data) => {
       if (err) {
-        console.error(`Failed! Could not save to DynamoDB table (${tableName}):`, err);
+        console.error(
+          `Failed! Could not save to DynamoDB table (${tableName}):`,
+          err
+        );
       } else {
         console.log(`Success! Saved to DynamoDB table (${tableName}):`, item);
       }
@@ -26,9 +31,11 @@ export default class DynamoDBService {
   public static async load(
     tableName: string,
     primaryKeyName: string,
-    key: string,
+    key: string
   ): Promise<AttributeMap | undefined> {
-    console.log(`LOADING FROM DYNAMODB: ${tableName}, ${primaryKeyName}, ${key}`);
+    console.log(
+      `LOADING FROM DYNAMODB: ${tableName}, ${primaryKeyName}, ${key}`
+    );
     const params: GetItemInput = {
       TableName: tableName,
       Key: {
@@ -45,7 +52,7 @@ export default class DynamoDBService {
   public static async list(
     tableName: string,
     expressionAttributeValueMap: ExpressionAttributeValueMap,
-    filterExpression: string,
+    filterExpression: string
   ): Promise<ItemList | undefined> {
     console.log(`SCANNING DYNAMODB: ${tableName}`);
     const params: QueryInput = {

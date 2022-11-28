@@ -1,5 +1,5 @@
 interface FeatureFlags {
-  sudokuGenerationEnabled: boolean,
+  sudokuGenerationEnabled: boolean;
 }
 
 export { FeatureFlags as default };

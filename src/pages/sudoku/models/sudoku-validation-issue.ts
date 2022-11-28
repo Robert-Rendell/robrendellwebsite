@@ -1,9 +1,9 @@
 interface SudokuValidationIssue {
-  row: number,
+  row: number;
   /**
    * Column number
    */
-  col: number,
+  col: number;
 }
 
 export { SudokuValidationIssue as default };

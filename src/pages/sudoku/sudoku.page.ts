@@ -1,40 +1,48 @@
-import { Request, Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
-import { IPAddressService } from '../../services/ip-address.service';
-import S3BucketService from '../../services/s3-bucket.service';
-import SudokuDynamoDBService from './services/sudoku-dynamodb.service';
-import SudokuValidatorService from './services/sudoku-validator.service';
-import SubmissionsDynamoDbService from './services/submission-dynamodb.service';
-import { ConfigService } from '../../services/config.service';
-import { Sudoku } from './models/sudoku';
-import PostSubmissionRequest from './requests/submission.post';
-import { SudokuResponse, SudokuNotFoundResponse, SudokuInternalServerError } from './response/sudoku.response';
-import { SubmitSudokuBasicResponse, SubmitSudokuInternalServerError, SubmitSudokuNotFoundError } from './response/submit-sudoku.response';
-import GetSudokuRequest from './requests/sudoku.get';
-import { ExtendedSubmission, Submission } from './models/submission';
-import SudokuPuzzle from './models/sudoku-puzzle';
-import SudokuValidation from './models/sudoku-validation';
-import SudokuDifficulty from './enums/sudoku-difficulty';
-import ErrorResponse from '../../responses/error.response';
-import PostGenerateSudokuRequest from './requests/generate.post';
-import GenerateSudokuResponse from './response/generate.response';
-import PostGenerateSudokuCallbackRequest from './requests/generate-callback.post';
-import GenerateSudokuJson from './models/generate-sudoku-json';
-import { PostSudokuListRequest } from './requests/sudoku-list.post';
-import { SudokuListResponse } from './response/sudoku-list.response';
-import { ListSudokuParams } from './models/params/list-sudoku-params';
-import GetSudokuLeaderboardRequest from './requests/sudoku-leaderboard.get';
-import { SudokuLeaderboardResponse } from './response/sudoku-leaderboard.response';
+import { Request, Response } from "express";
+import { v4 as uuidv4 } from "uuid";
+import { IPAddressService } from "../../services/ip-address.service";
+import S3BucketService from "../../services/s3-bucket.service";
+import SudokuDynamoDBService from "./services/sudoku-dynamodb.service";
+import SudokuValidatorService from "./services/sudoku-validator.service";
+import SubmissionsDynamoDbService from "./services/submission-dynamodb.service";
+import { ConfigService } from "../../services/config.service";
+import { Sudoku } from "./models/sudoku";
+import PostSubmissionRequest from "./requests/submission.post";
+import {
+  SudokuResponse,
+  SudokuNotFoundResponse,
+  SudokuInternalServerError,
+} from "./response/sudoku.response";
+import {
+  SubmitSudokuBasicResponse,
+  SubmitSudokuInternalServerError,
+  SubmitSudokuNotFoundError,
+} from "./response/submit-sudoku.response";
+import GetSudokuRequest from "./requests/sudoku.get";
+import { ExtendedSubmission, Submission } from "./models/submission";
+import SudokuPuzzle from "./models/sudoku-puzzle";
+import SudokuValidation from "./models/sudoku-validation";
+import SudokuDifficulty from "./enums/sudoku-difficulty";
+import ErrorResponse from "../../responses/error.response";
+import PostGenerateSudokuRequest from "./requests/generate.post";
+import GenerateSudokuResponse from "./response/generate.response";
+import PostGenerateSudokuCallbackRequest from "./requests/generate-callback.post";
+import GenerateSudokuJson from "./models/generate-sudoku-json";
+import { PostSudokuListRequest } from "./requests/sudoku-list.post";
+import { SudokuListResponse } from "./response/sudoku-list.response";
+import { ListSudokuParams } from "./models/params/list-sudoku-params";
+import GetSudokuLeaderboardRequest from "./requests/sudoku-leaderboard.get";
+import { SudokuLeaderboardResponse } from "./response/sudoku-leaderboard.response";
 
 class SudokuAPI {
   static Routes = {
-    getSudoku: '/sudoku/play/:sudokuId',
-    getSudokuLeaderboard: '/sudoku/leaderboard/:sudokuId',
-    postSudokuList: '/sudoku/list',
-    postSubmission: '/sudoku/submit',
-    postGenerateSudoku: '/sudoku/add',
-    postGenerateSudokuCallback: '/sudoku/add/callback',
-  }
+    getSudoku: "/sudoku/play/:sudokuId",
+    getSudokuLeaderboard: "/sudoku/leaderboard/:sudokuId",
+    postSudokuList: "/sudoku/list",
+    postSubmission: "/sudoku/submit",
+    postGenerateSudoku: "/sudoku/add",
+    postGenerateSudokuCallback: "/sudoku/add/callback",
+  };
 
   /**
    * Use DynamoDB Service to create a sudoku submission in DynamoDB
@@ -43,11 +51,11 @@ class SudokuAPI {
     req: Request,
     sudoku: Sudoku,
     opts?: {
-      submissionPuzzle?: SudokuPuzzle,
-      validation?: SudokuValidation,
-      submitterName?: string,
-      timeTakenMs?: number,
-    },
+      submissionPuzzle?: SudokuPuzzle;
+      validation?: SudokuValidation;
+      submitterName?: string;
+      timeTakenMs?: number;
+    }
   ): Submission {
     const submission: ExtendedSubmission = {
       submissionId: uuidv4(),
@@ -58,7 +66,7 @@ class SudokuAPI {
       ipAddress: `${IPAddressService.getIPAddress(req)}`,
       valid: opts?.validation?.valid,
       complete: opts?.validation?.complete,
-      submitterName: opts?.submitterName || '',
+      submitterName: opts?.submitterName || "",
     };
     SubmissionsDynamoDbService.saveSubmission(submission);
     return submission;
@@ -69,7 +77,7 @@ class SudokuAPI {
    */
   static async postSudokuList(req: Request, res: Response): Promise<void> {
     try {
-      console.log('POST postSudokuList');
+      console.log("POST postSudokuList");
       console.log(req.body);
       const request = req.body as PostSudokuListRequest;
 
@@ -79,7 +87,9 @@ class SudokuAPI {
 
       if (request.filters?.dateGenerated) {
         const fromDate = new Date();
-        fromDate.setDate(new Date().getDate() - (request.filters.dateGenerated.days || 5));
+        fromDate.setDate(
+          new Date().getDate() - (request.filters.dateGenerated.days || 5)
+        );
         params.dateGenerated = {
           to: new Date(),
           from: fromDate,
@@ -89,9 +99,11 @@ class SudokuAPI {
       let sudokus: Sudoku[] = await SudokuDynamoDBService.listSudokus(params);
 
       if (request.pagination) {
-        sudokus = sudokus.sort(
-          (a, b) => (+(new Date(b.dateGenerated)) - +(new Date(a.dateGenerated))),
-        ).splice(0, request.pagination.limit || 5);
+        sudokus = sudokus
+          .sort(
+            (a, b) => +new Date(b.dateGenerated) - +new Date(a.dateGenerated)
+          )
+          .splice(0, request.pagination.limit || 5);
       }
 
       res.status(200).send(sudokus as SudokuListResponse);
@@ -106,14 +118,13 @@ class SudokuAPI {
    */
   static async getSudoku(req: Request, res: Response): Promise<void> {
     try {
-      console.log('GET getSudoku');
+      console.log("GET getSudoku");
       const request: GetSudokuRequest = req.params as any;
 
-      const sudoku: Sudoku | undefined | void = await SudokuDynamoDBService.getSudoku(
-        request.sudokuId,
-      ).catch((e) => {
-        console.error(e);
-      });
+      const sudoku: Sudoku | undefined | void =
+        await SudokuDynamoDBService.getSudoku(request.sudokuId).catch((e) => {
+          console.error(e);
+        });
 
       if (!sudoku) {
         res.status(404).send(SudokuNotFoundResponse(request.sudokuId));
@@ -138,21 +149,24 @@ class SudokuAPI {
   /**
    * GET a sudoku leaderboard using sudokuId
    */
-  public static async getSudokuLeaderboard(req: Request, res: Response): Promise<void> {
+  public static async getSudokuLeaderboard(
+    req: Request,
+    res: Response
+  ): Promise<void> {
     try {
-      console.log('GET getSudokuLeaderboard');
+      console.log("GET getSudokuLeaderboard");
       const request: GetSudokuLeaderboardRequest = req.params as any;
 
-      const leaderboard = await SubmissionsDynamoDbService.getCompletedSubmissionsForSudoku(
-        request.sudokuId,
-      );
+      const leaderboard =
+        await SubmissionsDynamoDbService.getCompletedSubmissionsForSudoku(
+          request.sudokuId
+        );
 
       const response: SudokuLeaderboardResponse = {
-        leaderboard: leaderboard?.filter(
-          (item) => item.timeTakenMs,
-        ).sort(
-          (a, b) => a.timeTakenMs - b.timeTakenMs,
-        ) || [],
+        leaderboard:
+          leaderboard
+            ?.filter((item) => item.timeTakenMs)
+            .sort((a, b) => a.timeTakenMs - b.timeTakenMs) || [],
       };
 
       res.status(200).send(response);
@@ -167,57 +181,61 @@ class SudokuAPI {
    */
   static async postSubmission(req: Request, res: Response): Promise<void> {
     try {
-      console.log('POST postSubmission');
+      console.log("POST postSubmission");
       console.log(req.body);
       const submissionRequest: PostSubmissionRequest = req.body;
 
-      const sudoku: Sudoku | undefined | void = await SudokuDynamoDBService.getSudoku(
-        submissionRequest.sudokuId,
-      ).catch((e) => {
-        console.error(e);
-      });
+      const sudoku: Sudoku | undefined | void =
+        await SudokuDynamoDBService.getSudoku(submissionRequest.sudokuId).catch(
+          (e) => {
+            console.error(e);
+          }
+        );
 
       if (!sudoku) {
-        res.status(404).send(SubmitSudokuNotFoundError(submissionRequest.sudokuId));
+        res
+          .status(404)
+          .send(SubmitSudokuNotFoundError(submissionRequest.sudokuId));
         return;
       }
 
       const response: SubmitSudokuBasicResponse = {
-        complete: (sudoku?.solution.replace(/ /g, '') === submissionRequest.sudokuSubmission),
-        valid: SudokuValidatorService.isSudokuSubmissionValid(
-          sudoku?.puzzle || '',
+        complete:
+          sudoku?.solution.replace(/ /g, "") ===
           submissionRequest.sudokuSubmission,
-          sudoku?.solution || '',
+        valid: SudokuValidatorService.isSudokuSubmissionValid(
+          sudoku?.puzzle || "",
+          submissionRequest.sudokuSubmission,
+          sudoku?.solution || ""
         ),
       };
 
       if (response.complete) {
         const startSubmission = await SubmissionsDynamoDbService.getSubmission(
-          submissionRequest.sudokuSubmissionId,
+          submissionRequest.sudokuSubmissionId
         );
         if (startSubmission?.dateSubmitted) {
-          response.timeTakenMs = (+(new Date()) - +(new Date(startSubmission?.dateSubmitted)));
+          response.timeTakenMs =
+            +new Date() - +new Date(startSubmission?.dateSubmitted);
         }
       }
 
-      SudokuAPI.createSubmission(
-        req,
-        sudoku,
-        {
-          submissionPuzzle: submissionRequest.sudokuSubmission,
-          validation: {
-            complete: response.complete,
-            valid: response.valid,
-          },
-          timeTakenMs: response.timeTakenMs,
-          submitterName: submissionRequest.submitterName,
+      SudokuAPI.createSubmission(req, sudoku, {
+        submissionPuzzle: submissionRequest.sudokuSubmission,
+        validation: {
+          complete: response.complete,
+          valid: response.valid,
         },
-      );
+        timeTakenMs: response.timeTakenMs,
+        submitterName: submissionRequest.submitterName,
+      });
 
       res.status(200).send(response);
     } catch (e) {
       console.error(e);
-      res.status(500).send(SubmitSudokuInternalServerError((e as Error).message));
+      res
+        .status(500)
+        .send(SubmitSudokuInternalServerError((e as Error).message));
     }
   }
 
@@ -225,23 +243,30 @@ class SudokuAPI {
    * POST Endpoint to trigger the Python Lambda for sudoku generation
    */
   static async generateSudoku(req: Request, res: Response): Promise<void> {
-    console.log('POST generateSudoku');
+    console.log("POST generateSudoku");
     console.log(req.params, req.body);
     const request = req.body as PostGenerateSudokuRequest;
 
-    if (request.roberto !== 'testing') {
-      SudokuAPI.badRequest('Error: Testing flag not set in message body: { "roberto": "testing" }', res);
+    if (request.roberto !== "testing") {
+      SudokuAPI.badRequest(
+        'Error: Testing flag not set in message body: { "roberto": "testing" }',
+        res
+      );
       return;
     }
 
-    const difficulty = request.difficulty || 'not specified';
+    const difficulty = request.difficulty || "not specified";
     if (!Object.values<string>(SudokuDifficulty).includes(difficulty)) {
-      SudokuAPI.badRequest(`Error: Sudoku generation difficulty not recognised: '${difficulty}'`, res);
+      SudokuAPI.badRequest(
+        `Error: Sudoku generation difficulty not recognised: '${difficulty}'`,
+        res
+      );
       return;
     }
 
     if (!ConfigService.FeatureFlags.sudokuGenerationEnabled) {
-      const info = 'Sudoku Generation feature disabled, so lambda was not invoked.';
+      const info =
+        "Sudoku Generation feature disabled, so lambda was not invoked.";
       console.log(info);
       res.status(200).send({ info });
       return;
@@ -251,35 +276,51 @@ class SudokuAPI {
     const generateSudokuJson: GenerateSudokuJson = {
       difficulty,
       generatorIPAddress: `${IPAddressService.getIPAddress(req)}`,
-      generatorUserName: request.generatorUserName || 'anonymous',
+      generatorUserName: request.generatorUserName || "anonymous",
       generationJobId,
     };
-    console.log(`Triggering sudoku generation lambda (Difficulty: ${difficulty})`);
-    S3BucketService.s3.putObject({
-      Bucket: ConfigService.SudokuGenerateJsonBucket,
-      Key: `${generationJobId}.json`,
-      Body: JSON.stringify(generateSudokuJson),
-    }).promise();
+    console.log(
+      `Triggering sudoku generation lambda (Difficulty: ${difficulty})`
+    );
+    S3BucketService.s3
+      .putObject({
+        Bucket: ConfigService.SudokuGenerateJsonBucket,
+        Key: `${generationJobId}.json`,
+        Body: JSON.stringify(generateSudokuJson),
+      })
+      .promise();
     const response: GenerateSudokuResponse = { generationJobId };
     res.status(200).send(response);
   }
 
-  static async generateSudokuCallback(req: Request, res: Response): Promise<void> {
-    console.log('POST generateSudokuCallback');
+  static async generateSudokuCallback(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    console.log("POST generateSudokuCallback");
     console.log(req.params, req.body);
     const request = req.body as PostGenerateSudokuCallbackRequest;
 
-    if (request.sudokuInsertionSecurityKey !== ConfigService.SudokuGenSecurityKey) {
-      SudokuAPI.unauthorised("Error: SUDOKU_GEN_SECURITY_KEY env var not matching for 'sudokuInsertionSecurityKey' in body", res);
+    if (
+      request.sudokuInsertionSecurityKey !== ConfigService.SudokuGenSecurityKey
+    ) {
+      SudokuAPI.unauthorised(
+        "Error: SUDOKU_GEN_SECURITY_KEY env var not matching for 'sudokuInsertionSecurityKey' in body",
+        res
+      );
       return;
     }
     if (!(request.puzzle && request.solution && request.difficulty)) {
-      SudokuAPI.badRequest("Error: Need to specify 'puzzle', 'solution' and 'difficulty'", res);
+      SudokuAPI.badRequest(
+        "Error: Need to specify 'puzzle', 'solution' and 'difficulty'",
+        res
+      );
       return;
     }
 
     if (!ConfigService.FeatureFlags.sudokuGenerationEnabled) {
-      const info = 'Sudoku Generation feature disabled, so sudoku was not created.';
+      const info =
+        "Sudoku Generation feature disabled, so sudoku was not created.";
       console.log(info);
       res.status(200).send({ info });
       return;
