@@ -19,6 +19,7 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "comma-dangle":"off",
         "quotes": [
             "error",
             "double"
