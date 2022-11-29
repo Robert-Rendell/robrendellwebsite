@@ -19,6 +19,8 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "operator-linebreak":"off",
+        "comma-dangle":"off",
         "quotes": [
             "error",
             "double"

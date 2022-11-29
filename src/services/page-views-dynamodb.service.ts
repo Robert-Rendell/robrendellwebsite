@@ -10,7 +10,9 @@ import DynamoDBService from "./dynamo-db.service";
 export class PageViewsDynamoDbService extends DynamoDBService {
   public static readonly PartitionKey = "pageUrl";
 
-  public static async savePageView(pageViewer: PageViewDto): Promise<void> {
+  public static async savePageView(
+    pageViewer: PageViewDto
+  ): Promise<PageViewerDocument> {
     const currentPage = (await PageViewsDynamoDbService.getPageView(
       pageViewer[PageViewsDynamoDbService.PartitionKey]
     )) ?? {
@@ -28,6 +30,7 @@ export class PageViewsDynamoDbService extends DynamoDBService {
     console.log("currentPage:", currentPage);
     const marshalled = AWS.DynamoDB.Converter.marshall(currentPage);
     await super.save(ConfigService.PageViewsDynamoDbTable, marshalled);
+    return currentPage;
   }
 
   public static async getPageView(

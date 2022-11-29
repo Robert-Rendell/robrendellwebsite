@@ -47,6 +47,10 @@ export class ConfigService {
     return ConfigService.GetEnvVar(EnvVar.APP_HOST);
   }
 
+  static get MyPublicIpAddress(): string {
+    return ConfigService.GetEnvVar(EnvVar.MY_PUBLIC_IP_ADDRESS);
+  }
+
   static get SudokuGenSecurityKey(): string {
     return ConfigService.GetEnvVar(EnvVar.SUDOKU_GEN_SECURITY_KEY);
   }
