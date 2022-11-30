@@ -1,5 +1,5 @@
 import AWS from "aws-sdk";
-import { doNotSaveIps } from "../common/utils/DoNotSaveIps";
+import { doNotSaveIps } from "../common/utils/do-not-save-ip-list";
 import {
   PageView,
   PageViewDto,
