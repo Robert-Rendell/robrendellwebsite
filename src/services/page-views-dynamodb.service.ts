@@ -1,4 +1,5 @@
 import AWS from "aws-sdk";
+import { doNotSaveIps } from "../common/utils/DoNotSaveIps";
 import {
   PageView,
   PageViewDto,
@@ -6,13 +7,20 @@ import {
 } from "../models/page-viewer-document";
 import { ConfigService } from "./config.service";
 import DynamoDBService from "./dynamo-db.service";
+import { IPAddressService, IPLocation } from "./ip-address.service";
+
+type SavePageViewProps = {
+  pageViewer: PageViewDto;
+  isSaving: boolean;
+};
 
 export class PageViewsDynamoDbService extends DynamoDBService {
   public static readonly PartitionKey = "pageUrl";
 
   public static async savePageView(
-    pageViewer: PageViewDto
+    props: SavePageViewProps
   ): Promise<PageViewerDocument> {
+    const { pageViewer, isSaving } = props;
     const currentPage = (await PageViewsDynamoDbService.getPageView(
       pageViewer[PageViewsDynamoDbService.PartitionKey]
     )) ?? {
@@ -21,15 +29,22 @@ export class PageViewsDynamoDbService extends DynamoDBService {
       total: 0,
     };
 
-    currentPage.total += 1;
-    const viewer: PageView = {
-      dateTime: pageViewer.dateTime,
-      ipAddress: pageViewer.ipAddress,
-    };
-    currentPage.views.push(viewer);
-    console.log("currentPage:", currentPage);
-    const marshalled = AWS.DynamoDB.Converter.marshall(currentPage);
-    await super.save(ConfigService.PageViewsDynamoDbTable, marshalled);
+    // const location: IPLocation =
+    await IPAddressService.getIPLocation(pageViewer.ipAddress);
+    currentPage.views = currentPage.views.filter(
+      (view) => !(doNotSaveIps().includes(view.ipAddress))
+    );
+    if (isSaving) {
+      currentPage.total += 1;
+      const viewer: PageView = {
+        dateTime: pageViewer.dateTime,
+        ipAddress: pageViewer.ipAddress,
+      };
+      currentPage.views.push(viewer);
+      const marshalled = AWS.DynamoDB.Converter.marshall(currentPage);
+      await super.save(ConfigService.PageViewsDynamoDbTable, marshalled);
+    }
+
     return currentPage;
   }
 
