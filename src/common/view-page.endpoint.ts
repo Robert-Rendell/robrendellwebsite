@@ -17,7 +17,7 @@ export const SavePageView = async (req: Request, res: Response) => {
     unsafeTypedRequest.dateTime = String(new Date());
     delete unsafeTypedRequest.headers;
     if (
-      unsafeTypedRequest.ipAddress !== localIp ||
+      unsafeTypedRequest.ipAddress !== localIp &&
       unsafeTypedRequest.ipAddress !== ConfigService.MyPublicIpAddress
     ) {
       pageViewDocument = await PageViewsDynamoDbService.savePageView(unsafeTypedRequest);
