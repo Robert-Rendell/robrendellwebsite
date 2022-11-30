@@ -54,12 +54,19 @@ export class IPAddressService {
   }
 
   public static async getIPLocation(ipAddress: string): Promise<IPLocation> {
-    const result = await axios.get(`https://tools.keycdn.com/geo.json?host=${ipAddress}`, {
-      headers: {
-        "User-Agent": `keycdn-tools:${ConfigService.ApiHost}`
+    const result = await axios.get(
+      `https://tools.keycdn.com/geo.json?host=${ipAddress}`,
+      {
+        headers: {
+          "User-Agent": `keycdn-tools:${ConfigService.ApiHost}`,
+        },
       }
-    });
-    console.log(`IPAddressService.getIPLocation(${ipAddress})`, result.status, result.data);
+    );
+    console.log(
+      `IPAddressService.getIPLocation(${ipAddress})`,
+      result.status,
+      result.data
+    );
     return result.data;
   }
 }

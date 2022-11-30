@@ -30,7 +30,7 @@ export class PageViewsDynamoDbService extends DynamoDBService {
     };
 
     currentPage.views = currentPage.views.filter(
-      (view) => !(doNotSaveIps().includes(view.ipAddress))
+      (view) => !doNotSaveIps().includes(view.ipAddress)
     );
     if (isSaving) {
       // const location: IPLocation =
