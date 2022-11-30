@@ -6,7 +6,7 @@ import {
 
 import { IPAddressService } from "../services/ip-address.service";
 import { PageViewsDynamoDbService } from "../services/page-views-dynamodb.service";
-import { doNotSaveIps } from "./utils/DoNotSaveIps";
+import { doNotSaveIps } from "./utils/do-not-save-ip-list";
 
 export const SavePageView = async (req: Request, res: Response) => {
   try {
