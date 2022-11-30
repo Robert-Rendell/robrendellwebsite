@@ -43,6 +43,10 @@ export class ConfigService {
     return ConfigService.GetEnvVar(EnvVar.PORT);
   }
 
+  static get ApiHost(): string {
+    return ConfigService.GetEnvVar(EnvVar.API_HOST);
+  }
+
   static get AppHost(): string {
     return ConfigService.GetEnvVar(EnvVar.APP_HOST);
   }
