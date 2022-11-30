@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
-import { PageViewDto, PageViewerDocument } from "../models/page-viewer-document";
-import { ConfigService } from "../services/config.service";
+import {
+  PageViewDto,
+  PageViewerDocument,
+} from "../models/page-viewer-document";
+
 import { IPAddressService } from "../services/ip-address.service";
 import { PageViewsDynamoDbService } from "../services/page-views-dynamodb.service";
-
-const localIp = "::1";
+import { doNotSaveIps } from "./utils/DoNotSaveIps";
 
 export const SavePageView = async (req: Request, res: Response) => {
   try {
-    let pageViewDocument: PageViewerDocument | undefined;
     const unsafeTypedRequest: PageViewDto = req.body;
     if (!unsafeTypedRequest.pageUrl) {
       throw new Error("PageUrl not given in request");
@@ -16,13 +17,18 @@ export const SavePageView = async (req: Request, res: Response) => {
     unsafeTypedRequest.ipAddress = `${IPAddressService.getIPAddress(req)}`;
     unsafeTypedRequest.dateTime = String(new Date());
     delete unsafeTypedRequest.headers;
-    if (
-      unsafeTypedRequest.ipAddress !== localIp &&
-      unsafeTypedRequest.ipAddress !== ConfigService.MyPublicIpAddress
-    ) {
-      pageViewDocument = await PageViewsDynamoDbService.savePageView(unsafeTypedRequest);
-    } else {
-      console.log("[SavePageView]:", unsafeTypedRequest.ipAddress, "that is me - not capturing page view");
+    const isSaving = !doNotSaveIps().includes(unsafeTypedRequest.ipAddress);
+    const pageViewDocument: PageViewerDocument =
+      await PageViewsDynamoDbService.savePageView({
+        pageViewer: unsafeTypedRequest,
+        isSaving,
+      });
+    if (!isSaving) {
+      console.log(
+        "[SavePageView]:",
+        unsafeTypedRequest.ipAddress,
+        "that is me - not capturing page view"
+      );
     }
     res.status(200).send(pageViewDocument);
   } catch (e) {
