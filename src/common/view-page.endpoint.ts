@@ -32,6 +32,7 @@ export const SavePageView = async (req: Request, res: Response) => {
     }
     res.status(200).send(pageViewDocument);
   } catch (e) {
+    console.log(e);
     res.status(500).send((e as Error).message);
   }
 };

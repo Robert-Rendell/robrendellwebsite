@@ -29,12 +29,12 @@ export class PageViewsDynamoDbService extends DynamoDBService {
       total: 0,
     };
 
-    // const location: IPLocation =
-    await IPAddressService.getIPLocation(pageViewer.ipAddress);
     currentPage.views = currentPage.views.filter(
       (view) => !(doNotSaveIps().includes(view.ipAddress))
     );
     if (isSaving) {
+      // const location: IPLocation =
+      await IPAddressService.getIPLocation(pageViewer.ipAddress);
       currentPage.total += 1;
       const viewer: PageView = {
         dateTime: pageViewer.dateTime,

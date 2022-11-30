@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import axios from "axios";
 import { Request } from "express";
+import { ConfigService } from "./config.service";
 
 export type IPLocation = {
   host: string;
@@ -53,7 +54,11 @@ export class IPAddressService {
   }
 
   public static async getIPLocation(ipAddress: string): Promise<IPLocation> {
-    const result = await axios.get(`https://tools.keycdn.com/geo?host=${ipAddress}`);
+    const result = await axios.get(`https://tools.keycdn.com/geo.json?host=${ipAddress}`, {
+      headers: {
+        "User-Agent": `keycdn-tools:${ConfigService.ApiHost}`
+      }
+    });
     console.log(`IPAddressService.getIPLocation(${ipAddress})`, result.status, result.data);
     return result.data;
   }
