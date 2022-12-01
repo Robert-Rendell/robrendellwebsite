@@ -34,8 +34,11 @@ export class PageViewsDynamoDbService extends DynamoDBService {
     );
     if (isSaving) {
       // const location: IPLocation =
-      // await IPAddressService.getIPLocation(pageViewer.ipAddress);
-      currentPage.total += 1;
+      await IPAddressService.getIPLocation(pageViewer.ipAddress).catch(
+        (error) => console.error("IPAddressService.getIPLocation", error)
+      );
+      const uniquePageViews = new Set(currentPage.views);
+      currentPage.total = uniquePageViews.size;
       const viewer: PageView = {
         dateTime: pageViewer.dateTime,
         ipAddress: pageViewer.ipAddress,
