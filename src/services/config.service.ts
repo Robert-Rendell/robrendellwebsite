@@ -56,7 +56,7 @@ export class ConfigService {
   }
 
   static get BlockedIpAddresses(): string {
-    return ConfigService.GetEnvVar(EnvVar.BLOCKED_IP_ADDRESSES);
+    return ConfigService.GetEnvVar(EnvVar.BLOCKED_IPS);
   }
 
   static get SudokuGenSecurityKey(): string {
