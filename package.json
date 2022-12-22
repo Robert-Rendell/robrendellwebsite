@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node dist/index.js",
-    "build": "tsc",
+    "build": "tsc && npm run add-cv-to-build",
     "postinstall": "npm run build",
     "dev:slow": "ts-node index.ts",
     "dev": "ts-node-dev --respawn --pretty --transpile-only index.ts",
@@ -17,7 +17,8 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier -w ./src",
     "prepare": "husky install",
-    "husky-add-hook": "husky add .husky/pre-commit \"npm run build\""
+    "husky-add-hook": "husky add .husky/pre-commit \"npm run build\"",
+    "add-cv-to-build": "cp ./src/resources/CV_Robert_Rendell.pdf ./dist/src/resources/CV_Robert_Rendell.pdf"
   },
   "repository": {
     "type": "git",
