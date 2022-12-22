@@ -15,6 +15,7 @@ import { LichenPage } from "./src/pages/photos-ive-taken/nature/pages/lichen.pag
 import { FungiPage } from "./src/pages/photos-ive-taken/nature/pages/fungi.page";
 import { ConfigService } from "./src/services/config.service";
 import { SavePageView } from "./src/common/view-page.endpoint";
+import { CVPage } from "./src/pages/home/cv.page";
 
 config();
 // Heroku exposes PORT env var by default
@@ -46,6 +47,7 @@ app.listen(PORT, () => {
 app.get("/", HomePage);
 
 app.post("/view-page", SavePageView);
+app.get("/cv", CVPage);
 
 app.get(NatureRouting.WildFlowers, WildFlowersPage);
 app.get(NatureRouting.Arachnids, ArachnidsPage);
