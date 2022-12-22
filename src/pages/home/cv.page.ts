@@ -11,7 +11,7 @@ export const CVPage = async (req: Request, res: Response) => {
     };
 
     console.log("path", resourcesPath);
-    const fileName = "CV_Robert_Rendell_24-11-22_XS.pdf";
+    const fileName = "CV_Robert_Rendell.pdf";
     res.sendFile(fileName, options, (err) => {
       if (err) {
         console.log(err.message);
