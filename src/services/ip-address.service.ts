@@ -69,4 +69,23 @@ export class IPAddressService {
     );
     return result.data;
   }
+
+  public static isBlockedIpAddress(req: Request): boolean {
+    const ipAddress = IPAddressService.getIPAddress(req);
+    const blockedIps = ConfigService.BlockedIpAddresses;
+    if (typeof ipAddress === "string") {
+      return blockedIps.includes(ipAddress);
+    }
+    let blocked = false;
+    ipAddress.forEach((ip) => {
+      if (blockedIps.includes(ip)) {
+        blocked = true;
+      }
+    });
+    return blocked;
+  }
+
+  public static get blockedIpMessage(): string {
+    return "Nope! I've taken the right to access this file away from you personally. I'm not sorry about it either.";
+  }
 }
