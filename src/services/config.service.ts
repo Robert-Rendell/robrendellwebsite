@@ -55,6 +55,10 @@ export class ConfigService {
     return ConfigService.GetEnvVar(EnvVar.MY_PUBLIC_IP_ADDRESS);
   }
 
+  static get BlockedIpAddresses(): string {
+    return ConfigService.GetEnvVar(EnvVar.BLOCKED_IP_ADDRESSES);
+  }
+
   static get SudokuGenSecurityKey(): string {
     return ConfigService.GetEnvVar(EnvVar.SUDOKU_GEN_SECURITY_KEY);
   }
