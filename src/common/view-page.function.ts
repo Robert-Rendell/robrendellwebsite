@@ -1,5 +1,8 @@
 import { Request } from "express";
-import { PageViewDto, PageViewerDocument } from "../models/page-viewer-document";
+import {
+  PageViewDto,
+  PageViewerDocument,
+} from "../models/page-viewer-document";
 import { IPAddressService } from "../services/ip-address.service";
 import { PageViewsDynamoDbService } from "../services/page-views-dynamodb.service";
 import { doNotSaveIps } from "./utils/do-not-save-ip-list";
@@ -14,10 +17,10 @@ export const ViewPageFunc = async (req: Request) => {
   delete unsafeTypedRequest.headers;
   const isSaving = !doNotSaveIps().includes(unsafeTypedRequest.ipAddress);
   const pageViewDocument: PageViewerDocument =
-      await PageViewsDynamoDbService.savePageView({
-        pageViewer: unsafeTypedRequest,
-        isSaving,
-      });
+    await PageViewsDynamoDbService.savePageView({
+      pageViewer: unsafeTypedRequest,
+      isSaving,
+    });
   if (!isSaving) {
     console.log(
       "[SavePageView]:",

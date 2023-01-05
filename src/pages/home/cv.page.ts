@@ -8,7 +8,7 @@ export const CVPage = async (req: Request, res: Response) => {
     req.body.pageUrl = "/cv";
     await ViewPageFunc(req);
     const options = {
-      root: resourcesPath
+      root: resourcesPath,
     };
 
     console.log("path", resourcesPath);
