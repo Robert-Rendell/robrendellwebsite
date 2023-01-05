@@ -37,7 +37,9 @@ export class PageViewsDynamoDbService extends DynamoDBService {
       await IPAddressService.getIPLocation(pageViewer.ipAddress).catch(
         (error) => console.error("IPAddressService.getIPLocation", error)
       );
-      const uniquePageViews = new Set(currentPage.views.map((pageView) => pageView.ipAddress));
+      const uniquePageViews = new Set(
+        currentPage.views.map((pageView) => pageView.ipAddress)
+      );
       currentPage.total = uniquePageViews.size;
       const viewer: PageView = {
         dateTime: pageViewer.dateTime,
