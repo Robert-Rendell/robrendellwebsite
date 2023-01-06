@@ -10,6 +10,7 @@ export type KeepNoteAttachment = {
   mimetype: string;
 };
 export type KeepNote = {
+  filename?: string;
   color: string;
   isTrashed: boolean;
   isPinned: boolean;
