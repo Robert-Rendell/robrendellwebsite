@@ -172,7 +172,10 @@ takeoutFolders.forEach((folder: string) => {
       return s3
         .upload({
           Bucket: targetBucket,
-          Key: `${targetKeyPrefix}/${filename.replace(".json", "")}/data.json`,
+          Key: `${targetKeyPrefix}/${filename
+            .replace(".json", "")
+            .trim()
+            .replace("_", "")}/data.json`,
           Body: getRawKeepNote(folder, filename),
         })
         .promise();
@@ -195,7 +198,9 @@ takeoutFolders.forEach((folder: string) => {
         return s3
           .upload({
             Bucket: targetBucket,
-            Key: `${targetKeyPrefix}/${matchedKeepNote?.title || "UNMATCHED"}/${filename}`,
+            Key: `${targetKeyPrefix}/${
+              matchedKeepNote?.title.trim().replace("_", "") || "UNMATCHED"
+            }/${filename}`,
             Body: getRawKeepNote(resolvedFolder, filename),
           })
           .promise();
