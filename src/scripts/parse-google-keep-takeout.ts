@@ -17,13 +17,19 @@ import {
  * - Run:
  *   - $ npx ts-node ./src/scripts/parse-google-keep-takeout.ts
  */
-const executeS3UploadEnabled = true;
+const executeS3UploadEnabled = false;
+
+const targetGoogleKeepLabel = process.argv.slice(2)[0].replace(/_/g, " ");
+const targetS3Path =
+  (process.argv.slice(2)[1] || "").replace(/_/g, " ") ||
+  targetGoogleKeepLabel.toLowerCase().replace(/ /g, "-").trim();
+console.log("Using Google Keep label/s3-path:", targetGoogleKeepLabel, targetS3Path);
 const logFilenames = false;
 const targetDir = "/home/rob/Downloads";
 const targetBucket = "robrendellwebsite-photosivetaken";
-const targetKeyPrefix = "nature/lichen";
+const targetKeyPrefix = `nature/${targetS3Path || "lichen"}`;
 const targetLabel: KeepNoteLabel = {
-  name: "Lichen",
+  name: targetGoogleKeepLabel || "Lichen",
 };
 
 AWS.config.update({
