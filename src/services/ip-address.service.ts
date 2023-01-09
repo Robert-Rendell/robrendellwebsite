@@ -70,6 +70,22 @@ export class IPAddressService {
     return result.data;
   }
 
+  public static isOneOfMyIpAddresses(req: Request): boolean {
+    const requestIpAddresses = IPAddressService.getIPAddress(req);
+    const myIps = ConfigService.MyPublicIpAddress.split(",");
+    if (typeof requestIpAddresses === "string") {
+      return myIps.includes(requestIpAddresses);
+    }
+    myIps.forEach((myIp) => {
+      requestIpAddresses.forEach((requestIp) => {
+        if (requestIp === myIp) {
+          return true;
+        }
+      });
+    });
+    return false;
+  }
+
   public static isBlockedIpAddress(req: Request): boolean {
     const ipAddress = IPAddressService.getIPAddress(req);
     const blockedIps = ConfigService.BlockedIpAddresses;
@@ -86,6 +102,6 @@ export class IPAddressService {
   }
 
   public static get blockedIpMessage(): string {
-    return "Nope! I've taken the right to access this file away from you personally. I'm not sorry about it either.";
+    return "Sorry, you don't have access to this :'(";
   }
 }

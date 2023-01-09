@@ -23,7 +23,11 @@ const targetGoogleKeepLabel = process.argv.slice(2)[0].replace(/_/g, " ");
 const targetS3Path =
   (process.argv.slice(2)[1] || "").replace(/_/g, " ") ||
   targetGoogleKeepLabel.toLowerCase().replace(/ /g, "-").trim();
-console.log("Using Google Keep label/s3-path:", targetGoogleKeepLabel, targetS3Path);
+console.log(
+  "Using Google Keep label/s3-path:",
+  targetGoogleKeepLabel,
+  targetS3Path
+);
 const logFilenames = false;
 const targetDir = "/home/rob/Downloads";
 const targetBucket = "robrendellwebsite-photosivetaken";
