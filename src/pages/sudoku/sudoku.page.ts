@@ -119,6 +119,7 @@ class SudokuAPI {
   static async getSudoku(req: Request, res: Response): Promise<void> {
     try {
       console.log("GET getSudoku");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const request: GetSudokuRequest = req.params as any;
 
       const sudoku: Sudoku | undefined | void =
@@ -155,6 +156,7 @@ class SudokuAPI {
   ): Promise<void> {
     try {
       console.log("GET getSudokuLeaderboard");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const request: GetSudokuLeaderboardRequest = req.params as any;
 
       const leaderboard =

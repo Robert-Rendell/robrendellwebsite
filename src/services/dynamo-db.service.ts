@@ -16,7 +16,7 @@ export default class DynamoDBService {
       Item: item,
     };
 
-    DynamoDBService.ddb.putItem(params, (err, data) => {
+    DynamoDBService.ddb.putItem(params, (err, _data) => {
       if (err) {
         console.error(
           `Failed! Could not save to DynamoDB table (${tableName}):`,

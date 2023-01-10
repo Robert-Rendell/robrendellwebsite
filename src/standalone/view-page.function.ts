@@ -10,7 +10,7 @@ import { doNotSaveIps } from "./utils/do-not-save-ip-list";
 export const ViewPageFunc = async (req: Request) => {
   const unsafeTypedRequest: PageViewDto = req.body;
   if (!unsafeTypedRequest.pageUrl) {
-    throw new Error("PageUrl not given in request");
+    throw new Error("'pageUrl' not given in request body");
   }
   unsafeTypedRequest.ipAddress = `${IPAddressService.getIPAddress(req)}`;
   unsafeTypedRequest.dateTime = String(new Date());

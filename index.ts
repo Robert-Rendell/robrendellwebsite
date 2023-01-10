@@ -14,9 +14,10 @@ import { InsectsPage } from "./src/pages/photos-ive-taken/nature/pages/insects.p
 import { LichenPage } from "./src/pages/photos-ive-taken/nature/pages/lichen.page";
 import { FungiPage } from "./src/pages/photos-ive-taken/nature/pages/fungi.page";
 import { ConfigService } from "./src/services/config.service";
-import { SavePageView } from "./src/common/view-page.endpoint";
+import { SavePageView } from "./src/standalone/view-page.endpoint";
 import { CVPage } from "./src/pages/home/cv.page";
 import { KnockKnockEndpoint } from "./src/standalone/knock-knock.endpoint";
+import { OperationsDashboardPage } from "./src/operations/dashboard.page";
 
 config();
 // Heroku exposes PORT env var by default
@@ -50,6 +51,8 @@ app.get("/", HomePage);
 app.post("/view-page", SavePageView);
 app.get("/cv", CVPage);
 app.get("/knock-knock", KnockKnockEndpoint);
+
+app.post("/operations", OperationsDashboardPage);
 
 app.get(NatureRouting.WildFlowers, WildFlowersPage);
 app.get(NatureRouting.Arachnids, ArachnidsPage);
