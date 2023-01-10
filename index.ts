@@ -16,6 +16,7 @@ import { FungiPage } from "./src/pages/photos-ive-taken/nature/pages/fungi.page"
 import { ConfigService } from "./src/services/config.service";
 import { SavePageView } from "./src/common/view-page.endpoint";
 import { CVPage } from "./src/pages/home/cv.page";
+import { KnockKnockEndpoint } from "./src/standalone/knock-knock.endpoint";
 
 config();
 // Heroku exposes PORT env var by default
@@ -48,6 +49,7 @@ app.get("/", HomePage);
 
 app.post("/view-page", SavePageView);
 app.get("/cv", CVPage);
+app.get("/knock-knock", KnockKnockEndpoint);
 
 app.get(NatureRouting.WildFlowers, WildFlowersPage);
 app.get(NatureRouting.Arachnids, ArachnidsPage);

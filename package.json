@@ -18,7 +18,13 @@
     "format": "prettier -w ./src",
     "prepare": "husky install",
     "husky-add-hook": "husky add .husky/pre-commit \"npm run build\"",
-    "add-cv-to-build": "cp ./src/resources/CV_Robert_Rendell.pdf ./dist/src/resources/CV_Robert_Rendell.pdf"
+    "add-cv-to-build": "cp ./src/resources/CV_Robert_Rendell.pdf ./dist/src/resources/CV_Robert_Rendell.pdf",
+    "parse-keep-notes:insects": "ts-node ./src/scripts/parse-google-keep-takeout.ts Insects",
+    "parse-keep-notes:lichen": "ts-node ./src/scripts/parse-google-keep-takeout.ts Lichen",
+    "parse-keep-notes:flowers": "ts-node ./src/scripts/parse-google-keep-takeout.ts AAA_Flowers wild-flowers",
+    "parse-keep-notes:fungi": "ts-node ./src/scripts/parse-google-keep-takeout.ts Fungi",
+    "parse-keep-notes:arachnids": "ts-node ./src/scripts/parse-google-keep-takeout.ts Arachnids",
+    "parse-all-keep-notes": "npm run parse-keep-notes:flowers && npm run parse-keep-notes:fungi && npm run parse-keep-notes:arachnids && npm run parse-keep-notes:lichen"
   },
   "repository": {
     "type": "git",

@@ -17,13 +17,23 @@ import {
  * - Run:
  *   - $ npx ts-node ./src/scripts/parse-google-keep-takeout.ts
  */
-const executeS3UploadEnabled = true;
+const executeS3UploadEnabled = false;
+
+const targetGoogleKeepLabel = process.argv.slice(2)[0].replace(/_/g, " ");
+const targetS3Path =
+  (process.argv.slice(2)[1] || "").replace(/_/g, " ") ||
+  targetGoogleKeepLabel.toLowerCase().replace(/ /g, "-").trim();
+console.log(
+  "Using Google Keep label/s3-path:",
+  targetGoogleKeepLabel,
+  targetS3Path
+);
 const logFilenames = false;
 const targetDir = "/home/rob/Downloads";
 const targetBucket = "robrendellwebsite-photosivetaken";
-const targetKeyPrefix = "nature/wild-flowers";
+const targetKeyPrefix = `nature/${targetS3Path || "lichen"}`;
 const targetLabel: KeepNoteLabel = {
-  name: "AAA Flowers",
+  name: targetGoogleKeepLabel || "Lichen",
 };
 
 AWS.config.update({
@@ -36,8 +46,13 @@ const s3 = new AWS.S3();
 const getRawKeepNote = (folder: string, filename: string): Buffer =>
   fs.readFileSync(path.join(targetDir, folder, "Takeout", "Keep", filename));
 
-const getKeepNote = (folder: string, filename: string): KeepNote =>
-  JSON.parse(getRawKeepNote(folder, filename).toString());
+const getKeepNote = (folder: string, filename: string): KeepNote => {
+  const note: KeepNote = JSON.parse(
+    getRawKeepNote(folder, filename).toString()
+  );
+  note.filename = filename;
+  return note;
+};
 
 const filterNotesByLabel = (opts: {
   targetLabel: KeepNoteLabel;
@@ -64,20 +79,20 @@ const resolveAttachments = (opts: {
 }) => {
   const errors: (string | undefined)[] = [];
   const resolvedAttachments = opts.attachmentFilenames.map((d) => {
-    const fixedFileExtensioFilename = d?.replace("jpeg", "jpg") || "BIG ERROR";
+    const fixedFileExtensionFilename = d?.replace("jpeg", "jpg") || "BIG ERROR";
     try {
-      getRawKeepNote(opts.folder, fixedFileExtensioFilename);
+      getRawKeepNote(opts.folder, fixedFileExtensionFilename);
       return {
         resolvedFolder: opts.folder,
-        filename: fixedFileExtensioFilename,
+        filename: fixedFileExtensionFilename,
       };
     } catch (error) {
       const otherFolders = opts.takeoutFolders.filter((f) => f !== opts.folder);
       try {
-        getRawKeepNote(otherFolders[0], fixedFileExtensioFilename);
+        getRawKeepNote(otherFolders[0], fixedFileExtensionFilename);
         return {
           resolvedFolder: otherFolders[0],
-          filename: fixedFileExtensioFilename,
+          filename: fixedFileExtensionFilename,
         };
       } catch (error2) {
         errors.push(d);
@@ -113,19 +128,22 @@ takeoutFolders.forEach((folder: string) => {
     folder,
     fileExt: "json",
   });
+  const keepNotes = jsonNoteFilenames.map((filename: string) =>
+    getKeepNote(folder, filename)
+  );
   const attachments = jsonNoteFilenames.map((filename) =>
     getKeepNote(folder, filename).attachments?.filter(
       (attachment) => typeof attachment !== "undefined"
     )
   );
-  const allAttachmentFilenames = attachments
+  const allAttachmentFilePaths = attachments
     .flat()
     .map((a) => a?.filePath)
     .filter((a) => typeof a !== "undefined");
 
   console.log("------------", "folder: ", folder, "------------");
   console.log("Files: ", takeoutFolderFilenames.length);
-  console.log("Attachments:", allAttachmentFilenames.length);
+  console.log("Attachments:", allAttachmentFilePaths.length);
   console.log(targetLabel.name, "(json):", jsonNoteFilenames.length);
   console.log("------------", fileTypes, "------------");
   if (logFilenames) {
@@ -137,8 +155,25 @@ takeoutFolders.forEach((folder: string) => {
   const resolvedAttachmentFilenames = resolveAttachments({
     takeoutFolders,
     folder,
-    attachmentFilenames: allAttachmentFilenames,
+    attachmentFilenames: allAttachmentFilePaths,
   });
+
+  // keepNotes.forEach((note) => {
+  //   console.log(note.title, note.attachments);
+  // });
+  // resolvedAttachmentFilenames.forEach(({ resolvedFolder, filename }) => {
+  //   const matchedKeepNote = keepNotes.find((keepNote) =>
+  //     keepNote.attachments
+  //       ?.map((attachment) => attachment.filePath)
+  //       .includes(filename.replace("jpg", "jpeg"))
+  //   );
+  //   console.log(
+  //     matchedKeepNote?.filename,
+  //     filename.replace("jpg", "jpeg"),
+  //     matchedKeepNote ? "matched" : "",
+  //     matchedKeepNote?.title
+  //   );
+  // });
 
   if (executeS3UploadEnabled) {
     // Only works for one folder just now
@@ -147,7 +182,10 @@ takeoutFolders.forEach((folder: string) => {
       return s3
         .upload({
           Bucket: targetBucket,
-          Key: `${targetKeyPrefix}/jsons/${filename}`,
+          Key: `${targetKeyPrefix}/${filename
+            .replace(".json", "")
+            .trim()
+            .replace("_", "")}/data.json`,
           Body: getRawKeepNote(folder, filename),
         })
         .promise();
@@ -155,11 +193,24 @@ takeoutFolders.forEach((folder: string) => {
 
     const imgPromises = resolvedAttachmentFilenames.map(
       ({ resolvedFolder, filename }) => {
-        console.log("Uploading: ", resolvedFolder, filename);
+        const matchedKeepNote = keepNotes.find((keepNote) =>
+          keepNote.attachments
+            ?.map((attachment) => attachment.filePath)
+            .includes(filename.replace("jpg", "jpeg"))
+        );
+        console.log(
+          "Uploading: ",
+          resolvedFolder,
+          filename,
+          "; Matched to",
+          matchedKeepNote?.title
+        );
         return s3
           .upload({
             Bucket: targetBucket,
-            Key: `${targetKeyPrefix}/${filename}`,
+            Key: `${targetKeyPrefix}/${
+              matchedKeepNote?.title.trim().replace("_", "") || "UNMATCHED"
+            }/${filename}`,
             Body: getRawKeepNote(resolvedFolder, filename),
           })
           .promise();
