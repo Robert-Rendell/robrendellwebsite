@@ -16,7 +16,8 @@ export default class DynamoDBService {
       Item: item,
     };
 
-    DynamoDBService.ddb.putItem(params, (err, _data) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    DynamoDBService.ddb.putItem(params, (err, data) => {
       if (err) {
         console.error(
           `Failed! Could not save to DynamoDB table (${tableName}):`,
