@@ -16,6 +16,7 @@ export default class DynamoDBService {
       Item: item,
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DynamoDBService.ddb.putItem(params, (err, data) => {
       if (err) {
         console.error(

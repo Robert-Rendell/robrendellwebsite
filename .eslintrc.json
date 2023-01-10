@@ -18,6 +18,7 @@
     "plugins": [
         "@typescript-eslint"
     ],
+    "ignorePatterns": ["**/uni-data-291121/*", "**/google-drive.ts"],
     "rules": {
         "consistent-return": "off",
         "function-paren-newline": "off",
