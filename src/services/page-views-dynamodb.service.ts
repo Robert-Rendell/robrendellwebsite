@@ -7,7 +7,8 @@ import {
 } from "../models/page-viewer-document";
 import { ConfigService } from "./config.service";
 import DynamoDBService from "./dynamo-db.service";
-import { IPAddressService, IPLocation } from "./ip-address.service";
+import { IPAddressService } from "./ip-address.service";
+import { IPLocation } from "../models/ip-location";
 
 type SavePageViewProps = {
   pageViewer: PageViewDto;
@@ -33,16 +34,20 @@ export class PageViewsDynamoDbService extends DynamoDBService {
       (view) => !doNotSaveIps().includes(view.ipAddress)
     );
     if (isSaving) {
-      // const location: IPLocation =
-      await IPAddressService.getIPLocation(pageViewer.ipAddress).catch(
-        (error) => console.error("IPAddressService.getIPLocation", error)
-      );
+      const ipLocation: IPLocation | undefined =
+        await IPAddressService.getIPLocation(
+          pageViewer.ipAddress
+        ).catch<undefined>((error) => {
+          console.error("IPAddressService.getIPLocation", error);
+          return undefined;
+        });
       const uniquePageViews = new Set(
         currentPage.views.map((pageView) => pageView.ipAddress)
       );
       currentPage.total = uniquePageViews.size;
       const viewer: PageView = {
         dateTime: pageViewer.dateTime,
+        ipLocation,
         ipAddress: pageViewer.ipAddress,
       };
       currentPage.views.push(viewer);

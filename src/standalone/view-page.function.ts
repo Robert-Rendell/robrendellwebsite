@@ -12,7 +12,11 @@ export const ViewPageFunc = async (req: Request) => {
   if (!unsafeTypedRequest.pageUrl) {
     throw new Error("'pageUrl' not given in request body");
   }
-  unsafeTypedRequest.ipAddress = `${IPAddressService.getIPAddress(req)}`;
+  const ipAddress = IPAddressService.getIPAddress(req);
+  unsafeTypedRequest.ipAddress = `${ipAddress}`;
+  unsafeTypedRequest.ipLocation = await IPAddressService.getIPLocation(
+    Array.isArray(ipAddress) ? ipAddress[0] : ipAddress
+  );
   unsafeTypedRequest.dateTime = String(new Date());
   delete unsafeTypedRequest.headers;
   const isSaving = !doNotSaveIps().includes(unsafeTypedRequest.ipAddress);
