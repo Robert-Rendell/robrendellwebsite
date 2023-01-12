@@ -1,40 +1,8 @@
 /* eslint-disable camelcase */
-import axios from "axios";
+import * as geoip from "fast-geoip";
 import { Request } from "express";
 import { ConfigService } from "./config.service";
-
-export type IPLocation = {
-  host: string;
-  ip: string;
-  rdns: string;
-  asn: string;
-  country_name: string;
-  country_code: string;
-  region_name: string;
-  region_code: string;
-  city: string;
-  postal_code: string;
-  contitent_code: string;
-  latitude: string;
-  longitude: string;
-  metro_code: string;
-  timezone: string;
-  datetime: string;
-
-  // Newcastle upon Tyne
-  // Newcastle upon Tyne (NET)
-  // NE3
-  // United Kingdom (GB)
-  // Europe (EU)
-  // 55.0021 (lat) / -1.6287 (long)
-  // 2022-11-30 06:07:07 (Europe/London)
-  // NETWORK
-  // eslint-disable-next-line camelcase
-  // 86.8.53.70
-  // cpc1-benw13-2-0-cust325.16-2.cable.virginm.net
-  // Virgin Media Limited
-  // 5089
-};
+import { IPLocation } from "../models/ip-location";
 
 export class IPAddressService {
   /**
@@ -53,21 +21,12 @@ export class IPAddressService {
     return ip;
   }
 
-  public static async getIPLocation(ipAddress: string): Promise<IPLocation> {
-    const result = await axios.get(
-      `https://tools.keycdn.com/geo.json?host=${ipAddress}`,
-      {
-        headers: {
-          "User-Agent": `keycdn-tools:${ConfigService.ApiHost}`,
-        },
-      }
-    );
-    console.log(
-      `IPAddressService.getIPLocation(${ipAddress})`,
-      result.status,
-      result.data
-    );
-    return result.data;
+  public static async getIPLocation(
+    ipAddress: string
+  ): Promise<IPLocation | undefined> {
+    const geo = await geoip.lookup(ipAddress);
+    console.log(`IPAddressService.getIPLocation(${ipAddress})`, geo);
+    return geo ?? undefined;
   }
 
   public static isOneOfMyIpAddresses(req: Request): boolean {
