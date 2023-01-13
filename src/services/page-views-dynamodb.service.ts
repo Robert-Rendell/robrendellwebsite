@@ -9,6 +9,7 @@ import { ConfigService } from "./config.service";
 import DynamoDBService from "./dynamo-db.service";
 import { IPAddressService } from "./ip-address.service";
 import { IPLocation } from "../models/ip-location";
+import { EmailService } from "./email.service";
 
 type SavePageViewProps = {
   pageViewer: PageViewDto;
@@ -22,10 +23,11 @@ export class PageViewsDynamoDbService extends DynamoDBService {
     props: SavePageViewProps
   ): Promise<PageViewerDocument> {
     const { pageViewer, isSaving } = props;
+    const pageUrl = pageViewer[PageViewsDynamoDbService.PartitionKey];
     const currentPage = (await PageViewsDynamoDbService.getPageView(
-      pageViewer[PageViewsDynamoDbService.PartitionKey]
+      pageUrl
     )) ?? {
-      pageUrl: pageViewer[PageViewsDynamoDbService.PartitionKey],
+      pageUrl,
       views: [],
       total: 0,
     };
@@ -50,6 +52,10 @@ export class PageViewsDynamoDbService extends DynamoDBService {
         ipLocation,
         ipAddress: pageViewer.ipAddress,
       };
+      EmailService.send({
+        subject: "[robrendellwebsite] Page view!",
+        text: `${pageUrl} - ${JSON.stringify(ipLocation, null, 2)}`,
+      });
       currentPage.views.push(viewer);
       const marshalled = AWS.DynamoDB.Converter.marshall(currentPage);
       await super.save(ConfigService.PageViewsDynamoDbTable, marshalled);
