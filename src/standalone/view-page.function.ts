@@ -1,8 +1,5 @@
 import { Request } from "express";
-import {
-  PageViewDto,
-  PageViewerDocument,
-} from "../models/page-viewer-document";
+import { PageViewDto, PageViewerDocument } from "robrendellwebsite-common";
 import { IPAddressService } from "../services/ip-address.service";
 import { PageViewsDynamoDbService } from "../services/page-views-dynamodb.service";
 import { doNotSaveIps } from "./utils/do-not-save-ip-list";

@@ -188,7 +188,14 @@ takeoutFolders.forEach((folder: string) => {
             .replace("_", "")}/data.json`,
           Body: getRawKeepNote(folder, filename),
         })
-        .promise().then(() => console.log(`Success! ${filename} uploaded... (${index + 1}/${jsonNoteFilenames.length})`));
+        .promise()
+        .then(() =>
+          console.log(
+            `Success! ${filename} uploaded... (${index + 1}/${
+              jsonNoteFilenames.length
+            })`
+          )
+        );
     });
 
     const imgPromises = resolvedAttachmentFilenames.map(
@@ -213,7 +220,14 @@ takeoutFolders.forEach((folder: string) => {
             }/${filename}`,
             Body: getRawKeepNote(resolvedFolder, filename),
           })
-          .promise().then(() => console.log(`Success! ${filename} uploaded... (${index + 1}/${resolvedAttachmentFilenames.length})`));
+          .promise()
+          .then(() =>
+            console.log(
+              `Success! ${filename} uploaded... (${index + 1}/${
+                resolvedAttachmentFilenames.length
+              })`
+            )
+          );
       }
     );
 

@@ -1,4 +1,4 @@
-import { PageViewerDocument } from "../../models/page-viewer-document";
+import { PageViewerDocument } from "robrendellwebsite-common";
 
 export type OperationsDashboardResponse = {
   pageViews: (PageViewerDocument | undefined)[];
