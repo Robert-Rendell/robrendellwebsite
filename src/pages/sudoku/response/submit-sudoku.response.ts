@@ -1,4 +1,4 @@
-import ErrorResponse from "../../../responses/error.response";
+import { ErrorResponse } from "robrendellwebsite-common";
 import { SudokuId } from "../models/sudoku";
 import SudokuValidation from "../models/sudoku-validation";
 import SudokuValidationIssue from "../models/sudoku-validation-issue";

@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
 import * as geoip from "fast-geoip";
+import { IPLocation } from "robrendellwebsite-common";
 import { Request } from "express";
 import { ConfigService } from "./config.service";
-import { IPLocation } from "../models/ip-location";
 
 export class IPAddressService {
   /**

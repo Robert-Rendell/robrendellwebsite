@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
+import { ErrorResponse } from "robrendellwebsite-common";
 import { IPAddressService } from "../../services/ip-address.service";
 import S3BucketService from "../../services/s3-bucket.service";
 import SudokuDynamoDBService from "./services/sudoku-dynamodb.service";
@@ -23,7 +24,6 @@ import { ExtendedSubmission, Submission } from "./models/submission";
 import SudokuPuzzle from "./models/sudoku-puzzle";
 import SudokuValidation from "./models/sudoku-validation";
 import SudokuDifficulty from "./enums/sudoku-difficulty";
-import ErrorResponse from "../../responses/error.response";
 import PostGenerateSudokuRequest from "./requests/generate.post";
 import GenerateSudokuResponse from "./response/generate.response";
 import PostGenerateSudokuCallbackRequest from "./requests/generate-callback.post";
@@ -250,10 +250,10 @@ class SudokuAPI {
     const request = req.body as PostGenerateSudokuRequest;
 
     if (request.roberto !== "testing") {
-      SudokuAPI.badRequest(
-        'Error: Testing flag not set in message body: { "roberto": "testing" }',
-        res
-      );
+      const msg =
+        // eslint-disable-next-line quotes
+        'Error: Testing flag not set in message body: { "roberto": "testing" }';
+      SudokuAPI.badRequest(msg, res);
       return;
     }
 

@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
+import {
+  OperationsDashboardRequest,
+  OperationsDashboardResponse,
+} from "robrendellwebsite-common";
 import { PageViewsDynamoDbService } from "../services/page-views-dynamodb.service";
-import { OperationsDashboardRequest } from "./requests/dashboard.request";
-import { OperationsDashboardResponse } from "./responses/dashboard.response";
 
 export const OperationsDashboardPage = async (req: Request, res: Response) => {
   try {
