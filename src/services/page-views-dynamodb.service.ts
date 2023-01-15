@@ -7,7 +7,6 @@ import { IPAddressService } from "./ip-address.service";
 import { IPLocation } from "../models/ip-location";
 import { EmailService } from "./email.service";
 
-
 type SavePageViewProps = {
   pageViewer: PageViewDto;
   isSaving: boolean;
