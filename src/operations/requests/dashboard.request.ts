@@ -1,4 +1,4 @@
-import { PageUrl } from "../../models/page-viewer-document";
+import { PageUrl } from "robrendellwebsite-common";
 
 export type OperationsDashboardRequest = {
   pageUrls: PageUrl[];

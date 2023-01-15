@@ -79,7 +79,7 @@ const resolveAttachments = (opts: {
 }) => {
   const errors: (string | undefined)[] = [];
   const resolvedAttachments = opts.attachmentFilenames.map((d) => {
-    const fixedFileExtensionFilename = d?.replace("jpeg", "jpg") || "BIG ERROR";
+    const fixedFileExtensionFilename = d || "BIG ERROR";
     try {
       getRawKeepNote(opts.folder, fixedFileExtensionFilename);
       return {
@@ -165,11 +165,11 @@ takeoutFolders.forEach((folder: string) => {
   //   const matchedKeepNote = keepNotes.find((keepNote) =>
   //     keepNote.attachments
   //       ?.map((attachment) => attachment.filePath)
-  //       .includes(filename.replace("jpg", "jpeg"))
+  //       .includes(filename)
   //   );
   //   console.log(
   //     matchedKeepNote?.filename,
-  //     filename.replace("jpg", "jpeg"),
+  //     filename,
   //     matchedKeepNote ? "matched" : "",
   //     matchedKeepNote?.title
   //   );
@@ -177,7 +177,7 @@ takeoutFolders.forEach((folder: string) => {
 
   if (executeS3UploadEnabled) {
     // Only works for one folder just now
-    const jsonPromises = jsonNoteFilenames.map((filename) => {
+    const jsonPromises = jsonNoteFilenames.map((filename, index) => {
       console.log("Uploading: ", folder, filename);
       return s3
         .upload({
@@ -188,15 +188,22 @@ takeoutFolders.forEach((folder: string) => {
             .replace("_", "")}/data.json`,
           Body: getRawKeepNote(folder, filename),
         })
-        .promise();
+        .promise()
+        .then(() =>
+          console.log(
+            `Success! ${filename} uploaded... (${index + 1}/${
+              jsonNoteFilenames.length
+            })`
+          )
+        );
     });
 
     const imgPromises = resolvedAttachmentFilenames.map(
-      ({ resolvedFolder, filename }) => {
+      ({ resolvedFolder, filename }, index) => {
         const matchedKeepNote = keepNotes.find((keepNote) =>
           keepNote.attachments
             ?.map((attachment) => attachment.filePath)
-            .includes(filename.replace("jpg", "jpeg"))
+            .includes(filename)
         );
         console.log(
           "Uploading: ",
@@ -213,7 +220,14 @@ takeoutFolders.forEach((folder: string) => {
             }/${filename}`,
             Body: getRawKeepNote(resolvedFolder, filename),
           })
-          .promise();
+          .promise()
+          .then(() =>
+            console.log(
+              `Success! ${filename} uploaded... (${index + 1}/${
+                resolvedAttachmentFilenames.length
+              })`
+            )
+          );
       }
     );
 

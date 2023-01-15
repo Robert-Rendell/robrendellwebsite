@@ -1,10 +1,6 @@
 import AWS from "aws-sdk";
+import { PageView, PageViewDto, PageViewerDocument } from "robrendellwebsite-common";
 import { doNotSaveIps } from "../standalone/utils/do-not-save-ip-list";
-import {
-  PageView,
-  PageViewDto,
-  PageViewerDocument,
-} from "../models/page-viewer-document";
 import { ConfigService } from "./config.service";
 import DynamoDBService from "./dynamo-db.service";
 import { IPAddressService } from "./ip-address.service";
