@@ -1,4 +1,4 @@
-import ErrorResponse from "../../../responses/error.response";
+import { ErrorResponse } from "robrendellwebsite-common";
 import { SubmissionId } from "../models/submission";
 import { SudokuId } from "../models/sudoku";
 
