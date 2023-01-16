@@ -18,6 +18,8 @@ import { SavePageView } from "./src/standalone/view-page.endpoint";
 import { CVPage } from "./src/pages/home/cv.page";
 import { KnockKnockEndpoint } from "./src/standalone/knock-knock.endpoint";
 import { OperationsDashboardPage } from "./src/operations/dashboard.page";
+import { AddWordOfDayEndpoint } from "./src/standalone/add-word-of-day.endpoint";
+import { AddDateInHistoryEndpoint } from "./src/standalone/add-date-in-history.endpoint";
 
 config();
 // Heroku exposes PORT env var by default
@@ -53,6 +55,8 @@ app.get("/cv", CVPage);
 app.get("/knock-knock", KnockKnockEndpoint);
 
 app.post("/operations", OperationsDashboardPage);
+app.post("/operations/word-of-the-day/add", AddWordOfDayEndpoint);
+app.post("/operations/dates-in-history/add", AddDateInHistoryEndpoint);
 
 app.get(NatureRouting.WildFlowers, WildFlowersPage);
 app.get(NatureRouting.Arachnids, ArachnidsPage);

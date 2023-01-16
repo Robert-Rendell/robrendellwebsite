@@ -1,4 +1,4 @@
-import AWS from "aws-sdk";
+import AWS, { Config } from "aws-sdk";
 import { EnvVar } from "../enums/env-vars.enum";
 import FeatureFlags from "../models/feature-flags";
 import { UniDataEnvVars } from "../pages/technical-tests/uni-data-291121/models/uni-data-env-vars";
@@ -93,5 +93,9 @@ export class ConfigService {
 
   static get SudokuGenerateJsonBucket(): string {
     return ConfigService.GetEnvVar(EnvVar.SUDOKU_GEN_BUCKET_JSON);
+  }
+
+  static get PublicBucket(): string {
+    return ConfigService.GetEnvVar(EnvVar.PUBLIC_BUCKET);
   }
 }
