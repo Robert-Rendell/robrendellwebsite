@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
-import { InterestingDateInHistory } from "robrendellwebsite-common";
+import {
+  ErrorResponse,
+  InterestingDateInHistory,
+} from "robrendellwebsite-common";
 import { ConfigService } from "../services/config.service";
 import { IPAddressService } from "../services/ip-address.service";
 import S3BucketService from "../services/s3-bucket.service";
@@ -11,13 +14,19 @@ export const AddDateInHistoryEndpoint = async (req: Request, res: Response) => {
     if (IPAddressService.isOneOfMyIpAddresses(req)) {
       const dateInHistoryToAdd: InterestingDateInHistory = req.body;
       if (!dateInHistoryToAdd.date) {
-        throw new Error("'date' not given in request body");
+        res.status(400).send(<ErrorResponse>{
+          errorMessage: "'date' not given in request body",
+        });
       }
       if (!dateInHistoryToAdd.event) {
-        throw new Error("'event' not given in request body");
+        res.status(400).send(<ErrorResponse>{
+          errorMessage: "'event' not given in request body",
+        });
       }
       if (!dateInHistoryToAdd.school) {
-        throw new Error("'school' not given in request body");
+        res.status(400).send(<ErrorResponse>{
+          errorMessage: "'school' not given in request body",
+        });
       }
       const datesInHistoryJson = await S3BucketService.download(
         ConfigService.PublicBucket,
