@@ -56,8 +56,8 @@ app.get("/cv", CVPage);
 app.get("/knock-knock", KnockKnockEndpoint);
 
 app.post("/operations", OperationsDashboardPage);
-app.post(OpsEndpoints.AddWordOfTheDay, AddWordOfDayEndpoint);
-app.post(OpsEndpoints.AddInterestingDateInHistory, AddDateInHistoryEndpoint);
+app.post("/operations/word-of-the-day/add", AddWordOfDayEndpoint);
+app.post("/operations/dates-in-history/add", AddDateInHistoryEndpoint);
 
 app.get(NatureRouting.WildFlowers, WildFlowersPage);
 app.get(NatureRouting.Arachnids, ArachnidsPage);
