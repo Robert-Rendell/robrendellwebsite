@@ -1,15 +1,17 @@
 import AWS from "aws-sdk";
-import S3, { ListObjectsV2Request, ObjectList } from "aws-sdk/clients/s3";
+import { ListObjectsV2Request, ObjectList } from "aws-sdk/clients/s3";
 
 export default class S3BucketService {
   static s3: AWS.S3 = new AWS.S3();
 
   public static async upload(bucket: string, key: string, content: string) {
-    return S3BucketService.s3.upload({
-      Bucket: bucket,
-      Key: key,
-      Body: content,
-    }).promise();
+    return S3BucketService.s3
+      .upload({
+        Bucket: bucket,
+        Key: key,
+        Body: content,
+      })
+      .promise();
   }
 
   public static async download(bucket: string, key: string) {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { WordOfTheDay } from "robrendellwebsite-common";
+import { ErrorResponse, WordOfTheDay } from "robrendellwebsite-common";
 import { ConfigService } from "../services/config.service";
 import { IPAddressService } from "../services/ip-address.service";
 import S3BucketService from "../services/s3-bucket.service";
@@ -11,16 +11,32 @@ export const AddWordOfDayEndpoint = async (req: Request, res: Response) => {
     if (IPAddressService.isOneOfMyIpAddresses(req)) {
       const wordOfTheDayToAdd: WordOfTheDay = req.body;
       if (!wordOfTheDayToAdd.date) {
-        throw new Error("'date' not given in request body");
+        res
+          .status(400)
+          .send(<ErrorResponse>{
+            errorMessage: "'date' not given in request body",
+          });
       }
       if (!wordOfTheDayToAdd.context) {
-        throw new Error("'context' not given in request body");
+        res
+          .status(400)
+          .send(<ErrorResponse>{
+            errorMessage: "'context' not given in request body",
+          });
       }
       if (!wordOfTheDayToAdd.definition) {
-        throw new Error("'definition' not given in request body");
+        res
+          .status(400)
+          .send(<ErrorResponse>{
+            errorMessage: "'definition' not given in request body",
+          });
       }
       if (!wordOfTheDayToAdd.word) {
-        throw new Error("'word' not given in request body");
+        res
+          .status(400)
+          .send(<ErrorResponse>{
+            errorMessage: "'word' not given in request body",
+          });
       }
       const wordOfDayJson = await S3BucketService.download(
         ConfigService.PublicBucket,

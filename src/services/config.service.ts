@@ -1,4 +1,4 @@
-import AWS, { Config } from "aws-sdk";
+import AWS from "aws-sdk";
 import { EnvVar } from "../enums/env-vars.enum";
 import FeatureFlags from "../models/feature-flags";
 import { UniDataEnvVars } from "../pages/technical-tests/uni-data-291121/models/uni-data-env-vars";
