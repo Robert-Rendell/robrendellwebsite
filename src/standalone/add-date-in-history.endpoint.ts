@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import {
+  AddDateInHistoryRequest,
+  AddDateInHistoryResponse,
   ErrorResponse,
   InterestingDateInHistory,
 } from "robrendellwebsite-common";
@@ -12,7 +14,7 @@ const datesInHistoryFile = "dates-in-history.json";
 export const AddDateInHistoryEndpoint = async (req: Request, res: Response) => {
   try {
     if (IPAddressService.isOneOfMyIpAddresses(req)) {
-      const dateInHistoryToAdd: InterestingDateInHistory = req.body;
+      const dateInHistoryToAdd: AddDateInHistoryRequest = req.body;
       if (!dateInHistoryToAdd.date) {
         return res.status(400).send(<ErrorResponse>{
           errorMessage: "'date' not given in request body",
@@ -36,14 +38,22 @@ export const AddDateInHistoryEndpoint = async (req: Request, res: Response) => {
         datesInHistoryJson?.toString() || ""
       );
       if (datesInHistory) {
-        datesInHistory = [dateInHistoryToAdd, ...datesInHistory];
+        if (typeof dateInHistoryToAdd.insertionIndex !== "undefined") {
+          datesInHistory.splice(
+            dateInHistoryToAdd.insertionIndex,
+            0,
+            dateInHistoryToAdd
+          );
+        } else {
+          datesInHistory = [dateInHistoryToAdd, ...datesInHistory];
+        }
       }
       await S3BucketService.upload(
         ConfigService.PublicBucket,
         datesInHistoryFile,
         JSON.stringify(datesInHistory)
       );
-      res.status(200).send(dateInHistoryToAdd);
+      res.status(200).send(<AddDateInHistoryResponse>dateInHistoryToAdd);
     } else {
       res.status(403).send(IPAddressService.blockedIpMessage);
     }
