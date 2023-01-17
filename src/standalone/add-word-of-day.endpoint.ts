@@ -11,32 +11,24 @@ export const AddWordOfDayEndpoint = async (req: Request, res: Response) => {
     if (IPAddressService.isOneOfMyIpAddresses(req)) {
       const wordOfTheDayToAdd: WordOfTheDay = req.body;
       if (!wordOfTheDayToAdd.date) {
-        res
-          .status(400)
-          .send(<ErrorResponse>{
-            errorMessage: "'date' not given in request body",
-          });
+        return res.status(400).send(<ErrorResponse>{
+          errorMessage: "'date' not given in request body",
+        });
       }
       if (!wordOfTheDayToAdd.context) {
-        res
-          .status(400)
-          .send(<ErrorResponse>{
-            errorMessage: "'context' not given in request body",
-          });
+        return res.status(400).send(<ErrorResponse>{
+          errorMessage: "'context' not given in request body",
+        });
       }
       if (!wordOfTheDayToAdd.definition) {
-        res
-          .status(400)
-          .send(<ErrorResponse>{
-            errorMessage: "'definition' not given in request body",
-          });
+        return res.status(400).send(<ErrorResponse>{
+          errorMessage: "'definition' not given in request body",
+        });
       }
       if (!wordOfTheDayToAdd.word) {
-        res
-          .status(400)
-          .send(<ErrorResponse>{
-            errorMessage: "'word' not given in request body",
-          });
+        return res.status(400).send(<ErrorResponse>{
+          errorMessage: "'word' not given in request body",
+        });
       }
       const wordOfDayJson = await S3BucketService.download(
         ConfigService.PublicBucket,

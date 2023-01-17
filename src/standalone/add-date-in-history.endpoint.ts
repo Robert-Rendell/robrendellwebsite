@@ -14,17 +14,17 @@ export const AddDateInHistoryEndpoint = async (req: Request, res: Response) => {
     if (IPAddressService.isOneOfMyIpAddresses(req)) {
       const dateInHistoryToAdd: InterestingDateInHistory = req.body;
       if (!dateInHistoryToAdd.date) {
-        res.status(400).send(<ErrorResponse>{
+        return res.status(400).send(<ErrorResponse>{
           errorMessage: "'date' not given in request body",
         });
       }
       if (!dateInHistoryToAdd.event) {
-        res.status(400).send(<ErrorResponse>{
+        return res.status(400).send(<ErrorResponse>{
           errorMessage: "'event' not given in request body",
         });
       }
       if (!dateInHistoryToAdd.school) {
-        res.status(400).send(<ErrorResponse>{
+        return res.status(400).send(<ErrorResponse>{
           errorMessage: "'school' not given in request body",
         });
       }
