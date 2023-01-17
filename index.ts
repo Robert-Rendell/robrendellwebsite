@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { config } from "dotenv";
 import RateLimit from "express-rate-limit";
+import { OpsEndpoints } from "robrendellwebsite-common";
 import { HomePage } from "./src/pages/home/home.page";
 import SudokuAPI from "./src/pages/sudoku/sudoku.page";
 import TechTestUniDataAPI from "./src/pages/technical-tests/uni-data-291121/uni-data-291121.page";
@@ -55,8 +56,8 @@ app.get("/cv", CVPage);
 app.get("/knock-knock", KnockKnockEndpoint);
 
 app.post("/operations", OperationsDashboardPage);
-app.post("/operations/word-of-the-day/add", AddWordOfDayEndpoint);
-app.post("/operations/dates-in-history/add", AddDateInHistoryEndpoint);
+app.post(OpsEndpoints.AddWordOfTheDay, AddWordOfDayEndpoint);
+app.post(OpsEndpoints.AddInterestingDateInHistory, AddDateInHistoryEndpoint);
 
 app.get(NatureRouting.WildFlowers, WildFlowersPage);
 app.get(NatureRouting.Arachnids, ArachnidsPage);

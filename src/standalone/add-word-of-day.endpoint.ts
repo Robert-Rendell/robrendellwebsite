@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
-import { ErrorResponse, WordOfTheDay } from "robrendellwebsite-common";
+import {
+  AddWordOfTheDayRequest,
+  AddWordOfTheDayResponse,
+  ErrorResponse,
+  WordOfTheDay,
+} from "robrendellwebsite-common";
 import { ConfigService } from "../services/config.service";
 import { IPAddressService } from "../services/ip-address.service";
 import S3BucketService from "../services/s3-bucket.service";
@@ -9,7 +14,7 @@ const wordOfDayFilename = "word-of-day.json";
 export const AddWordOfDayEndpoint = async (req: Request, res: Response) => {
   try {
     if (IPAddressService.isOneOfMyIpAddresses(req)) {
-      const wordOfTheDayToAdd: WordOfTheDay = req.body;
+      const wordOfTheDayToAdd: AddWordOfTheDayRequest = req.body;
       if (!wordOfTheDayToAdd.date) {
         return res.status(400).send(<ErrorResponse>{
           errorMessage: "'date' not given in request body",
@@ -45,7 +50,7 @@ export const AddWordOfDayEndpoint = async (req: Request, res: Response) => {
         wordOfDayFilename,
         JSON.stringify(wordOfDay)
       );
-      res.status(200).send(wordOfTheDayToAdd);
+      res.status(200).send(<AddWordOfTheDayResponse>wordOfTheDayToAdd);
     } else {
       res.status(403).send(IPAddressService.blockedIpMessage);
     }
