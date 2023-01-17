@@ -1,5 +1,5 @@
 import AWS from "aws-sdk";
-import S3, { ListObjectsV2Request, ObjectList } from "aws-sdk/clients/s3";
+import { ListObjectsV2Request, ObjectList } from "aws-sdk/clients/s3";
 
 export default class S3BucketService {
   static s3: AWS.S3 = new AWS.S3();
