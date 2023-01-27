@@ -43,6 +43,7 @@ export const AddWordOfDayEndpoint = async (req: Request, res: Response) => {
         wordOfDayJson?.toString() || ""
       );
       if (wordOfDay) {
+        wordOfTheDayToAdd.word = wordOfTheDayToAdd.word.trim();
         wordOfDay = [wordOfDay[0], wordOfTheDayToAdd, ...wordOfDay.slice(1)];
       }
       await S3BucketService.upload(
