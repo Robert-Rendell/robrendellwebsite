@@ -5,6 +5,7 @@ import {
   ErrorResponse,
   InterestingDateInHistory,
 } from "robrendellwebsite-common";
+import { AuthService } from "../services/auth.service";
 import { ConfigService } from "../services/config.service";
 import { IPAddressService } from "../services/ip-address.service";
 import S3BucketService from "../services/s3-bucket.service";
@@ -13,7 +14,7 @@ const datesInHistoryFile = "dates-in-history.json";
 
 export const AddDateInHistoryEndpoint = async (req: Request, res: Response) => {
   try {
-    if (IPAddressService.isOneOfMyIpAddresses(req)) {
+    if (AuthService.hasAccess(req)) {
       const dateInHistoryToAdd: AddDateInHistoryRequest = req.body;
       if (!dateInHistoryToAdd.date) {
         return res.status(400).send(<ErrorResponse>{

@@ -5,6 +5,7 @@ import {
   ErrorResponse,
   WordOfTheDay,
 } from "robrendellwebsite-common";
+import { AuthService } from "../services/auth.service";
 import { ConfigService } from "../services/config.service";
 import { IPAddressService } from "../services/ip-address.service";
 import S3BucketService from "../services/s3-bucket.service";
@@ -13,7 +14,7 @@ const wordOfDayFilename = "word-of-day.json";
 
 export const AddWordOfDayEndpoint = async (req: Request, res: Response) => {
   try {
-    if (IPAddressService.isOneOfMyIpAddresses(req)) {
+    if (AuthService.hasAccess(req)) {
       const wordOfTheDayToAdd: AddWordOfTheDayRequest = req.body;
       if (!wordOfTheDayToAdd.date) {
         return res.status(400).send(<ErrorResponse>{
