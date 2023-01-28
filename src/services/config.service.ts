@@ -98,4 +98,8 @@ export class ConfigService {
   static get PublicBucket(): string {
     return ConfigService.GetEnvVar(EnvVar.PUBLIC_BUCKET);
   }
+
+  static get KnockKnockSecurityKey(): string {
+    return ConfigService.GetEnvVar(EnvVar.KNOCK_KNOCK_SECURITY_KEY);
+  }
 }
