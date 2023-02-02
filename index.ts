@@ -21,6 +21,7 @@ import { KnockKnockEndpoint } from "./src/standalone/knock-knock.endpoint";
 import { OperationsDashboardPage } from "./src/operations/dashboard.page";
 import { AddWordOfDayEndpoint } from "./src/standalone/add-word-of-day.endpoint";
 import { AddDateInHistoryEndpoint } from "./src/standalone/add-date-in-history.endpoint";
+import { HealthEndpoint } from "./src/standalone/health.endpoint";
 
 config();
 // Heroku exposes PORT env var by default
@@ -54,6 +55,7 @@ app.get("/", HomePage);
 app.post("/view-page", SavePageView);
 app.get("/cv", CVPage);
 app.get("/knock-knock", KnockKnockEndpoint);
+app.get("/health", HealthEndpoint);
 
 app.post("/operations", OperationsDashboardPage);
 app.post("/operations/word-of-the-day/add", AddWordOfDayEndpoint);
