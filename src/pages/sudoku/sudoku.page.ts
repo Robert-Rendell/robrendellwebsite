@@ -15,6 +15,7 @@ import {
   SudokuInternalServerError,
 } from "./response/sudoku.response";
 import {
+  ExtendedSubmitSudokuResponse,
   SubmitSudokuBasicResponse,
   SubmitSudokuInternalServerError,
   SubmitSudokuNotFoundError,
@@ -201,7 +202,7 @@ class SudokuAPI {
         return;
       }
 
-      const response: SubmitSudokuBasicResponse = {
+      const response: ExtendedSubmitSudokuResponse = {
         complete:
           sudoku?.solution.replace(/ /g, "") ===
           submissionRequest.sudokuSubmission,
@@ -210,7 +211,16 @@ class SudokuAPI {
           submissionRequest.sudokuSubmission,
           sudoku?.solution || ""
         ),
+        validationIssues: [],
       };
+
+      if (!response.valid) {
+        response.validationIssues =
+          SudokuValidatorService.getSudokuValidationIssues(
+            submissionRequest.sudokuSubmission,
+            sudoku?.solution || ""
+          );
+      }
 
       if (response.complete) {
         const startSubmission = await SubmissionsDynamoDbService.getSubmission(

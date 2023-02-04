@@ -1,7 +1,24 @@
+import { SudokuValidationIssue } from "robrendellwebsite-common";
 import TamperingError from "../errors/tampering.error";
 import SudokuPuzzle from "../models/sudoku-puzzle";
 
 class SudokuValidatorService {
+  public static getSudokuValidationIssues(
+    submission: SudokuPuzzle,
+    solution: SudokuPuzzle
+  ): SudokuValidationIssue[] {
+    const issues: SudokuValidationIssue[] = [];
+    const trSubmission: number[][] = JSON.parse(submission);
+    const trSolution: number[][] = JSON.parse(solution);
+    trSolution.forEach((row, x) => {
+      row.forEach((cell, y) => {
+        if (cell !== trSubmission[x][y] && trSubmission[x][y] !== 0) {
+          issues.push({ row: x, col: y });
+        }
+      });
+    });
+    return issues;
+  }
   public static isSudokuSubmissionValid(
     originalPuzzle: SudokuPuzzle,
     submission: SudokuPuzzle,
