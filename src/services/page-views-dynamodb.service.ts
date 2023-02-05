@@ -54,7 +54,7 @@ export class PageViewsDynamoDbService extends DynamoDBService {
       };
       EmailService.send({
         subject: "[robrendellwebsite] Page view!",
-        text: `${pageUrl} - ${JSON.stringify(ipLocation, null, 2)}`,
+        text: `${pageUrl} - ${pageViewer.ipAddress} - ${JSON.stringify(ipLocation, null, 2)}`,
       });
       currentPage.views.push(viewer);
       const marshalled = AWS.DynamoDB.Converter.marshall(currentPage);
