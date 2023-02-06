@@ -2,6 +2,7 @@ import AWS from "aws-sdk";
 import { QueryInput } from "aws-sdk/clients/dynamodb";
 import { ConfigService } from "../../../services/config.service";
 import DynamoDBService from "../../../services/dynamo-db.service";
+import { EmailService } from "../../../services/email.service";
 import { Submission } from "../models/submission";
 import { SudokuId } from "../models/sudoku";
 
@@ -11,9 +12,19 @@ export default class SubmissionsDynamoDbService extends DynamoDBService {
     SudokuId: "sudokuId-index",
   };
 
+  private static isCompletedSubmission(submission: Submission): boolean {
+    return Boolean(submission.timeTakenMs);
+  }
+
   public static async saveSubmission(submission: Submission): Promise<void> {
     const marshalled = AWS.DynamoDB.Converter.marshall(submission);
     super.save(ConfigService.SudokuSubmissionsDynamoDbTable, marshalled);
+    if (SubmissionsDynamoDbService.isCompletedSubmission(submission)) {
+      EmailService.send({
+        subject: "[robrendellwebsite] Sudoku completed!",
+        text: `${submission.submitterName} - ${submission.ipAddress} - Sudoku Id: [${submission.sudokuId}]`,
+      });
+    }
   }
 
   public static async getSubmission(
