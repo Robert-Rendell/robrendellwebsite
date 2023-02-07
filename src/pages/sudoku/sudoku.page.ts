@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import { ErrorResponse } from "robrendellwebsite-common";
+import { ErrorResponse, PostGenerateSudokuCallbackRequest } from "robrendellwebsite-common";
 import { IPAddressService } from "../../services/ip-address.service";
 import S3BucketService from "../../services/s3-bucket.service";
 import SudokuDynamoDBService from "./services/sudoku-dynamodb.service";
@@ -16,7 +16,6 @@ import {
 } from "./response/sudoku.response";
 import {
   ExtendedSubmitSudokuResponse,
-  SubmitSudokuBasicResponse,
   SubmitSudokuInternalServerError,
   SubmitSudokuNotFoundError,
 } from "./response/submit-sudoku.response";
@@ -27,7 +26,6 @@ import SudokuValidation from "./models/sudoku-validation";
 import SudokuDifficulty from "./enums/sudoku-difficulty";
 import PostGenerateSudokuRequest from "./requests/generate.post";
 import GenerateSudokuResponse from "./response/generate.response";
-import PostGenerateSudokuCallbackRequest from "./requests/generate-callback.post";
 import GenerateSudokuJson from "./models/generate-sudoku-json";
 import { PostSudokuListRequest } from "./requests/sudoku-list.post";
 import { SudokuListResponse } from "./response/sudoku-list.response";
@@ -306,12 +304,12 @@ class SudokuAPI {
   }
 
   static async generateSudokuCallback(
-    req: Request,
+    req: Request<unknown, unknown, PostGenerateSudokuCallbackRequest>,
     res: Response
   ): Promise<void> {
     console.log("POST generateSudokuCallback");
     console.log(req.params, req.body);
-    const request = req.body as PostGenerateSudokuCallbackRequest;
+    const request = req.body;
 
     if (
       request.sudokuInsertionSecurityKey !== ConfigService.SudokuGenSecurityKey
