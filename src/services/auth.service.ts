@@ -5,7 +5,7 @@ import { IPAddressService } from "./ip-address.service";
 export class AuthService {
   public static hasAccess(req: Request): boolean {
     return (
-      req.headers.authorization === ConfigService.KnockKnockSecurityKey ||
+      req.headers.authorization === ConfigService.KnockKnockSecurityKey &&
       IPAddressService.isOneOfMyIpAddresses(req)
     );
   }

@@ -6,7 +6,8 @@ import { IPAddressService } from "../../services/ip-address.service";
 export const CVPage = async (req: Request, res: Response) => {
   try {
     req.body.pageUrl = "/cv";
-    await ViewPageFunc(req);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await ViewPageFunc(req as any);
     const options = {
       root: resourcesPath,
     };

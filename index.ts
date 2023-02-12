@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { config } from "dotenv";
 import RateLimit from "express-rate-limit";
+// Don't ever use this, it crashes back end with CORS issues
 import { OpsEndpoints } from "robrendellwebsite-common";
 import { HomePage } from "./src/pages/home/home.page";
 import SudokuAPI from "./src/pages/sudoku/sudoku.page";
