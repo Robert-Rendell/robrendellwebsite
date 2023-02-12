@@ -13,7 +13,7 @@ export class IPAddressService {
    * If the proxy isn't 'yours', I wouldn't trust the 'x-forwarded-for' header,
    * because it can be spoofed.
    */
-  public static getIPAddress(req: Request): string | string[] {
+  public static getIPAddress(req: Request<unknown>): string | string[] {
     const ip =
       req.headers["x-forwarded-for"] ||
       req.socket.remoteAddress ||

@@ -4,24 +4,24 @@ import { IPAddressService } from "../services/ip-address.service";
 import { PageViewsDynamoDbService } from "../services/page-views-dynamodb.service";
 import { doNotSaveIps } from "./utils/do-not-save-ip-list";
 
-export const ViewPageFunc = async (req: Request) => {
-  const unsafeTypedRequest: PageViewDto = req.body;
-  if (!unsafeTypedRequest.pageUrl) {
+export const ViewPageFunc = async (req: Request<PageViewDto>) => {
+  const pageViewObj: PageViewDto = req.body;
+  if (!pageViewObj.pageUrl) {
     throw new Error("'pageUrl' not given in request body");
   }
-  unsafeTypedRequest.ipAddress = `${IPAddressService.getIPAddress(req)}`;
-  unsafeTypedRequest.dateTime = String(new Date());
-  delete unsafeTypedRequest.headers;
-  const isSaving = !doNotSaveIps().includes(unsafeTypedRequest.ipAddress);
+  pageViewObj.ipAddress = `${IPAddressService.getIPAddress(req)}`;
+  pageViewObj.dateTime = String(new Date());
+  delete pageViewObj.headers;
+  const isSaving = !doNotSaveIps().includes(pageViewObj.ipAddress);
   const pageViewDocument: PageViewerDocument =
     await PageViewsDynamoDbService.savePageView({
-      pageViewer: unsafeTypedRequest,
+      pageViewer: pageViewObj,
       isSaving,
     });
   if (!isSaving) {
     console.log(
       "[SavePageView]:",
-      unsafeTypedRequest.ipAddress,
+      pageViewObj.ipAddress,
       "that is me - not capturing page view"
     );
   }
