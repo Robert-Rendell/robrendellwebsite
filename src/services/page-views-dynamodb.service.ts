@@ -2,8 +2,8 @@ import AWS from "aws-sdk";
 import {
   IPLocation,
   PageView,
-  PageViewDto,
   PageViewerDocument,
+  PageViewRequest,
 } from "robrendellwebsite-common";
 import { doNotSaveIps } from "../standalone/utils/do-not-save-ip-list";
 import { ConfigService } from "./config.service";
@@ -12,7 +12,7 @@ import { IPAddressService } from "./ip-address.service";
 import { EmailService } from "./email.service";
 
 type SavePageViewProps = {
-  pageViewer: PageViewDto;
+  pageViewer: PageViewRequest;
   isSaving: boolean;
 };
 

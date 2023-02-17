@@ -1,11 +1,11 @@
 import { Request } from "express";
-import { PageViewDto, PageViewerDocument } from "robrendellwebsite-common";
+import { PageViewRequest, PageViewerDocument, ViewPageResponse } from "robrendellwebsite-common";
 import { IPAddressService } from "../services/ip-address.service";
 import { PageViewsDynamoDbService } from "../services/page-views-dynamodb.service";
 import { doNotSaveIps } from "./utils/do-not-save-ip-list";
 
-export const ViewPageFunc = async (req: Request<PageViewDto>) => {
-  const pageViewObj: PageViewDto = req.body;
+export const ViewPageFunc = async (req: Request<PageViewRequest>): Promise<ViewPageResponse> => {
+  const pageViewObj: PageViewRequest = req.body;
   if (!pageViewObj.pageUrl) {
     throw new Error("'pageUrl' not given in request body");
   }
@@ -25,5 +25,9 @@ export const ViewPageFunc = async (req: Request<PageViewDto>) => {
       "that is me - not capturing page view"
     );
   }
-  return pageViewDocument;
+
+  return {
+    total: pageViewDocument.total,
+    pageUrl: pageViewDocument.pageUrl,
+  };
 };
