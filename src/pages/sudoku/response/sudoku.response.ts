@@ -1,5 +1,4 @@
-import { ErrorResponse } from "robrendellwebsite-common";
-import { SubmissionId } from "../models/submission";
+import { ErrorResponse, SubmissionId } from "robrendellwebsite-common";
 import { SudokuId } from "../models/sudoku";
 
 export interface SudokuResponse {

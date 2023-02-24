@@ -1,4 +1,4 @@
-import { Submission } from "./submission";
+import { Submission } from "robrendellwebsite-common";
 
 export type LeaderboardEntry = Pick<
   Submission,
