@@ -3,6 +3,9 @@ import { v4 as uuidv4 } from "uuid";
 import {
   ErrorResponse,
   PostGenerateSudokuCallbackRequest,
+  Submission,
+  ExtendedSubmission,
+  SudokuLeaderboardResponse,
 } from "robrendellwebsite-common";
 import { IPAddressService } from "../../services/ip-address.service";
 import S3BucketService from "../../services/s3-bucket.service";
@@ -23,7 +26,6 @@ import {
   SubmitSudokuNotFoundError,
 } from "./response/submit-sudoku.response";
 import GetSudokuRequest from "./requests/sudoku.get";
-import { ExtendedSubmission, Submission } from "./models/submission";
 import SudokuPuzzle from "./models/sudoku-puzzle";
 import SudokuValidation from "./models/sudoku-validation";
 import SudokuDifficulty from "./enums/sudoku-difficulty";
@@ -34,7 +36,6 @@ import { PostSudokuListRequest } from "./requests/sudoku-list.post";
 import { SudokuListResponse } from "./response/sudoku-list.response";
 import { ListSudokuParams } from "./models/params/list-sudoku-params";
 import GetSudokuLeaderboardRequest from "./requests/sudoku-leaderboard.get";
-import { SudokuLeaderboardResponse } from "./response/sudoku-leaderboard.response";
 
 class SudokuAPI {
   static Routes = {
@@ -64,11 +65,37 @@ class SudokuAPI {
       sudokuId: sudoku.sudokuId,
       sudokuSubmission: opts?.submissionPuzzle,
       timeTakenMs: opts?.timeTakenMs || 0,
-      dateSubmitted: `${new Date().toISOString()}`,
+      dateStarted: `${new Date().toISOString()}`,
+      dateCompleted: "",
       ipAddress: `${IPAddressService.getIPAddress(req)}`,
+      timesValidated: 0,
       valid: opts?.validation?.valid,
       complete: opts?.validation?.complete,
       submitterName: opts?.submitterName || "",
+    };
+    SubmissionsDynamoDbService.saveSubmission(submission);
+    return submission;
+  }
+
+  private static updateSubmission(
+    req: Request,
+    partial: Partial<ExtendedSubmission>
+  ): Submission {
+    const submission: ExtendedSubmission = {
+      submissionId: partial.submissionId || uuidv4(),
+      sudokuId: partial.sudokuId || "",
+      sudokuSubmission: partial.sudokuSubmission,
+      timeTakenMs: partial.timeTakenMs || 0,
+      dateCompleted: partial.dateCompleted || `${new Date().toISOString()}`,
+      dateStarted: partial.dateStarted || `${new Date().toISOString()}`,
+      ipAddress: `${IPAddressService.getIPAddress(req)}`,
+      timesValidated:
+        typeof partial.timesValidated !== "undefined"
+          ? partial.timesValidated
+          : 0,
+      valid: partial.valid,
+      complete: partial.complete,
+      submitterName: partial.submitterName || "",
     };
     SubmissionsDynamoDbService.saveSubmission(submission);
     return submission;
@@ -203,6 +230,14 @@ class SudokuAPI {
         return;
       }
 
+      const startSubmission = await SubmissionsDynamoDbService.getSubmission(
+        submissionRequest.sudokuSubmissionId
+      );
+
+      if (typeof startSubmission === "undefined") {
+        throw Error("start submission is missing");
+      }
+
       const response: ExtendedSubmitSudokuResponse = {
         complete:
           sudoku?.solution.replace(/ /g, "") ===
@@ -213,6 +248,9 @@ class SudokuAPI {
           sudoku?.solution || ""
         ),
         validationIssues: [],
+        timesValidated: startSubmission?.timesValidated
+          ? startSubmission.timesValidated + 1
+          : 1,
       };
 
       if (!response.valid) {
@@ -223,23 +261,22 @@ class SudokuAPI {
           );
       }
 
+      const completedDate = new Date();
       if (response.complete) {
-        const startSubmission = await SubmissionsDynamoDbService.getSubmission(
-          submissionRequest.sudokuSubmissionId
-        );
-        if (startSubmission?.dateSubmitted) {
+        if (startSubmission.dateStarted) {
           response.timeTakenMs =
-            +new Date() - +new Date(startSubmission?.dateSubmitted);
+            +completedDate - +new Date(startSubmission?.dateStarted);
+          startSubmission.dateCompleted = completedDate.toISOString();
         }
       }
 
-      SudokuAPI.createSubmission(req, sudoku, {
-        submissionPuzzle: submissionRequest.sudokuSubmission,
-        validation: {
-          complete: response.complete,
-          valid: response.valid,
-        },
+      SudokuAPI.updateSubmission(req, {
+        ...startSubmission,
+        sudokuSubmission: submissionRequest.sudokuSubmission,
+        complete: response.complete,
+        valid: response.valid,
         timeTakenMs: response.timeTakenMs,
+        timesValidated: response.timesValidated,
         submitterName: submissionRequest.submitterName,
       });
 
