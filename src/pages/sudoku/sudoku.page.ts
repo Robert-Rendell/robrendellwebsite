@@ -5,6 +5,7 @@ import {
   PostGenerateSudokuCallbackRequest,
   Submission,
   ExtendedSubmission,
+  SudokuLeaderboardResponse,
 } from "robrendellwebsite-common";
 import { IPAddressService } from "../../services/ip-address.service";
 import S3BucketService from "../../services/s3-bucket.service";
@@ -35,7 +36,6 @@ import { PostSudokuListRequest } from "./requests/sudoku-list.post";
 import { SudokuListResponse } from "./response/sudoku-list.response";
 import { ListSudokuParams } from "./models/params/list-sudoku-params";
 import GetSudokuLeaderboardRequest from "./requests/sudoku-leaderboard.get";
-import { SudokuLeaderboardResponse } from "./response/sudoku-leaderboard.response";
 
 class SudokuAPI {
   static Routes = {
@@ -66,7 +66,7 @@ class SudokuAPI {
       sudokuSubmission: opts?.submissionPuzzle,
       timeTakenMs: opts?.timeTakenMs || 0,
       dateStarted: `${new Date().toISOString()}`,
-      dateSubmitted: `${new Date().toISOString()}`,
+      dateCompleted: `${new Date().toISOString()}`,
       ipAddress: `${IPAddressService.getIPAddress(req)}`,
       timesValidated: 0,
       valid: opts?.validation?.valid,
@@ -86,7 +86,7 @@ class SudokuAPI {
       sudokuId: partial.sudokuId || "",
       sudokuSubmission: partial.sudokuSubmission,
       timeTakenMs: partial.timeTakenMs || 0,
-      dateSubmitted: partial.dateSubmitted || `${new Date().toISOString()}`,
+      dateCompleted: partial.dateCompleted || `${new Date().toISOString()}`,
       dateStarted: partial.dateStarted || `${new Date().toISOString()}`,
       ipAddress: `${IPAddressService.getIPAddress(req)}`,
       timesValidated:
@@ -234,6 +234,10 @@ class SudokuAPI {
         submissionRequest.sudokuSubmissionId
       );
 
+      if (typeof startSubmission === "undefined") {
+        throw Error("start submission is missing");
+      }
+
       const response: ExtendedSubmitSudokuResponse = {
         complete:
           sudoku?.solution.replace(/ /g, "") ===
@@ -257,10 +261,12 @@ class SudokuAPI {
           );
       }
 
+      const completedDate = new Date();
       if (response.complete) {
-        if (startSubmission?.dateSubmitted) {
+        if (startSubmission.dateStarted) {
           response.timeTakenMs =
-            +new Date() - +new Date(startSubmission?.dateSubmitted);
+            +completedDate - +new Date(startSubmission?.dateStarted);
+          startSubmission.dateCompleted = completedDate.toISOString();
         }
       }
 
