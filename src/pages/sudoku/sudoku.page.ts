@@ -66,7 +66,7 @@ class SudokuAPI {
       sudokuSubmission: opts?.submissionPuzzle,
       timeTakenMs: opts?.timeTakenMs || 0,
       dateStarted: `${new Date().toISOString()}`,
-      dateCompleted: `${new Date().toISOString()}`,
+      dateCompleted: "",
       ipAddress: `${IPAddressService.getIPAddress(req)}`,
       timesValidated: 0,
       valid: opts?.validation?.valid,
