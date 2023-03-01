@@ -54,7 +54,9 @@ export class PageViewsDynamoDbService extends DynamoDBService {
       };
       EmailService.send({
         subject: "[robrendellwebsite] Page view!",
-        text: `${pageUrl} - ${pageViewer.ipAddress} - ${JSON.stringify(
+        text: `${pageUrl} - ${
+          pageViewer.ipAddress
+        } - ${`https://www.google.com/maps/search/${ipLocation?.ll[0]},${ipLocation?.ll[1]}`} ${JSON.stringify(
           ipLocation,
           null,
           2
