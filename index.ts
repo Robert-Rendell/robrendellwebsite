@@ -72,6 +72,9 @@ app.get(NatureRouting.Fungi, FungiPage);
 app.get(BattleshipsAPI.Routes.GET.GameState, BattleshipsAPI.getGameState);
 app.get(BattleshipsAPI.Routes.GET.StartConfiguration, BattleshipsAPI.getStartConfiguration);
 app.get(BattleshipsAPI.Routes.GET.User, BattleshipsAPI.getUser);
+app.post(BattleshipsAPI.Routes.POST.MakeMove, BattleshipsAPI.postMakeMove);
+app.post(BattleshipsAPI.Routes.POST.StartConfiguration, BattleshipsAPI.postStartConfiguration);
+app.post(BattleshipsAPI.Routes.POST.User, BattleshipsAPI.postUser);
 
 app.get(SudokuAPI.Routes.getSudoku, SudokuAPI.getSudoku);
 app.get(SudokuAPI.Routes.getSudokuLeaderboard, SudokuAPI.getSudokuLeaderboard);
