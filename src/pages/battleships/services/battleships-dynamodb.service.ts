@@ -15,24 +15,24 @@ export default class BattleshipsDynamoDbService extends DynamoDBService {
     startConfiguration: BattleshipsStartConfiguration
   ): Promise<void> {
     const marshalled = AWS.DynamoDB.Converter.marshall(startConfiguration);
-    super.save(ConfigService.SudokuSubmissionsDynamoDbTable, marshalled);
+    super.save(ConfigService.BattleshipsStartDynamoDbTable, marshalled);
   }
 
   public static async saveGame(game: BattleshipsGame): Promise<void> {
     const marshalled = AWS.DynamoDB.Converter.marshall(game);
-    super.save(ConfigService.SudokuSubmissionsDynamoDbTable, marshalled);
+    super.save(ConfigService.BattleshipsGameDynamoDbTable, marshalled);
   }
 
   public static async saveUser(user: BattleshipsUser): Promise<void> {
     const marshalled = AWS.DynamoDB.Converter.marshall(user);
-    super.save(ConfigService.SudokuSubmissionsDynamoDbTable, marshalled);
+    super.save(ConfigService.BattleshipsUserDynamoDbTable, marshalled);
   }
 
   public static async loadStartConfiguration(
     key: string
   ): Promise<BattleshipsGame | undefined> {
     const attributeMap = await super.load(
-      ConfigService.SudokuSubmissionsDynamoDbTable,
+      ConfigService.BattleshipsStartDynamoDbTable,
       BattleshipsDynamoDbService.PartitionKey,
       key
     );
@@ -44,7 +44,7 @@ export default class BattleshipsDynamoDbService extends DynamoDBService {
     key: string
   ): Promise<BattleshipsStartConfiguration | undefined> {
     const attributeMap = await super.load(
-      ConfigService.SudokuSubmissionsDynamoDbTable,
+      ConfigService.BattleshipsStartDynamoDbTable,
       BattleshipsDynamoDbService.PartitionKey,
       key
     );
@@ -58,7 +58,7 @@ export default class BattleshipsDynamoDbService extends DynamoDBService {
     key: string
   ): Promise<BattleshipsUser | undefined> {
     const attributeMap = await super.load(
-      ConfigService.SudokuSubmissionsDynamoDbTable,
+      ConfigService.BattleshipsUserDynamoDbTable,
       BattleshipsDynamoDbService.UserPartitionKey,
       key
     );

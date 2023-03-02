@@ -9,28 +9,59 @@ import {
   GetGameStateRequest,
   GetStartConfigurationRequest,
   GetUserRequest,
+  PostBattleshipsMakeMoveRequest,
+  PostBattleshipsMakeMoveResponse,
 } from "robrendellwebsite-common";
 import BattleshipsDynamoDbService from "./services/battleships-dynamodb.service";
+import { BattleshipsService } from "./services/battleships.service";
 
 export class BattleshipsAPI {
   static Routes = {
-    /**
-     * POST
-     */
-    MakeMove: "/battleships/game/:gameId/move",
-    /**
-     * GET
-     */
-    GameState: "/battleships/game/:gameId",
-    /**
-     * GET, POST
-     */
-    User: "/battleships/user/:username",
-    /**
-     * GET, POST
-     */
-    StartConfiguration: "/battleships/game/:gameId/start-configuration",
+    POST: {
+      MakeMove: "/battleships/game/:gameId/move",
+      User: "/battleships/user/:username",
+      StartConfiguration: "/battleships/game/:gameId/start-configuration",
+    },
+    GET: {
+      GameState: "/battleships/game/:gameId",
+      User: "/battleships/user/:username",
+      StartConfiguration: "/battleships/game/:gameId/start-configuration",
+    },
   };
+
+  static async postMakeMove(
+    req: Request<
+      Pick<BattleshipsGame, "gameId">,
+      unknown,
+      PostBattleshipsMakeMoveRequest
+    >,
+    res: Response<PostBattleshipsMakeMoveResponse>
+  ): Promise<void> {
+    try {
+      const move = req.body;
+      const gameState = await BattleshipsDynamoDbService.loadGame(
+        req.body.gameId
+      );
+
+      if (!gameState) {
+        res.status(404).send(BattleshipsGameNotFound(req.params.gameId));
+        return;
+      }
+      if (!BattleshipsService.isValidMove(move, gameState)) {
+        res.status(400).send(BattleshipsGameNotFound(req.params.gameId));
+        return;
+      }
+
+      const newGameState = BattleshipsService.makeMove(move, gameState);
+
+      res.status(200).send(newGameState);
+    } catch (e) {
+      console.error(e);
+      res
+        .status(500)
+        .send(BattleshipsInternalServerError((e as Error).message));
+    }
+  }
 
   static async getGameState(
     req: Request<GetGameStateRequest>,
