@@ -1,4 +1,7 @@
-import { BattleshipsGame } from "robrendellwebsite-common";
+import {
+  BattleshipsGame,
+  BattleshipsStartConfiguration,
+} from "robrendellwebsite-common";
 import { BattleshipsMove } from "robrendellwebsite-common/src/models/battleships/battleships-move";
 
 export class BattleshipsService {
@@ -14,5 +17,11 @@ export class BattleshipsService {
     game: BattleshipsGame
   ): BattleshipsGame {
     return game;
+  }
+
+  public static isStartConfigurationValid(
+    startConfiguration: BattleshipsStartConfiguration
+  ): boolean {
+    return false;
   }
 }

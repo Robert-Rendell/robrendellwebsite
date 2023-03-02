@@ -15,17 +15,17 @@ export default class BattleshipsDynamoDbService extends DynamoDBService {
     startConfiguration: BattleshipsStartConfiguration
   ): Promise<void> {
     const marshalled = AWS.DynamoDB.Converter.marshall(startConfiguration);
-    super.save(ConfigService.BattleshipsStartDynamoDbTable, marshalled);
+    await super.save(ConfigService.BattleshipsStartDynamoDbTable, marshalled);
   }
 
   public static async saveGame(game: BattleshipsGame): Promise<void> {
     const marshalled = AWS.DynamoDB.Converter.marshall(game);
-    super.save(ConfigService.BattleshipsGameDynamoDbTable, marshalled);
+    await super.save(ConfigService.BattleshipsGameDynamoDbTable, marshalled);
   }
 
   public static async saveUser(user: BattleshipsUser): Promise<void> {
     const marshalled = AWS.DynamoDB.Converter.marshall(user);
-    super.save(ConfigService.BattleshipsUserDynamoDbTable, marshalled);
+    await super.save(ConfigService.BattleshipsUserDynamoDbTable, marshalled);
   }
 
   public static async loadStartConfiguration(

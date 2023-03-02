@@ -5,12 +5,15 @@ import {
   BattleshipsGameNotFound,
   BattleshipsInternalServerError,
   BattleshipsStartConfiguration,
+  BattleshipsStartConfigurationNotFound,
   BattleshipsUser,
   GetGameStateRequest,
   GetStartConfigurationRequest,
   GetUserRequest,
   PostBattleshipsMakeMoveRequest,
   PostBattleshipsMakeMoveResponse,
+  PostBattleshipsUserRequest,
+  PostStartConfigurationRequest,
 } from "robrendellwebsite-common";
 import BattleshipsDynamoDbService from "./services/battleships-dynamodb.service";
 import { BattleshipsService } from "./services/battleships.service";
@@ -105,19 +108,60 @@ export class BattleshipsAPI {
     }
   }
 
+  static async postUser(
+    req: Request<
+      Pick<BattleshipsUser, "username">,
+      unknown,
+      PostBattleshipsUserRequest
+    >,
+    res: Response<BattleshipsUser | BattleshipsErrorResponse>
+  ): Promise<void> {
+    try {
+      await BattleshipsDynamoDbService.saveUser(req.body);
+      res.status(200).send(req.body);
+    } catch (e) {
+      console.error(e);
+      res
+        .status(500)
+        .send(BattleshipsInternalServerError((e as Error).message));
+    }
+  }
+
   static async getStartConfiguration(
     req: Request<GetStartConfigurationRequest>,
     res: Response<BattleshipsStartConfiguration | BattleshipsErrorResponse>
   ): Promise<void> {
     try {
-      const user = await BattleshipsDynamoDbService.loadStartConfiguration(
-        req.params.gameId
-      );
-      if (!user) {
-        res.status(404).send(BattleshipsGameNotFound(req.params.gameId));
+      const startConfiguration =
+        await BattleshipsDynamoDbService.loadStartConfiguration(
+          req.params.gameId
+        );
+      if (!startConfiguration) {
+        res
+          .status(404)
+          .send(BattleshipsStartConfigurationNotFound(req.params.gameId));
         return;
       }
-      res.status(200).send(user);
+      res.status(200).send(startConfiguration);
+    } catch (e) {
+      console.error(e);
+      res
+        .status(500)
+        .send(BattleshipsInternalServerError((e as Error).message));
+    }
+  }
+
+  static async postStartConfiguration(
+    req: Request<
+      Pick<BattleshipsGame, "gameId">,
+      unknown,
+      PostStartConfigurationRequest
+    >,
+    res: Response<BattleshipsStartConfiguration | BattleshipsErrorResponse>
+  ): Promise<void> {
+    try {
+      await BattleshipsDynamoDbService.saveStartConfiguration(req.body);
+      res.status(200).send(req.body);
     } catch (e) {
       console.error(e);
       res
