@@ -2,10 +2,7 @@ import { Request, Response } from "express";
 import {
   BattleshipsErrorResponse,
   BattleshipsGame,
-  BattleshipsGameNotFound,
-  BattleshipsInternalServerError,
   BattleshipsStartConfiguration,
-  BattleshipsStartConfigurationNotFound,
   BattleshipsUser,
   GetGameStateRequest,
   GetStartConfigurationRequest,
@@ -15,6 +12,11 @@ import {
   PostBattleshipsUserRequest,
   PostStartConfigurationRequest,
 } from "robrendellwebsite-common";
+import {
+  BattleshipsGameNotFound,
+  BattleshipsInternalServerError,
+  BattleshipsStartConfigurationNotFound,
+} from "./errors";
 import BattleshipsDynamoDbService from "./services/battleships-dynamodb.service";
 import { BattleshipsService } from "./services/battleships.service";
 
@@ -60,7 +62,10 @@ export class BattleshipsAPI {
         return;
       }
 
-      const newGameState = BattleshipsService.makeMove(req.body.move, gameState);
+      const newGameState = BattleshipsService.makeMove(
+        req.body.move,
+        gameState
+      );
 
       res.status(200).send(newGameState);
     } catch (e) {

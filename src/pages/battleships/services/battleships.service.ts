@@ -2,8 +2,8 @@ import {
   BattleshipsGame,
   BattleshipsStartConfiguration,
   BattleshipsUsername,
+  BattleshipsMove,
 } from "robrendellwebsite-common";
-import { BattleshipsMove } from "robrendellwebsite-common/src/models/battleships/battleships-move";
 
 export class BattleshipsService {
   public static isValidMove(

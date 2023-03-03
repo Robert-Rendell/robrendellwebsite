@@ -179,7 +179,7 @@ const resolveAttachments = (opts: {
     // });
 
     if (executeS3UploadEnabled) {
-    // Only works for one folder just now
+      // Only works for one folder just now
       const jsonPromises = jsonNoteFilenames.map((filename, index) => {
         console.log("Uploading: ", folder, filename);
         return s3
