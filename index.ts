@@ -76,6 +76,7 @@ app.get(BattleshipsAPI.Routes.GET.User, BattleshipsAPI.getUser);
 app.post(BattleshipsAPI.Routes.POST.MakeMove, BattleshipsAPI.postMakeMove);
 app.post(BattleshipsAPI.Routes.POST.StartConfiguration, BattleshipsAPI.postStartConfiguration);
 app.post(BattleshipsAPI.Routes.POST.User, BattleshipsAPI.postUser);
+app.post(BattleshipsAPI.Routes.POST.Join, BattleshipsAPI.postJoinGame);
 
 app.get(SudokuAPI.Routes.getSudoku, SudokuAPI.getSudoku);
 app.get(SudokuAPI.Routes.getSudokuLeaderboard, SudokuAPI.getSudokuLeaderboard);

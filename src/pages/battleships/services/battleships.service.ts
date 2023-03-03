@@ -11,25 +11,20 @@ export class BattleshipsService {
     username: BattleshipsUsername,
     game: BattleshipsGame
   ): string | false {
+    if (!game.playerUsernames.includes(username)) {
+      return `User '${username}' not currently playing this game`;
+    }
     if (BattleshipsService.getPlayerTurn(game) === username) {
       return "Not your turn";
     }
     if (
-      !game.playerMoves[game.turn].find(
+      game.playerMoves[game.turn].find(
         (previousMove) =>
-          previousMove.coords.x === move.coords.x &&
-          previousMove.coords.y === move.coords.y
+          previousMove.coords[0] === move.coords[0] &&
+          previousMove.coords[1] === move.coords[1]
       )
     ) {
       return "You have already taken that move";
-    }
-
-    if (!username) {
-      return "User can't be empty";
-    }
-
-    if (!game.playerUsernames.includes(username)) {
-      return `User '${username}' not currently playing this game`;
     }
     return false;
   }
@@ -38,12 +33,16 @@ export class BattleshipsService {
     move: BattleshipsMove,
     game: BattleshipsGame
   ): BattleshipsGame {
-    const changedGame = JSON.parse(JSON.stringify(game));
+    const changedGame = BattleshipsService.cloneGame(game);
     changedGame.playerMoves[game.turn].push(move);
     if (!BattleshipsService.isHit(move)) {
       changedGame.turn = this.getOpponent(game);
     }
     return changedGame;
+  }
+
+  private static cloneGame(game: BattleshipsGame): BattleshipsGame {
+    return JSON.parse(JSON.stringify(game));
   }
 
   private static getPlayerTurn(game: BattleshipsGame): BattleshipsUsername {
@@ -55,12 +54,39 @@ export class BattleshipsService {
   }
 
   private static isHit(move: BattleshipsMove): boolean {
+    return false;
+  }
+
+  public static canJoinGame(
+    game: BattleshipsGame,
+    username: BattleshipsUsername
+  ): true | string {
+    if (game.playerUsernames[1]) {
+      return "The game is full";
+    }
+    if (game.playerUsernames[0] === username) {
+      return "You cannot play against yourself";
+    }
     return true;
   }
 
-  public static isStartConfigurationValid(
-    startConfiguration: BattleshipsBoard
-  ): boolean {
-    return true;
+  public static joinGame(game: BattleshipsGame, username: BattleshipsUsername) {
+    const changed = BattleshipsService.cloneGame(game);
+    changed.playerUsernames[1] = username;
+    changed.state = "configuring";
+    return changed;
+  }
+
+  public static isStartConfigurationInvalid(
+    startConfiguration: BattleshipsBoard,
+    game: BattleshipsGame
+  ): string | false {
+    if (
+      startConfiguration.length !== game.boardDimensions[0] ||
+      startConfiguration.every((col) => col.length !== game.boardDimensions[1])
+    ) {
+      return `Board dimensions don't match the game (${game.boardDimensions})`;
+    }
+    return false;
   }
 }
