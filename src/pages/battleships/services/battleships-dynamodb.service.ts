@@ -42,16 +42,14 @@ export default class BattleshipsDynamoDbService extends DynamoDBService {
 
   public static async loadGame(
     key: string
-  ): Promise<BattleshipsStartConfiguration | undefined> {
+  ): Promise<BattleshipsGame | undefined> {
     const attributeMap = await super.load(
       ConfigService.BattleshipsStartDynamoDbTable,
       BattleshipsDynamoDbService.PartitionKey,
       key
     );
     if (!attributeMap) return undefined;
-    return AWS.DynamoDB.Converter.unmarshall(
-      attributeMap
-    ) as BattleshipsStartConfiguration;
+    return AWS.DynamoDB.Converter.unmarshall(attributeMap) as BattleshipsGame;
   }
 
   public static async loadUser(

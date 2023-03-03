@@ -41,21 +41,26 @@ export class BattleshipsAPI {
     res: Response<PostBattleshipsMakeMoveResponse>
   ): Promise<void> {
     try {
-      const move = req.body;
       const gameState = await BattleshipsDynamoDbService.loadGame(
-        req.body.gameId
+        req.params.gameId
       );
 
       if (!gameState) {
         res.status(404).send(BattleshipsGameNotFound(req.params.gameId));
         return;
       }
-      if (!BattleshipsService.isValidMove(move, gameState)) {
+      if (
+        !BattleshipsService.isValidMove(
+          req.body.move,
+          req.body.username,
+          gameState
+        )
+      ) {
         res.status(400).send(BattleshipsGameNotFound(req.params.gameId));
         return;
       }
 
-      const newGameState = BattleshipsService.makeMove(move, gameState);
+      const newGameState = BattleshipsService.makeMove(req.body.move, gameState);
 
       res.status(200).send(newGameState);
     } catch (e) {
