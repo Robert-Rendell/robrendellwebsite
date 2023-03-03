@@ -196,6 +196,14 @@ export class BattleshipsAPI {
     res: Response<BattleshipsStartConfiguration | BattleshipsErrorResponse>
   ): Promise<void> {
     try {
+      if (!req.params.gameId) {
+        res.status(400).send(BattleshipsMissingArgsRequest("gameId"));
+        return;
+      }
+      if (!req.params.username) {
+        res.status(400).send(BattleshipsMissingArgsRequest("username"));
+        return;
+      }
       const startConfiguration =
         await BattleshipsDynamoDbService.loadStartConfiguration(
           req.params.gameId,

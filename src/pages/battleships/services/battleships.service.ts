@@ -59,7 +59,8 @@ export class BattleshipsService {
   }
 
   public static isStartConfigurationValid(
-    startConfiguration: BattleshipsBoard
+    startConfiguration: BattleshipsBoard,
+    game: BattleshipsGame,
   ): boolean {
     return true;
   }
