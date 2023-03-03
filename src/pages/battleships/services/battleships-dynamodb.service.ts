@@ -11,6 +11,7 @@ import DynamoDBService from "../../../services/dynamo-db.service";
 export default class BattleshipsDynamoDbService extends DynamoDBService {
   private static PartitionKey = "gameId";
   private static UserPartitionKey = "username";
+  private static SortKey = "username";
 
   public static async saveStartConfiguration(
     startConfiguration: BattleshipsStartConfiguration
@@ -35,12 +36,15 @@ export default class BattleshipsDynamoDbService extends DynamoDBService {
   }
 
   public static async loadStartConfiguration(
-    key: string
+    gameId: string,
+    username: string
   ): Promise<BattleshipsStartConfiguration | undefined> {
     const attributeMap = await super.load(
       ConfigService.BattleshipsStartDynamoDbTable,
       BattleshipsDynamoDbService.PartitionKey,
-      key
+      gameId,
+      BattleshipsDynamoDbService.SortKey,
+      username
     );
     if (!attributeMap) return undefined;
     return AWS.DynamoDB.Converter.unmarshall(

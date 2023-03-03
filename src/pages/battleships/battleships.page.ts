@@ -31,12 +31,14 @@ export class BattleshipsAPI {
       Create: "/battleships/game/new",
       MakeMove: "/battleships/game/:gameId/move",
       User: "/battleships/user/:username",
-      StartConfiguration: "/battleships/game/:gameId/start-configuration",
+      StartConfiguration:
+        "/battleships/game/:gameId/start-configuration/:username",
     },
     GET: {
       GameState: "/battleships/game/:gameId",
       User: "/battleships/user/:username",
-      StartConfiguration: "/battleships/game/:gameId/start-configuration",
+      StartConfiguration:
+        "/battleships/game/:gameId/start-configuration/:username",
     },
   };
 
@@ -100,6 +102,10 @@ export class BattleshipsAPI {
     try {
       const gameState = await BattleshipsDynamoDbService.loadGame(
         req.params.gameId
+      );
+      await BattleshipsDynamoDbService.loadStartConfiguration(
+        req.params.gameId,
+        req.params.username
       );
       if (!gameState) {
         res.status(404).send(BattleshipsGameNotFound(req.params.gameId));
@@ -192,7 +198,8 @@ export class BattleshipsAPI {
     try {
       const startConfiguration =
         await BattleshipsDynamoDbService.loadStartConfiguration(
-          req.params.gameId
+          req.params.gameId,
+          req.params.username
         );
       if (!startConfiguration) {
         res
