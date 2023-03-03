@@ -1,5 +1,6 @@
 import {
   BattleshipsErrorResponse,
+  BattleshipsGameState,
   BattleshipsMove,
   BattleshipsUsername,
 } from "robrendellwebsite-common";
@@ -27,6 +28,12 @@ export const BattleshipsInvalidRequest = (
   msg?: string
 ): BattleshipsErrorResponse => ({
   errorMessage: msg || "You aren't allowed to do that.",
+});
+
+export const BattleshipsInvalidGameStateRequest = (
+  gameState: BattleshipsGameState
+): BattleshipsErrorResponse => ({
+  errorMessage: `You aren't allowed to do that in the current game state (${gameState}).`,
 });
 
 export const BattleshipsMissingArgsRequest = (

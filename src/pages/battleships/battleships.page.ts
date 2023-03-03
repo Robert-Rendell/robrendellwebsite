@@ -17,6 +17,7 @@ import {
 import {
   BattleshipsGameNotFound,
   BattleshipsInternalServerError,
+  BattleshipsInvalidGameStateRequest,
   BattleshipsInvalidMove,
   BattleshipsInvalidRequest,
   BattleshipsMissingArgsRequest,
@@ -63,6 +64,16 @@ export class BattleshipsAPI {
       }
       if (!req.body.move?.coords || !req.body.move?.datetime) {
         res.status(400).send(BattleshipsMissingArgsRequest("move"));
+        return;
+      }
+      if (
+        gameState.state === "created" ||
+        gameState.state === "configuring" ||
+        gameState.state === "finished"
+      ) {
+        res
+          .status(400)
+          .send(BattleshipsInvalidGameStateRequest(gameState.state));
         return;
       }
       const invalidReason = BattleshipsService.isInvalidMove(
@@ -292,14 +303,10 @@ export class BattleshipsAPI {
         res.status(404).send(BattleshipsGameNotFound(req.body.gameId));
         return;
       }
-      if (gameState.state !== "waiting_for_players") {
+      if (gameState.state !== "configuring") {
         res
           .status(400)
-          .send(
-            BattleshipsInvalidRequest(
-              `Not allowed in current game state: '${gameState.state}', must be 'waiting_for_players'`
-            )
-          );
+          .send(BattleshipsInvalidGameStateRequest(gameState.state));
       }
       const invalidReason = BattleshipsService.isStartConfigurationInvalid(
         req.body.configuration,

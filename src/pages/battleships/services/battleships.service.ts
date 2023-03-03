@@ -73,6 +73,7 @@ export class BattleshipsService {
   public static joinGame(game: BattleshipsGame, username: BattleshipsUsername) {
     const changed = BattleshipsService.cloneGame(game);
     changed.playerUsernames[1] = username;
+    changed.state = "configuring";
     return changed;
   }
 
