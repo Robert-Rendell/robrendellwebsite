@@ -181,6 +181,10 @@ export class BattleshipsAPI {
     res: Response<BattleshipsUser | BattleshipsErrorResponse>
   ): Promise<void> {
     try {
+      if (!req.body.username) {
+        res.status(400).send(BattleshipsMissingArgsRequest("username"));
+        return;
+      }
       await BattleshipsDynamoDbService.saveUser(req.body);
       res.status(200).send(req.body);
     } catch (e) {
