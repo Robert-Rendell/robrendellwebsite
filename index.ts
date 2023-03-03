@@ -23,6 +23,7 @@ import { OperationsDashboardPage } from "./src/operations/dashboard.page";
 import { AddWordOfDayEndpoint } from "./src/standalone/add-word-of-day.endpoint";
 import { AddDateInHistoryEndpoint } from "./src/standalone/add-date-in-history.endpoint";
 import { HealthEndpoint } from "./src/standalone/health.endpoint";
+import { BattleshipsAPI } from "./src/pages/battleships/battleships.page";
 
 config();
 // Heroku exposes PORT env var by default
@@ -67,6 +68,14 @@ app.get(NatureRouting.Arachnids, ArachnidsPage);
 app.get(NatureRouting.Insects, InsectsPage);
 app.get(NatureRouting.Lichen, LichenPage);
 app.get(NatureRouting.Fungi, FungiPage);
+
+app.post(BattleshipsAPI.Routes.POST.Create, BattleshipsAPI.postCreateGame);
+app.get(BattleshipsAPI.Routes.GET.GameState, BattleshipsAPI.getGameState);
+app.get(BattleshipsAPI.Routes.GET.StartConfiguration, BattleshipsAPI.getStartConfiguration);
+app.get(BattleshipsAPI.Routes.GET.User, BattleshipsAPI.getUser);
+app.post(BattleshipsAPI.Routes.POST.MakeMove, BattleshipsAPI.postMakeMove);
+app.post(BattleshipsAPI.Routes.POST.StartConfiguration, BattleshipsAPI.postStartConfiguration);
+app.post(BattleshipsAPI.Routes.POST.User, BattleshipsAPI.postUser);
 
 app.get(SudokuAPI.Routes.getSudoku, SudokuAPI.getSudoku);
 app.get(SudokuAPI.Routes.getSudokuLeaderboard, SudokuAPI.getSudokuLeaderboard);

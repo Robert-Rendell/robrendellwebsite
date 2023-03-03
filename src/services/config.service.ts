@@ -75,6 +75,18 @@ export class ConfigService {
     return ConfigService.GetEnvVar(EnvVar.SUDOKU_DYNAMO_DB_TABLE);
   }
 
+  static get BattleshipsGameDynamoDbTable(): string {
+    return ConfigService.GetEnvVar(EnvVar.BATTLESHIPS_GAME_DYNAMO_DB_TABLE);
+  }
+
+  static get BattleshipsStartDynamoDbTable(): string {
+    return ConfigService.GetEnvVar(EnvVar.BATTLESHIPS_START_DYNAMO_DB_TABLE);
+  }
+
+  static get BattleshipsUserDynamoDbTable(): string {
+    return ConfigService.GetEnvVar(EnvVar.BATTLESHIPS_USER_DYNAMO_DB_TABLE);
+  }
+
   static get HomePageDynamoDbTable(): string {
     return ConfigService.GetEnvVar(EnvVar.HOME_PAGE_DYNAMO_DB_TABLE);
   }

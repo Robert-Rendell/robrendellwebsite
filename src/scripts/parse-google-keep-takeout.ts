@@ -5,6 +5,7 @@ import {
   KeepNote,
   KeepNoteLabel,
 } from "./typing/parse-google-keep-takeout.models";
+import S3BucketService from "../services/s3-bucket.service";
 /**
  * Overview:
  * - Google Keep API is only for enterprise level users
@@ -17,7 +18,7 @@ import {
  * - Run:
  *   - $ npx ts-node ./src/scripts/parse-google-keep-takeout.ts
  */
-const executeS3UploadEnabled = false;
+const executeS3UploadEnabled = true;
 
 const targetGoogleKeepLabel = process.argv.slice(2)[0].replace(/_/g, " ");
 const targetS3Path =
@@ -110,139 +111,142 @@ const resolveAttachments = (opts: {
  * Script begins here:
  * --------------------------------------------------------------------------------
  */
-const targetDirContents = fs.readdirSync(targetDir);
-const takeoutFolders = targetDirContents.filter(
-  (filename: string) =>
-    filename.startsWith("takeout-") && !filename.endsWith(".zip")
-);
+(async () => {
+  await S3BucketService.deleteFolder(targetBucket, targetKeyPrefix);
+  const targetDirContents = fs.readdirSync(targetDir);
+  const takeoutFolders = targetDirContents.filter(
+    (filename: string) =>
+      filename.startsWith("takeout-") && !filename.endsWith(".zip")
+  );
 
-takeoutFolders.forEach((folder: string) => {
-  const takeoutFolderFilenames = fs.readdirSync(
-    path.join(targetDir, folder, "Takeout", "Keep")
-  );
-  const fileTypes = new Set();
-  const jsonNoteFilenames = filterNotesByLabel({
-    targetLabel,
-    takeoutFolderFilenames,
-    fileTypes,
-    folder,
-    fileExt: "json",
-  });
-  const keepNotes = jsonNoteFilenames.map((filename: string) =>
-    getKeepNote(folder, filename)
-  );
-  const attachments = jsonNoteFilenames.map((filename) =>
-    getKeepNote(folder, filename).attachments?.filter(
-      (attachment) => typeof attachment !== "undefined"
-    )
-  );
-  const allAttachmentFilePaths = attachments
-    .flat()
-    .map((a) => a?.filePath)
-    .filter((a) => typeof a !== "undefined");
-
-  console.log("------------", "folder: ", folder, "------------");
-  console.log("Files: ", takeoutFolderFilenames.length);
-  console.log("Attachments:", allAttachmentFilePaths.length);
-  console.log(targetLabel.name, "(json):", jsonNoteFilenames.length);
-  console.log("------------", fileTypes, "------------");
-  if (logFilenames) {
-    jsonNoteFilenames.forEach((flowerFilename: string) => {
-      console.log(flowerFilename);
+  takeoutFolders.forEach((folder: string) => {
+    const takeoutFolderFilenames = fs.readdirSync(
+      path.join(targetDir, folder, "Takeout", "Keep")
+    );
+    const fileTypes = new Set();
+    const jsonNoteFilenames = filterNotesByLabel({
+      targetLabel,
+      takeoutFolderFilenames,
+      fileTypes,
+      folder,
+      fileExt: "json",
     });
-  }
+    const keepNotes = jsonNoteFilenames.map((filename: string) =>
+      getKeepNote(folder, filename)
+    );
+    const attachments = jsonNoteFilenames.map((filename) =>
+      getKeepNote(folder, filename).attachments?.filter(
+        (attachment) => typeof attachment !== "undefined"
+      )
+    );
+    const allAttachmentFilePaths = attachments
+      .flat()
+      .map((a) => a?.filePath)
+      .filter((a) => typeof a !== "undefined");
 
-  const resolvedAttachmentFilenames = resolveAttachments({
-    takeoutFolders,
-    folder,
-    attachmentFilenames: allAttachmentFilePaths,
-  });
+    console.log("------------", "folder: ", folder, "------------");
+    console.log("Files: ", takeoutFolderFilenames.length);
+    console.log("Attachments:", allAttachmentFilePaths.length);
+    console.log(targetLabel.name, "(json):", jsonNoteFilenames.length);
+    console.log("------------", fileTypes, "------------");
+    if (logFilenames) {
+      jsonNoteFilenames.forEach((flowerFilename: string) => {
+        console.log(flowerFilename);
+      });
+    }
 
-  // keepNotes.forEach((note) => {
-  //   console.log(note.title, note.attachments);
-  // });
-  // resolvedAttachmentFilenames.forEach(({ resolvedFolder, filename }) => {
-  //   const matchedKeepNote = keepNotes.find((keepNote) =>
-  //     keepNote.attachments
-  //       ?.map((attachment) => attachment.filePath)
-  //       .includes(filename)
-  //   );
-  //   console.log(
-  //     matchedKeepNote?.filename,
-  //     filename,
-  //     matchedKeepNote ? "matched" : "",
-  //     matchedKeepNote?.title
-  //   );
-  // });
-
-  if (executeS3UploadEnabled) {
-    // Only works for one folder just now
-    const jsonPromises = jsonNoteFilenames.map((filename, index) => {
-      console.log("Uploading: ", folder, filename);
-      return s3
-        .upload({
-          Bucket: targetBucket,
-          Key: `${targetKeyPrefix}/${filename
-            .replace(".json", "")
-            .trim()
-            .replace("_", "")}/data.json`,
-          Body: getRawKeepNote(folder, filename),
-        })
-        .promise()
-        .then(() =>
-          console.log(
-            `Success! ${filename} uploaded... (${index + 1}/${
-              jsonNoteFilenames.length
-            })`
-          )
-        );
+    const resolvedAttachmentFilenames = resolveAttachments({
+      takeoutFolders,
+      folder,
+      attachmentFilenames: allAttachmentFilePaths,
     });
 
-    const imgPromises = resolvedAttachmentFilenames.map(
-      ({ resolvedFolder, filename }, index) => {
-        const matchedKeepNote = keepNotes.find((keepNote) =>
-          keepNote.attachments
-            ?.map((attachment) => attachment.filePath)
-            .includes(filename)
-        );
-        console.log(
-          "Uploading: ",
-          resolvedFolder,
-          filename,
-          "; Matched to",
-          matchedKeepNote?.title
-        );
+    // keepNotes.forEach((note) => {
+    //   console.log(note.title, note.attachments);
+    // });
+    // resolvedAttachmentFilenames.forEach(({ resolvedFolder, filename }) => {
+    //   const matchedKeepNote = keepNotes.find((keepNote) =>
+    //     keepNote.attachments
+    //       ?.map((attachment) => attachment.filePath)
+    //       .includes(filename)
+    //   );
+    //   console.log(
+    //     matchedKeepNote?.filename,
+    //     filename,
+    //     matchedKeepNote ? "matched" : "",
+    //     matchedKeepNote?.title
+    //   );
+    // });
+
+    if (executeS3UploadEnabled) {
+      // Only works for one folder just now
+      const jsonPromises = jsonNoteFilenames.map((filename, index) => {
+        console.log("Uploading: ", folder, filename);
         return s3
           .upload({
             Bucket: targetBucket,
-            Key: `${targetKeyPrefix}/${
-              matchedKeepNote?.title.trim().replace("_", "") || "UNMATCHED"
-            }/${filename}`,
-            Body: getRawKeepNote(resolvedFolder, filename),
+            Key: `${targetKeyPrefix}/${filename
+              .replace(".json", "")
+              .trim()
+              .replace("_", "")}/data.json`,
+            Body: getRawKeepNote(folder, filename),
           })
           .promise()
           .then(() =>
             console.log(
               `Success! ${filename} uploaded... (${index + 1}/${
-                resolvedAttachmentFilenames.length
+                jsonNoteFilenames.length
               })`
             )
           );
-      }
-    );
-
-    Promise.all([...jsonPromises, ...imgPromises])
-      .then(() => {
-        console.log(
-          "Success!",
-          jsonPromises.length + imgPromises.length,
-          "file(s) uploaded to S3"
-        );
-      })
-      .catch((error) => {
-        console.log("Error!", error);
       });
-  } else {
-    console.warn("executeS3UploadEnabled = false: SKIPPING");
-  }
-});
+
+      const imgPromises = resolvedAttachmentFilenames.map(
+        ({ resolvedFolder, filename }, index) => {
+          const matchedKeepNote = keepNotes.find((keepNote) =>
+            keepNote.attachments
+              ?.map((attachment) => attachment.filePath)
+              .includes(filename)
+          );
+          console.log(
+            "Uploading: ",
+            resolvedFolder,
+            filename,
+            "; Matched to",
+            matchedKeepNote?.title
+          );
+          return s3
+            .upload({
+              Bucket: targetBucket,
+              Key: `${targetKeyPrefix}/${
+                matchedKeepNote?.title.trim().replace("_", "") || "UNMATCHED"
+              }/${filename}`,
+              Body: getRawKeepNote(resolvedFolder, filename),
+            })
+            .promise()
+            .then(() =>
+              console.log(
+                `Success! ${filename} uploaded... (${index + 1}/${
+                  resolvedAttachmentFilenames.length
+                })`
+              )
+            );
+        }
+      );
+
+      Promise.all([...jsonPromises, ...imgPromises])
+        .then(() => {
+          console.log(
+            "Success!",
+            jsonPromises.length + imgPromises.length,
+            "file(s) uploaded to S3"
+          );
+        })
+        .catch((error) => {
+          console.log("Error!", error);
+        });
+    } else {
+      console.warn("executeS3UploadEnabled = false: SKIPPING");
+    }
+  });
+})();
