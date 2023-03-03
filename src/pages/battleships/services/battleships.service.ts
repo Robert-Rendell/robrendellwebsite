@@ -6,23 +6,36 @@ import {
 } from "robrendellwebsite-common";
 
 export class BattleshipsService {
-  public static isValidMove(
-    _move: BattleshipsMove,
+  public static isInvalidMove(
+    move: BattleshipsMove,
     username: BattleshipsUsername,
     game: BattleshipsGame
-  ): boolean {
-    return BattleshipsService.getPlayerTurn(game) === username;
+  ): string | false {
+    if (BattleshipsService.getPlayerTurn(game) === username) {
+      return "Not your turn";
+    }
+    if (
+      !game.playerMoves[game.turn].find(
+        (previousMove) =>
+          previousMove.coords.x === move.coords.x &&
+          previousMove.coords.y === move.coords.y
+      )
+    ) {
+      return "You have already taken that move";
+    }
+    return false;
   }
 
   public static makeMove(
     move: BattleshipsMove,
     game: BattleshipsGame
   ): BattleshipsGame {
-    game.playerMoves[game.turn].push(move);
+    const changedGame = JSON.parse(JSON.stringify(game));
+    changedGame.playerMoves[game.turn].push(move);
     if (!BattleshipsService.isHit(move)) {
-      game.turn = this.getOpponent(game);
+      changedGame.turn = this.getOpponent(game);
     }
-    return game;
+    return changedGame;
   }
 
   private static getPlayerTurn(game: BattleshipsGame): BattleshipsUsername {

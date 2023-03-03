@@ -69,6 +69,7 @@ app.get(NatureRouting.Insects, InsectsPage);
 app.get(NatureRouting.Lichen, LichenPage);
 app.get(NatureRouting.Fungi, FungiPage);
 
+app.post(BattleshipsAPI.Routes.POST.Create, BattleshipsAPI.postCreateGame);
 app.get(BattleshipsAPI.Routes.GET.GameState, BattleshipsAPI.getGameState);
 app.get(BattleshipsAPI.Routes.GET.StartConfiguration, BattleshipsAPI.getStartConfiguration);
 app.get(BattleshipsAPI.Routes.GET.User, BattleshipsAPI.getUser);

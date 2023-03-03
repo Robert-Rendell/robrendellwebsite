@@ -15,14 +15,20 @@ import {
 import {
   BattleshipsGameNotFound,
   BattleshipsInternalServerError,
+  BattleshipsInvalidMove,
+  BattleshipsInvalidRequest,
+  BattleshipsMissingArgsRequest,
   BattleshipsStartConfigurationNotFound,
+  BattleshipsUserNotFound,
 } from "./errors";
+import { BattleshipGameState } from "./game-state.enum";
 import BattleshipsDynamoDbService from "./services/battleships-dynamodb.service";
 import { BattleshipsService } from "./services/battleships.service";
 
 export class BattleshipsAPI {
   static Routes = {
     POST: {
+      Create: "/battleships/game/new",
       MakeMove: "/battleships/game/:gameId/move",
       User: "/battleships/user/:username",
       StartConfiguration: "/battleships/game/:gameId/start-configuration",
@@ -51,14 +57,23 @@ export class BattleshipsAPI {
         res.status(404).send(BattleshipsGameNotFound(req.params.gameId));
         return;
       }
-      if (
-        !BattleshipsService.isValidMove(
-          req.body.move,
-          req.body.username,
-          gameState
-        )
-      ) {
-        res.status(400).send(BattleshipsGameNotFound(req.params.gameId));
+      if (!req.body.username) {
+        res.status(400).send(BattleshipsMissingArgsRequest("username"));
+        return;
+      }
+      if (!req.body.move?.coords || !req.body.move?.datetime) {
+        res.status(400).send(BattleshipsMissingArgsRequest("move"));
+        return;
+      }
+      const invalidReason = BattleshipsService.isInvalidMove(
+        req.body.move,
+        req.body.username,
+        gameState
+      );
+      if (invalidReason) {
+        res
+          .status(400)
+          .send(BattleshipsInvalidMove(req.body.move, invalidReason));
         return;
       }
 
@@ -66,6 +81,8 @@ export class BattleshipsAPI {
         req.body.move,
         gameState
       );
+
+      await BattleshipsDynamoDbService.saveGame(newGameState);
 
       res.status(200).send(newGameState);
     } catch (e) {
@@ -97,6 +114,37 @@ export class BattleshipsAPI {
     }
   }
 
+  static async postCreateGame(
+    req: Request<
+      unknown,
+      unknown,
+      Pick<BattleshipsGame, "gameId" | "boardDimensions"> &
+        Pick<BattleshipsUser, "username">
+    >,
+    res: Response<BattleshipsGame | BattleshipsErrorResponse>
+  ): Promise<void> {
+    try {
+      if (req.body.gameId) {
+        res.status(400).send(BattleshipsInvalidRequest());
+      }
+      const newGame = await BattleshipsDynamoDbService.saveGame({
+        boardDimensions: req.body.boardDimensions || [10, 10],
+        playerBoards: [[], []],
+        playerUsernames: [req.body.username, ""],
+        playerMoves: [[], []],
+        state: BattleshipGameState.Created,
+        turn: 0,
+        gameId: "",
+      });
+      res.status(200).send(newGame);
+    } catch (e) {
+      console.error(e);
+      res
+        .status(500)
+        .send(BattleshipsInternalServerError((e as Error).message));
+    }
+  }
+
   static async getUser(
     req: Request<GetUserRequest>,
     res: Response<BattleshipsUser | BattleshipsErrorResponse>
@@ -106,7 +154,7 @@ export class BattleshipsAPI {
         req.params.username
       );
       if (!user) {
-        res.status(404).send(BattleshipsGameNotFound(req.params.username));
+        res.status(404).send(BattleshipsUserNotFound(req.params.username));
         return;
       }
       res.status(200).send(user);

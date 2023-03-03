@@ -20,7 +20,6 @@
     ],
     "ignorePatterns": ["**/uni-data-291121/*", "**/google-drive.ts"],
     "rules": {
-        "no-param-reassign": "off",
         "consistent-return": "off",
         "function-paren-newline": "off",
         "implicit-arrow-linebreak": "off",

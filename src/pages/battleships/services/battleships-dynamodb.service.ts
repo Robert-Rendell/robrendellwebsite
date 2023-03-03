@@ -1,4 +1,5 @@
 import AWS from "aws-sdk";
+import { v4 as uuidv4 } from "uuid";
 import {
   BattleshipsGame,
   BattleshipsStartConfiguration,
@@ -18,9 +19,14 @@ export default class BattleshipsDynamoDbService extends DynamoDBService {
     await super.save(ConfigService.BattleshipsStartDynamoDbTable, marshalled);
   }
 
-  public static async saveGame(game: BattleshipsGame): Promise<void> {
-    const marshalled = AWS.DynamoDB.Converter.marshall(game);
+  public static async saveGame(game: BattleshipsGame) {
+    const newGame: BattleshipsGame = {
+      ...game,
+      gameId: game.gameId || uuidv4(),
+    };
+    const marshalled = AWS.DynamoDB.Converter.marshall(newGame);
     await super.save(ConfigService.BattleshipsGameDynamoDbTable, marshalled);
+    return newGame;
   }
 
   public static async saveUser(user: BattleshipsUser): Promise<void> {
@@ -44,7 +50,7 @@ export default class BattleshipsDynamoDbService extends DynamoDBService {
     key: string
   ): Promise<BattleshipsGame | undefined> {
     const attributeMap = await super.load(
-      ConfigService.BattleshipsStartDynamoDbTable,
+      ConfigService.BattleshipsGameDynamoDbTable,
       BattleshipsDynamoDbService.PartitionKey,
       key
     );
