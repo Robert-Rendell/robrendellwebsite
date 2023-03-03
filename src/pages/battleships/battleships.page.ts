@@ -137,6 +137,7 @@ export class BattleshipsAPI {
     try {
       if (req.body.gameId) {
         res.status(400).send(BattleshipsInvalidRequest());
+        return;
       }
       const newGame = await BattleshipsDynamoDbService.saveGame({
         boardDimensions: req.body.boardDimensions || [10, 10],
@@ -235,6 +236,7 @@ export class BattleshipsAPI {
       const user = await BattleshipsDynamoDbService.loadUser(req.body.username);
       if (user) {
         res.status(401).send(BattleshipsInvalidRequest());
+        return;
       }
       await BattleshipsDynamoDbService.saveUser(req.body);
       res.status(200).send(req.body);
@@ -307,6 +309,7 @@ export class BattleshipsAPI {
         res
           .status(400)
           .send(BattleshipsInvalidGameStateRequest(gameState.state));
+        return;
       }
       const invalidReason = BattleshipsService.isStartConfigurationInvalid(
         req.body.configuration,
