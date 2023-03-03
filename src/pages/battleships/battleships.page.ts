@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+  BattleshipsBoard,
   BattleshipsErrorResponse,
   BattleshipsGame,
   BattleshipsStartConfiguration,
@@ -21,7 +22,6 @@ import {
   BattleshipsStartConfigurationNotFound,
   BattleshipsUserNotFound,
 } from "./errors";
-import { BattleshipGameState } from "./game-state.enum";
 import BattleshipsDynamoDbService from "./services/battleships-dynamodb.service";
 import { BattleshipsService } from "./services/battleships.service";
 
@@ -132,7 +132,7 @@ export class BattleshipsAPI {
         playerBoards: [[], []],
         playerUsernames: [req.body.username, ""],
         playerMoves: [[], []],
-        state: BattleshipGameState.Created,
+        state: "created",
         turn: 0,
         gameId: "",
       });
@@ -215,11 +215,23 @@ export class BattleshipsAPI {
       unknown,
       PostStartConfigurationRequest
     >,
-    res: Response<BattleshipsStartConfiguration | BattleshipsErrorResponse>
+    res: Response<BattleshipsBoard | BattleshipsErrorResponse>
   ): Promise<void> {
     try {
+      if (!req.body.configuration) {
+        res.status(400).send(BattleshipsMissingArgsRequest("configuration"));
+        return;
+      }
+      if (!req.body.gameId) {
+        res.status(400).send(BattleshipsMissingArgsRequest("gameId"));
+        return;
+      }
+      if (!req.body.username) {
+        res.status(400).send(BattleshipsMissingArgsRequest("username"));
+        return;
+      }
       await BattleshipsDynamoDbService.saveStartConfiguration(req.body);
-      res.status(200).send(req.body);
+      res.status(200).send(req.body.configuration);
     } catch (e) {
       console.error(e);
       res

@@ -1,8 +1,8 @@
 import {
   BattleshipsGame,
-  BattleshipsStartConfiguration,
   BattleshipsUsername,
   BattleshipsMove,
+  BattleshipsBoard,
 } from "robrendellwebsite-common";
 
 export class BattleshipsService {
@@ -22,6 +22,14 @@ export class BattleshipsService {
       )
     ) {
       return "You have already taken that move";
+    }
+
+    if (!username) {
+      return "User can't be empty";
+    }
+
+    if (!game.playerUsernames.includes(username)) {
+      return `User '${username}' not currently playing this game`;
     }
     return false;
   }
@@ -51,7 +59,7 @@ export class BattleshipsService {
   }
 
   public static isStartConfigurationValid(
-    startConfiguration: BattleshipsStartConfiguration
+    startConfiguration: BattleshipsBoard
   ): boolean {
     return true;
   }
