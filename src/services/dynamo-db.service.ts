@@ -32,7 +32,9 @@ export default class DynamoDBService {
   public static async load(
     tableName: string,
     primaryKeyName: string,
-    key: string
+    key: string,
+    sortKeyName?: string,
+    sortKey?: string
   ): Promise<AttributeMap | undefined> {
     console.log(
       `LOADING FROM DYNAMODB: ${tableName}, ${primaryKeyName}, ${key}`
@@ -43,6 +45,9 @@ export default class DynamoDBService {
         [primaryKeyName]: { S: key },
       },
     };
+    if (sortKey && sortKeyName) {
+      params.Key[sortKeyName] = { S: sortKey };
+    }
     console.log(JSON.stringify(params));
     const response = await DynamoDBService.ddb.getItem(params).promise();
     console.log(response);
