@@ -41,6 +41,12 @@ export class BattleshipsService {
     return changedGame;
   }
 
+  public static setPlayersConfigurationComplete(game: BattleshipsGame) {
+    const changedGame = BattleshipsService.cloneGame(game);
+    changedGame.state = "playing";
+    return changedGame;
+  }
+
   private static cloneGame(game: BattleshipsGame): BattleshipsGame {
     return JSON.parse(JSON.stringify(game));
   }
@@ -51,6 +57,13 @@ export class BattleshipsService {
 
   private static getOpponent(game: BattleshipsGame): 0 | 1 {
     return game.turn === 1 ? 0 : 1;
+  }
+
+  public static getOpponentUsername(
+    game: BattleshipsGame,
+    username: BattleshipsUsername
+  ) {
+    return game.playerUsernames.filter((n) => n !== username)[0];
   }
 
   private static isHit(move: BattleshipsMove): boolean {
@@ -79,13 +92,17 @@ export class BattleshipsService {
 
   public static isStartConfigurationInvalid(
     startConfiguration: BattleshipsBoard,
-    game: BattleshipsGame
+    game: BattleshipsGame,
+    username: BattleshipsUsername
   ): string | false {
     if (
       startConfiguration.length !== game.boardDimensions[0] ||
       startConfiguration.every((col) => col.length !== game.boardDimensions[1])
     ) {
       return `Board dimensions don't match the game (${game.boardDimensions})`;
+    }
+    if (!game.playerUsernames.includes(username)) {
+      return `User '${username}' not currently playing this game`;
     }
     return false;
   }
