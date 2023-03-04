@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+  BattleshipsAPIRoutes,
   BattleshipsBoard,
   BattleshipsErrorResponse,
   BattleshipsGame,
@@ -7,12 +8,19 @@ import {
   BattleshipsStartConfiguration,
   BattleshipsUser,
   BattleshipsUsername,
+  GetBattleshipsGameResponse,
+  GetBattleshipsStartConfigurationResponse,
+  GetBattleshipsUserResponse,
   GetGameStateRequest,
   GetStartConfigurationRequest,
   GetUserRequest,
+  PostBattleshipsCreateGameResponse,
+  PostBattleshipsJoinGameResponse,
   PostBattleshipsMakeMoveRequest,
   PostBattleshipsMakeMoveResponse,
+  PostBattleshipsStartConfigurationResponse,
   PostBattleshipsUserRequest,
+  PostBattleshipsUserResponse,
   PostStartConfigurationRequest,
 } from "robrendellwebsite-common";
 import {
@@ -29,7 +37,7 @@ import BattleshipsDynamoDbService from "./services/battleships-dynamodb.service"
 import { BattleshipsService } from "./services/battleships.service";
 
 export class BattleshipsAPI {
-  static Routes = {
+  static Routes: BattleshipsAPIRoutes = {
     POST: {
       Join: "/battleships/game/:gameId/join",
       Create: "/battleships/game/new",
@@ -107,7 +115,7 @@ export class BattleshipsAPI {
 
   static async getGameState(
     req: Request<GetGameStateRequest>,
-    res: Response<BattleshipsGame | BattleshipsErrorResponse>
+    res: Response<GetBattleshipsGameResponse>
   ): Promise<void> {
     try {
       const gameState = await BattleshipsDynamoDbService.loadGame(
@@ -133,7 +141,7 @@ export class BattleshipsAPI {
       Pick<BattleshipsGame, "gameId" | "boardDimensions"> &
         Pick<BattleshipsUser, "username">
     >,
-    res: Response<BattleshipsGame | BattleshipsErrorResponse>
+    res: Response<PostBattleshipsCreateGameResponse>
   ): Promise<void> {
     try {
       if (req.body.gameId) {
@@ -164,7 +172,7 @@ export class BattleshipsAPI {
       unknown,
       Pick<BattleshipsGame, "gameId"> & Pick<BattleshipsUser, "username">
     >,
-    res: Response<BattleshipsGame | BattleshipsErrorResponse>
+    res: Response<PostBattleshipsJoinGameResponse>
   ): Promise<void> {
     try {
       if (!req.body.gameId) {
@@ -206,7 +214,7 @@ export class BattleshipsAPI {
 
   static async getUser(
     req: Request<GetUserRequest>,
-    res: Response<BattleshipsUser | BattleshipsErrorResponse>
+    res: Response<GetBattleshipsUserResponse>
   ): Promise<void> {
     try {
       const user = await BattleshipsDynamoDbService.loadUser(
@@ -227,7 +235,7 @@ export class BattleshipsAPI {
 
   static async postUser(
     req: Request<unknown, unknown, PostBattleshipsUserRequest>,
-    res: Response<BattleshipsUser | BattleshipsErrorResponse>
+    res: Response<PostBattleshipsUserResponse>
   ): Promise<void> {
     try {
       if (!req.body.username) {
@@ -251,7 +259,7 @@ export class BattleshipsAPI {
 
   static async getStartConfiguration(
     req: Request<GetStartConfigurationRequest>,
-    res: Response<BattleshipsStartConfiguration | BattleshipsErrorResponse>
+    res: Response<GetBattleshipsStartConfigurationResponse>
   ): Promise<void> {
     try {
       if (!req.params.gameId) {
@@ -284,7 +292,7 @@ export class BattleshipsAPI {
 
   static async postStartConfiguration(
     req: Request<unknown, unknown, PostStartConfigurationRequest>,
-    res: Response<BattleshipsBoard | BattleshipsErrorResponse>
+    res: Response<PostBattleshipsStartConfigurationResponse>
   ): Promise<void> {
     try {
       if (!req.body.configuration) {
@@ -333,7 +341,7 @@ export class BattleshipsAPI {
         req.body.gameId,
         req.body.username
       );
-      res.status(200).send(req.body.configuration);
+      res.status(200).send(req.body);
     } catch (e) {
       console.error(e);
       res
