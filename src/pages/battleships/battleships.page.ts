@@ -1,12 +1,8 @@
 import { Request, Response } from "express";
 import {
   BattleshipsAPIRoutes,
-  BattleshipsBoard,
-  BattleshipsErrorResponse,
   BattleshipsGame,
   BattleshipsGameId,
-  BattleshipsStartConfiguration,
-  BattleshipsUser,
   BattleshipsUsername,
   GetBattleshipsGameResponse,
   GetBattleshipsStartConfigurationResponse,
@@ -15,6 +11,7 @@ import {
   GetStartConfigurationRequest,
   GetUserRequest,
   PostBattleshipsCreateGameResponse,
+  PostBattleshipsJoinGameRequest,
   PostBattleshipsJoinGameResponse,
   PostBattleshipsMakeMoveRequest,
   PostBattleshipsMakeMoveResponse,
@@ -22,6 +19,7 @@ import {
   PostBattleshipsUserRequest,
   PostBattleshipsUserResponse,
   PostStartConfigurationRequest,
+  PostBattleshipsCreateGameRequest
 } from "robrendellwebsite-common";
 import {
   BattleshipsGameNotFound,
@@ -138,8 +136,7 @@ export class BattleshipsAPI {
     req: Request<
       unknown,
       unknown,
-      Pick<BattleshipsGame, "gameId" | "boardDimensions"> &
-        Pick<BattleshipsUser, "username">
+      PostBattleshipsCreateGameRequest
     >,
     res: Response<PostBattleshipsCreateGameResponse>
   ): Promise<void> {
@@ -170,7 +167,7 @@ export class BattleshipsAPI {
     req: Request<
       unknown,
       unknown,
-      Pick<BattleshipsGame, "gameId"> & Pick<BattleshipsUser, "username">
+      PostBattleshipsJoinGameRequest
     >,
     res: Response<PostBattleshipsJoinGameResponse>
   ): Promise<void> {
