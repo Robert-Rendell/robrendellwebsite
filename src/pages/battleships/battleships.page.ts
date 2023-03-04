@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+  BattleshipsAPIRoutes,
   BattleshipsBoard,
   BattleshipsErrorResponse,
   BattleshipsGame,
@@ -29,7 +30,7 @@ import BattleshipsDynamoDbService from "./services/battleships-dynamodb.service"
 import { BattleshipsService } from "./services/battleships.service";
 
 export class BattleshipsAPI {
-  static Routes = {
+  static Routes: BattleshipsAPIRoutes = {
     POST: {
       Join: "/battleships/game/:gameId/join",
       Create: "/battleships/game/new",
