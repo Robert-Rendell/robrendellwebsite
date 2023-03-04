@@ -3,6 +3,7 @@ import {
   BattleshipsBoard,
   BattleshipsErrorResponse,
   BattleshipsGame,
+  BattleshipsGameId,
   BattleshipsStartConfiguration,
   BattleshipsUser,
   BattleshipsUsername,
@@ -313,7 +314,8 @@ export class BattleshipsAPI {
       }
       const invalidReason = BattleshipsService.isStartConfigurationInvalid(
         req.body.configuration,
-        gameState
+        gameState,
+        req.body.username
       );
       if (invalidReason) {
         res
@@ -326,6 +328,11 @@ export class BattleshipsAPI {
         return;
       }
       await BattleshipsDynamoDbService.saveStartConfiguration(req.body);
+      BattleshipsAPI.processStartConfiguration(
+        gameState,
+        req.body.gameId,
+        req.body.username
+      );
       res.status(200).send(req.body.configuration);
     } catch (e) {
       console.error(e);
@@ -333,5 +340,22 @@ export class BattleshipsAPI {
         .status(500)
         .send(BattleshipsInternalServerError((e as Error).message));
     }
+  }
+
+  private static processStartConfiguration(
+    gameState: BattleshipsGame,
+    gameId: BattleshipsGameId,
+    username: BattleshipsUsername
+  ) {
+    BattleshipsDynamoDbService.loadStartConfiguration(
+      gameId,
+      BattleshipsService.getOpponentUsername(gameState, username)
+    ).then((opponentConfiguration) => {
+      if (opponentConfiguration) {
+        const newState =
+          BattleshipsService.setPlayersConfigurationComplete(gameState);
+        BattleshipsDynamoDbService.saveGame(newState);
+      }
+    });
   }
 }
