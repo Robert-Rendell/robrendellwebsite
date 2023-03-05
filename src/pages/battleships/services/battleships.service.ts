@@ -3,6 +3,7 @@ import {
   BattleshipsUsername,
   BattleshipsMove,
   BattleshipsBoard,
+  BattleshipsStartConfiguration,
 } from "robrendellwebsite-common";
 
 export class BattleshipsService {
@@ -31,12 +32,15 @@ export class BattleshipsService {
 
   public static makeMove(
     move: BattleshipsMove,
-    game: BattleshipsGame
+    game: BattleshipsGame,
+    opponentShips: BattleshipsStartConfiguration
   ): BattleshipsGame {
+    const [x, y] = move.coords;
     const changedGame = BattleshipsService.cloneGame(game);
     changedGame.playerMoves[game.turn].push(move);
-    if (!BattleshipsService.isHit(move)) {
+    if (!BattleshipsService.isHit(move, opponentShips)) {
       changedGame.turn = this.getOpponent(game);
+      changedGame.playerBoards[this.getOpponent(game)][x][y] = 1;
     }
     return changedGame;
   }
@@ -66,8 +70,12 @@ export class BattleshipsService {
     return game.playerUsernames.filter((n) => n !== username)[0];
   }
 
-  private static isHit(move: BattleshipsMove): boolean {
-    return false;
+  private static isHit(
+    move: BattleshipsMove,
+    opponentShips: BattleshipsStartConfiguration
+  ): boolean {
+    const [x, y] = move.coords;
+    return Boolean(opponentShips.configuration[x][y]);
   }
 
   public static canJoinGame(
@@ -114,5 +122,19 @@ export class BattleshipsService {
       return `User '${username}' not currently playing this game`;
     }
     return false;
+  }
+
+  public static createEmpty2DBoard(width: number, height: number): number[][] {
+    return BattleshipsService.create1DArray(width).map(() =>
+      BattleshipsService.create1DArray(height, 0)
+    );
+  }
+
+  private static create1DArray(x: number, defaultVal?: number): number[] {
+    const array1d = Array.from(Array(x));
+    if (typeof defaultVal !== "undefined") {
+      return array1d.map(() => defaultVal);
+    }
+    return array1d;
   }
 }

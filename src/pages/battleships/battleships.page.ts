@@ -95,9 +95,26 @@ export class BattleshipsAPI {
         return;
       }
 
+      const opponentShips =
+        await BattleshipsDynamoDbService.loadStartConfiguration(
+          req.body.gameId,
+          BattleshipsService.getOpponentUsername(gameState, req.body.username)
+        );
+      if (!opponentShips) {
+        res
+          .status(400)
+          .send(
+            BattleshipsInvalidMove(
+              req.body.move,
+              "Opponent start configuration is missing."
+            )
+          );
+        return;
+      }
       const newGameState = BattleshipsService.makeMove(
         req.body.move,
-        gameState
+        gameState,
+        opponentShips
       );
 
       await BattleshipsDynamoDbService.saveGame(newGameState);
@@ -141,9 +158,13 @@ export class BattleshipsAPI {
         res.status(400).send(BattleshipsInvalidRequest());
         return;
       }
+      const [width, height] = req.body.boardDimensions;
       const newGame = await BattleshipsDynamoDbService.saveGame({
-        boardDimensions: req.body.boardDimensions || [10, 10],
-        playerBoards: [[], []],
+        boardDimensions: [width, height],
+        playerBoards: [
+          BattleshipsService.createEmpty2DBoard(width, height),
+          BattleshipsService.createEmpty2DBoard(width, height),
+        ],
         playerUsernames: [req.body.username, ""],
         playerMoves: [[], []],
         state: "created",
