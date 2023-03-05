@@ -19,7 +19,7 @@ import {
   PostBattleshipsUserRequest,
   PostBattleshipsUserResponse,
   PostStartConfigurationRequest,
-  PostBattleshipsCreateGameRequest
+  PostBattleshipsCreateGameRequest,
 } from "robrendellwebsite-common";
 import {
   BattleshipsGameNotFound,
@@ -133,11 +133,7 @@ export class BattleshipsAPI {
   }
 
   static async postCreateGame(
-    req: Request<
-      unknown,
-      unknown,
-      PostBattleshipsCreateGameRequest
-    >,
+    req: Request<unknown, unknown, PostBattleshipsCreateGameRequest>,
     res: Response<PostBattleshipsCreateGameResponse>
   ): Promise<void> {
     try {
@@ -164,11 +160,7 @@ export class BattleshipsAPI {
   }
 
   static async postJoinGame(
-    req: Request<
-      unknown,
-      unknown,
-      PostBattleshipsJoinGameRequest
-    >,
+    req: Request<unknown, unknown, PostBattleshipsJoinGameRequest>,
     res: Response<PostBattleshipsJoinGameResponse>
   ): Promise<void> {
     try {
