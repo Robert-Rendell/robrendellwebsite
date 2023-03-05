@@ -19,7 +19,7 @@ import {
   PostBattleshipsUserRequest,
   PostBattleshipsUserResponse,
   PostStartConfigurationRequest,
-  PostBattleshipsCreateGameRequest
+  PostBattleshipsCreateGameRequest,
 } from "robrendellwebsite-common";
 import {
   BattleshipsGameNotFound,
@@ -62,7 +62,7 @@ export class BattleshipsAPI {
       );
 
       if (!gameState) {
-        res.status(404).send(BattleshipsGameNotFound(req.body.gameId));
+        res.status(400).send(BattleshipsGameNotFound(req.body.gameId));
         return;
       }
       if (!req.body.username) {
@@ -120,7 +120,7 @@ export class BattleshipsAPI {
         req.params.gameId
       );
       if (!gameState) {
-        res.status(404).send(BattleshipsGameNotFound(req.params.gameId));
+        res.status(400).send(BattleshipsGameNotFound(req.params.gameId));
         return;
       }
       res.status(200).send(gameState);
@@ -133,11 +133,7 @@ export class BattleshipsAPI {
   }
 
   static async postCreateGame(
-    req: Request<
-      unknown,
-      unknown,
-      PostBattleshipsCreateGameRequest
-    >,
+    req: Request<unknown, unknown, PostBattleshipsCreateGameRequest>,
     res: Response<PostBattleshipsCreateGameResponse>
   ): Promise<void> {
     try {
@@ -164,11 +160,7 @@ export class BattleshipsAPI {
   }
 
   static async postJoinGame(
-    req: Request<
-      unknown,
-      unknown,
-      PostBattleshipsJoinGameRequest
-    >,
+    req: Request<unknown, unknown, PostBattleshipsJoinGameRequest>,
     res: Response<PostBattleshipsJoinGameResponse>
   ): Promise<void> {
     try {
@@ -184,7 +176,7 @@ export class BattleshipsAPI {
         req.body.gameId
       );
       if (!gameState) {
-        res.status(404).send(BattleshipsGameNotFound(req.body.gameId));
+        res.status(400).send(BattleshipsGameNotFound(req.body.gameId));
         return;
       }
       const joinable = BattleshipsService.canJoinGame(
@@ -218,7 +210,7 @@ export class BattleshipsAPI {
         req.params.username
       );
       if (!user) {
-        res.status(404).send(BattleshipsUserNotFound(req.params.username));
+        res.status(400).send(BattleshipsUserNotFound(req.params.username));
         return;
       }
       res.status(200).send(user);
@@ -274,7 +266,7 @@ export class BattleshipsAPI {
         );
       if (!startConfiguration) {
         res
-          .status(404)
+          .status(400)
           .send(BattleshipsStartConfigurationNotFound(req.params.gameId));
         return;
       }
