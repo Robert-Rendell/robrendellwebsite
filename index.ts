@@ -40,7 +40,7 @@ app.use(express.json());
 app.enable("trust proxy");
 const limiter = RateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 10000, // limit each IP to 100 requests per windowMs
+  max: 10000, // limit each IP to 10000 requests per windowMs
 });
 
 // apply to all requests
