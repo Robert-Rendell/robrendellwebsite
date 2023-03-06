@@ -82,8 +82,8 @@ export class BattleshipsService {
     game: BattleshipsGame,
     username: BattleshipsUsername
   ): true | string {
-    if (game.playerUsernames[0] === username) {
-      return "You cannot play against yourself.";
+    if (!username) {
+      return "No username was given";
     }
     if (
       username &&
@@ -91,6 +91,12 @@ export class BattleshipsService {
         game.playerUsernames[1] === username)
     ) {
       return true;
+    }
+    if (game.playerUsernames[0] === game.playerUsernames[1]) {
+      return true;
+    }
+    if (game.playerUsernames[0] === username) {
+      return "You cannot play against yourself.";
     }
     if (game.playerUsernames[1]) {
       return "The game is full.";
@@ -100,8 +106,10 @@ export class BattleshipsService {
 
   public static joinGame(game: BattleshipsGame, username: BattleshipsUsername) {
     const changed = BattleshipsService.cloneGame(game);
-    changed.playerUsernames[1] = username;
-    if (game.state === "created") {
+    if (changed.playerUsernames[0] !== username) {
+      changed.playerUsernames[1] = username;
+    }
+    if (game.state === "created" && changed.playerUsernames[1]) {
       changed.state = "configuring";
     }
     return changed;
