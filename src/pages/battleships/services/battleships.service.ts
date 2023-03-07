@@ -40,6 +40,8 @@ export class BattleshipsService {
     changedGame.playerMoves[game.turn].push(move);
     if (!BattleshipsService.isHit(move, opponentShips)) {
       changedGame.turn = this.getOpponent(game);
+      changedGame.playerBoards[this.getOpponent(game)][x][y] = 0;
+    } else {
       changedGame.playerBoards[this.getOpponent(game)][x][y] = 1;
     }
     return changedGame;
@@ -134,7 +136,7 @@ export class BattleshipsService {
 
   public static createEmpty2DBoard(width: number, height: number): number[][] {
     return BattleshipsService.create1DArray(width).map(() =>
-      BattleshipsService.create1DArray(height, 0)
+      BattleshipsService.create1DArray(height, -1)
     );
   }
 
