@@ -58,7 +58,8 @@ export const BattleshipsInternalServerError = (
 });
 
 export const BattleshipsStartConfigurationNotFound = (
-  gameId: string
+  gameId: string,
+  username: string
 ): BattleshipsErrorResponse => ({
-  errorMessage: `Battleships start configuration not found: ${gameId}`,
+  errorMessage: `Battleships start configuration for ${username} not found: ${gameId}`,
 });

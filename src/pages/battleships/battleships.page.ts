@@ -288,7 +288,12 @@ export class BattleshipsAPI {
       if (!startConfiguration) {
         res
           .status(400)
-          .send(BattleshipsStartConfigurationNotFound(req.params.gameId));
+          .send(
+            BattleshipsStartConfigurationNotFound(
+              req.params.gameId,
+              req.params.username
+            )
+          );
         return;
       }
       res.status(200).send(startConfiguration);
