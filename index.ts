@@ -24,6 +24,7 @@ import { AddWordOfDayEndpoint } from "./src/standalone/add-word-of-day.endpoint"
 import { AddDateInHistoryEndpoint } from "./src/standalone/add-date-in-history.endpoint";
 import { HealthEndpoint } from "./src/standalone/health.endpoint";
 import { BattleshipsAPI } from "./src/pages/battleships/battleships.page";
+import { MidjourneyCreationsPage } from "./src/pages/misc/midjourney.page";
 
 config();
 // Heroku exposes PORT env var by default
@@ -62,6 +63,8 @@ app.get("/health", HealthEndpoint);
 app.post("/operations", OperationsDashboardPage);
 app.post("/operations/word-of-the-day/add", AddWordOfDayEndpoint);
 app.post("/operations/dates-in-history/add", AddDateInHistoryEndpoint);
+
+app.get("/misc/midjourney-creations", MidjourneyCreationsPage);
 
 app.get(NatureRouting.WildFlowers, WildFlowersPage);
 app.get(NatureRouting.Arachnids, ArachnidsPage);
