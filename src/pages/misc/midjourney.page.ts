@@ -3,11 +3,6 @@ import { Request, Response } from "express";
 import { ConfigService } from "../../services/config.service";
 import S3BucketService from "../../services/s3-bucket.service";
 
-/**
- * https://<robrendellwebsite-public>.s3.eu-west-1.amazonaws.com/images/midjourney/shiva-archetypes_halos_magnetism_waves_two_people_with_their_he_4e7c78b5-e962-4e96-b26e-ac6f980ca211.png
- * @param req
- * @param res
- */
 export async function MidjourneyCreationsPage(
   req: Request,
   res: Response
