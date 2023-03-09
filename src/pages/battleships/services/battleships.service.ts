@@ -7,6 +7,33 @@ import {
 } from "robrendellwebsite-common";
 
 export class BattleshipsService {
+  public static setWinner(
+    game: BattleshipsGame,
+    username: BattleshipsUsername
+  ) {
+    const newGame = BattleshipsService.cloneGame(game);
+    newGame.state = "finished";
+    (newGame as any).winner = username;
+    return newGame;
+  }
+  public static isFleetSunk(
+    game: BattleshipsGame,
+    opponentShips: BattleshipsStartConfiguration
+  ): boolean {
+    for (let x = 0; x < opponentShips.configuration.length; x += 1) {
+      for (let y = 0; y < opponentShips.configuration[x].length; y += 1) {
+        const cell = opponentShips.configuration[x][y];
+        if (cell) {
+          const isShipCellSunk =
+            game.playerBoards[BattleshipsService.getOpponent(game)][x][y] !== 1;
+          if (isShipCellSunk) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
   public static isInvalidMove(
     move: BattleshipsMove,
     username: BattleshipsUsername,
