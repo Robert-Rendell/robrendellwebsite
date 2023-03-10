@@ -111,11 +111,21 @@ export class BattleshipsAPI {
           );
         return;
       }
-      const newGameState = BattleshipsService.makeMove(
+      let newGameState = BattleshipsService.makeMove(
         req.body.move,
         gameState,
         opponentShips
       );
+      const opponentFleetSunk = BattleshipsService.isFleetSunk(
+        gameState,
+        opponentShips
+      );
+      if (opponentFleetSunk) {
+        newGameState = BattleshipsService.setWinner(
+          newGameState,
+          req.body.username
+        );
+      }
 
       await BattleshipsDynamoDbService.saveGame(newGameState);
 

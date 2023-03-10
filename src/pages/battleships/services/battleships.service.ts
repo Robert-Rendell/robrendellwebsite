@@ -6,6 +6,16 @@ import {
   BattleshipsStartConfiguration,
 } from "robrendellwebsite-common";
 
+// Need these two here, otherwise jest fails for non standard JavaScript
+export type BattleshipsBoardType = 1 | 0 | -1;
+export const BattleshipsBoardState: Record<
+  "Hit" | "Miss" | "Empty",
+  BattleshipsBoardType
+> = {
+  Hit: 1,
+  Miss: 0,
+  Empty: -1,
+};
 export class BattleshipsService {
   public static setWinner(
     game: BattleshipsGame,
@@ -13,7 +23,7 @@ export class BattleshipsService {
   ) {
     const newGame = BattleshipsService.cloneGame(game);
     newGame.state = "finished";
-    (newGame as any).winner = username;
+    newGame.winner = username;
     return newGame;
   }
   public static isFleetSunk(
@@ -25,7 +35,8 @@ export class BattleshipsService {
         const cell = opponentShips.configuration[x][y];
         if (cell) {
           const isShipCellSunk =
-            game.playerBoards[BattleshipsService.getOpponent(game)][x][y] !== 1;
+            game.playerBoards[BattleshipsService.getOpponent(game)][x][y] !==
+            BattleshipsBoardState.Hit;
           if (isShipCellSunk) {
             return false;
           }
@@ -65,11 +76,13 @@ export class BattleshipsService {
     const [x, y] = move.coords;
     const changedGame = BattleshipsService.cloneGame(game);
     changedGame.playerMoves[game.turn].push(move);
-    if (!BattleshipsService.isHit(move, opponentShips)) {
-      changedGame.turn = this.getOpponent(game);
-      changedGame.playerBoards[this.getOpponent(game)][x][y] = 0;
+    if (BattleshipsService.isHit(move, opponentShips)) {
+      changedGame.playerBoards[this.getOpponent(game)][x][y] =
+        BattleshipsBoardState.Hit;
     } else {
-      changedGame.playerBoards[this.getOpponent(game)][x][y] = 1;
+      changedGame.playerBoards[this.getOpponent(game)][x][y] =
+        BattleshipsBoardState.Miss;
+      changedGame.turn = this.getOpponent(game);
     }
     return changedGame;
   }
@@ -161,13 +174,19 @@ export class BattleshipsService {
     return false;
   }
 
-  public static createEmpty2DBoard(width: number, height: number): number[][] {
+  public static createEmpty2DBoard(
+    width: number,
+    height: number
+  ): BattleshipsBoard {
     return BattleshipsService.create1DArray(width).map(() =>
-      BattleshipsService.create1DArray(height, -1)
+      BattleshipsService.create1DArray(height, BattleshipsBoardState.Empty)
     );
   }
 
-  private static create1DArray(x: number, defaultVal?: number): number[] {
+  private static create1DArray(
+    x: number,
+    defaultVal?: BattleshipsBoardType
+  ): BattleshipsBoardType[] {
     const array1d = Array.from(Array(x));
     if (typeof defaultVal !== "undefined") {
       return array1d.map(() => defaultVal);
