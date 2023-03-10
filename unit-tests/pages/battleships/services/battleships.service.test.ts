@@ -103,8 +103,7 @@ describe("BattleshipsService", () => {
             turn: 0,
           },
           {
-            configuration: [
-            ],
+            configuration: [],
             gameId: "",
             username: "",
           }
@@ -125,8 +124,7 @@ describe("BattleshipsService", () => {
             turn: 0,
           },
           {
-            configuration: [
-            ],
+            configuration: [],
             gameId: "",
             username: "",
           }
