@@ -15,7 +15,7 @@ describe("BattleshipsService", () => {
             turn: 0,
           },
           {
-            configuration: [["", "Ship", "Ship"]] as any,
+            configuration: [["", "Submarine", "Submarine"]],
             gameId: "",
             username: "",
           }
@@ -35,7 +35,7 @@ describe("BattleshipsService", () => {
             turn: 0,
           },
           {
-            configuration: [["", "Ship", "Ship"]] as any,
+            configuration: [["", "Submarine", "Submarine"]],
             gameId: "",
             username: "",
           }
@@ -43,7 +43,7 @@ describe("BattleshipsService", () => {
       ).toBe(true);
     });
 
-    test("fleet is not sunk 2d grid", () => {
+    test("fleet is not sunk", () => {
       expect(
         BattleshipsService.isFleetSunk(
           {
@@ -53,6 +53,7 @@ describe("BattleshipsService", () => {
             playerBoards: [
               [
                 [-1, -1, -1],
+                [-1, 0, 0],
                 [-1, 0, 0],
               ],
               [
@@ -67,10 +68,46 @@ describe("BattleshipsService", () => {
           },
           {
             configuration: [
-              ["", "Ship", "Ship"],
-              ["Ship", "", "Ship"],
-              ["", "", "Ship"],
-            ] as any,
+              ["", "Carrier", "Carrier"],
+              ["Carrier", "", "Carrier"],
+              ["", "", "Carrier"],
+            ],
+            gameId: "",
+            username: "",
+          }
+        )
+      ).toBe(false);
+    });
+
+    test("fleet is not sunk 2d grid", () => {
+      expect(
+        BattleshipsService.isFleetSunk(
+          {
+            gameId: "",
+            boardDimensions: [1, 3],
+            playerUsernames: ["Rob", "Yin"],
+            playerBoards: [
+              [
+                [-1, -1, -1],
+                [-1, 0, 0],
+                [-1, 0, 0],
+              ],
+              [
+                [0, 1, 1],
+                [1, 0, 1],
+                [-1, -1, -1],
+              ],
+            ],
+            playerMoves: [[], []],
+            state: "playing",
+            turn: 0,
+          },
+          {
+            configuration: [
+              ["", "Submarine", "Submarine"],
+              ["Submarine", "", "Submarine"],
+              ["", "", "Submarine"],
+            ],
             gameId: "",
             username: "",
           }
@@ -102,10 +139,10 @@ describe("BattleshipsService", () => {
           },
           {
             configuration: [
-              ["", "Ship", "Ship"],
-              ["Ship", "", "Ship"],
-              ["", "", "Ship"],
-            ] as any,
+              ["", "Submarine", "Submarine"],
+              ["Submarine", "", "Submarine"],
+              ["", "", "Submarine"],
+            ],
             gameId: "",
             username: "",
           }

@@ -4,6 +4,7 @@ import {
   BattleshipsMove,
   BattleshipsBoard,
   BattleshipsStartConfiguration,
+  BattleshipsConfigurationBoard,
 } from "robrendellwebsite-common";
 
 // Need these two here, otherwise jest fails for non standard JavaScript
@@ -158,7 +159,7 @@ export class BattleshipsService {
   }
 
   public static isStartConfigurationInvalid(
-    startConfiguration: BattleshipsBoard,
+    startConfiguration: BattleshipsConfigurationBoard,
     game: BattleshipsGame,
     username: BattleshipsUsername
   ): string | false {
