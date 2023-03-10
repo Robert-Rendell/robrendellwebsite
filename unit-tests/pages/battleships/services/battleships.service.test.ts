@@ -112,6 +112,28 @@ describe("BattleshipsService", () => {
       ).toBe(true);
     });
 
+    test("fleet is sunk when there are no player boards", () => {
+      expect(
+        BattleshipsService.isFleetSunk(
+          {
+            gameId: "",
+            boardDimensions: [1, 3],
+            playerUsernames: ["Rob", "Yin"],
+            playerBoards: [[], []],
+            playerMoves: [[], []],
+            state: "playing",
+            turn: 0,
+          },
+          {
+            configuration: [
+            ],
+            gameId: "",
+            username: "",
+          }
+        )
+      ).toBe(true);
+    });
+
     test("fleet is not sunk 2d grid", () => {
       expect(
         BattleshipsService.isFleetSunk(
