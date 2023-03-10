@@ -51,45 +51,49 @@ describe("BattleshipsService", () => {
         turn: 0,
       });
     });
-  });
 
-  test("player 2 hit", () => {
-    const move: BattleshipsMove = {
-      coords: [0, 1],
-      datetime: "today",
-    };
-    const game: BattleshipsGame = {
-      gameId: "",
-      boardDimensions: [1, 3],
-      playerUsernames: ["Rob", "Yin"],
-      playerBoards: [[[-1, -1, -1]], [[-1, -1, -1]]],
-      playerMoves: [[], []],
-      state: "playing",
-      turn: 1,
-    };
-    const opponentShips: BattleshipsStartConfiguration = {
-      configuration: [["", "Submarine", "Submarine"]],
-      gameId: "",
-      username: "",
-    };
-    const changedGame = BattleshipsService.makeMove(move, game, opponentShips);
+    test("player 2 hit", () => {
+      const move: BattleshipsMove = {
+        coords: [0, 1],
+        datetime: "today",
+      };
+      const game: BattleshipsGame = {
+        gameId: "",
+        boardDimensions: [1, 3],
+        playerUsernames: ["Rob", "Yin"],
+        playerBoards: [[[-1, -1, -1]], [[-1, -1, -1]]],
+        playerMoves: [[], []],
+        state: "playing",
+        turn: 1,
+      };
+      const opponentShips: BattleshipsStartConfiguration = {
+        configuration: [["", "Submarine", "Submarine"]],
+        gameId: "",
+        username: "",
+      };
+      const changedGame = BattleshipsService.makeMove(
+        move,
+        game,
+        opponentShips
+      );
 
-    expect(changedGame).toEqual({
-      gameId: "",
-      boardDimensions: [1, 3],
-      playerUsernames: ["Rob", "Yin"],
-      playerBoards: [[[-1, 1, -1]], [[-1, -1, -1]]],
-      playerMoves: [
-        [],
-        [
-          {
-            coords: [0, 1],
-            datetime: "today",
-          },
+      expect(changedGame).toEqual({
+        gameId: "",
+        boardDimensions: [1, 3],
+        playerUsernames: ["Rob", "Yin"],
+        playerBoards: [[[-1, 1, -1]], [[-1, -1, -1]]],
+        playerMoves: [
+          [],
+          [
+            {
+              coords: [0, 1],
+              datetime: "today",
+            },
+          ],
         ],
-      ],
-      state: "playing",
-      turn: 1,
+        state: "playing",
+        turn: 1,
+      });
     });
   });
 
