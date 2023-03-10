@@ -43,7 +43,7 @@ describe("BattleshipsService", () => {
       ).toBe(true);
     });
 
-    test("fleet is not sunk", () => {
+    test("fleet is sunk when there are no ships", () => {
       expect(
         BattleshipsService.isFleetSunk(
           {
@@ -57,8 +57,8 @@ describe("BattleshipsService", () => {
                 [-1, 0, 0],
               ],
               [
-                [0, 1, 1],
-                [1, 0, 1],
+                [0, 0, 0],
+                [0, 0, 0],
                 [-1, -1, -1],
               ],
             ],
@@ -68,15 +68,48 @@ describe("BattleshipsService", () => {
           },
           {
             configuration: [
-              ["", "Carrier", "Carrier"],
-              ["Carrier", "", "Carrier"],
-              ["", "", "Carrier"],
+              ["", "", ""],
+              ["", "", ""],
+              ["", "", ""],
             ],
             gameId: "",
             username: "",
           }
         )
-      ).toBe(false);
+      ).toBe(true);
+    });
+
+    test("fleet is sunk when there is no configuration", () => {
+      expect(
+        BattleshipsService.isFleetSunk(
+          {
+            gameId: "",
+            boardDimensions: [1, 3],
+            playerUsernames: ["Rob", "Yin"],
+            playerBoards: [
+              [
+                [-1, -1, -1],
+                [-1, 0, 0],
+                [-1, 0, 0],
+              ],
+              [
+                [0, 0, 0],
+                [0, 0, 0],
+                [-1, -1, -1],
+              ],
+            ],
+            playerMoves: [[], []],
+            state: "playing",
+            turn: 0,
+          },
+          {
+            configuration: [
+            ],
+            gameId: "",
+            username: "",
+          }
+        )
+      ).toBe(true);
     });
 
     test("fleet is not sunk 2d grid", () => {
@@ -115,7 +148,7 @@ describe("BattleshipsService", () => {
       ).toBe(false);
     });
 
-    test("fleet is not sunk 2d grid", () => {
+    test("fleet is sunk 2d grid", () => {
       expect(
         BattleshipsService.isFleetSunk(
           {
