@@ -23,6 +23,7 @@ export class BattleshipsService {
     username: BattleshipsUsername
   ) {
     const newGame = BattleshipsService.cloneGame(game);
+    newGame.finishedAt = new Date().toUTCString();
     newGame.state = "finished";
     newGame.winner = username;
     return newGame;
@@ -90,6 +91,7 @@ export class BattleshipsService {
 
   public static setPlayersConfigurationComplete(game: BattleshipsGame) {
     const changedGame = BattleshipsService.cloneGame(game);
+    changedGame.startedPlayingAt = new Date().toUTCString();
     changedGame.state = "playing";
     return changedGame;
   }
