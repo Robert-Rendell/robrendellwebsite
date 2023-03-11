@@ -127,6 +127,16 @@ export class BattleshipsAPI {
         );
       }
 
+      BattleshipsDynamoDbService.loadUser(req.body.username).then((user) => {
+        if (user) {
+          const changedUser = BattleshipsService.createUserBattleStats(
+            user,
+            newGameState
+          );
+          BattleshipsDynamoDbService.saveUser(changedUser);
+        }
+      });
+
       await BattleshipsDynamoDbService.saveGame(newGameState);
 
       res.status(200).send(newGameState);
