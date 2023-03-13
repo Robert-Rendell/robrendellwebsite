@@ -5,6 +5,7 @@ import {
   BattleshipsBoard,
   BattleshipsStartConfiguration,
   BattleshipsConfigurationBoard,
+  BattleshipType,
 } from "robrendellwebsite-common";
 
 // Need these two here, otherwise jest fails for non standard JavaScript
@@ -36,10 +37,30 @@ export class BattleshipsService {
       for (let y = 0; y < opponentShips.configuration[x].length; y += 1) {
         const cell = opponentShips.configuration[x][y];
         if (cell) {
-          const isShipCellSunk =
+          const isShipCellNotSunk =
             game.playerBoards[BattleshipsService.getOpponent(game)][x][y] !==
             BattleshipsBoardState.Hit;
-          if (isShipCellSunk) {
+          if (isShipCellNotSunk) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+  public static isShipSunk(
+    ship: BattleshipType,
+    game: BattleshipsGame,
+    opponentShips: BattleshipsStartConfiguration
+  ): boolean {
+    for (let x = 0; x < opponentShips.configuration.length; x += 1) {
+      for (let y = 0; y < opponentShips.configuration[x].length; y += 1) {
+        const cell = opponentShips.configuration[x][y];
+        if (cell === ship) {
+          const isShipCellNotSunk =
+            game.playerBoards[BattleshipsService.getOpponent(game)][x][y] !==
+            BattleshipsBoardState.Hit;
+          if (isShipCellNotSunk) {
             return false;
           }
         }
@@ -76,11 +97,17 @@ export class BattleshipsService {
     opponentShips: BattleshipsStartConfiguration
   ): BattleshipsGame {
     const [x, y] = move.coords;
+    const opponentIndex = this.getOpponent(game);
     const changedGame = BattleshipsService.cloneGame(game);
     changedGame.playerMoves[game.turn].push(move);
     if (BattleshipsService.isHit(move, opponentShips)) {
-      changedGame.playerBoards[this.getOpponent(game)][x][y] =
-        BattleshipsBoardState.Hit;
+      changedGame.playerBoards[opponentIndex][x][y] = BattleshipsBoardState.Hit;
+      const ship = opponentShips.configuration[x][y];
+      if (ship) {
+        if (BattleshipsService.isShipSunk(ship, changedGame, opponentShips)) {
+          changedGame.playerShips[opponentIndex][ship] = "sunk";
+        }
+      }
     } else {
       changedGame.playerBoards[this.getOpponent(game)][x][y] =
         BattleshipsBoardState.Miss;
