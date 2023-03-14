@@ -6,6 +6,7 @@ import {
 } from "robrendellwebsite-common";
 import { BattleshipsService } from "../../../../src/pages/battleships/services/battleships.service";
 
+jest.useFakeTimers().setSystemTime(new Date("2020-01-01"));
 describe("BattleshipsService", () => {
   describe("makeMove fn", () => {
     test("player 1 hit", () => {
@@ -17,6 +18,22 @@ describe("BattleshipsService", () => {
         gameId: "",
         boardDimensions: [1, 3],
         playerUsernames: ["Rob", "Yin"],
+        playerShips: [
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+        ],
         playerBoards: [[[-1, -1, -1]], [[-1, -1, -1]]],
         playerMoves: [[], []],
         state: "playing",
@@ -38,6 +55,22 @@ describe("BattleshipsService", () => {
         boardDimensions: [1, 3],
         playerUsernames: ["Rob", "Yin"],
         playerBoards: [[[-1, -1, -1]], [[-1, 1, -1]]],
+        playerShips: [
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+        ],
         playerMoves: [
           [
             {
@@ -51,45 +84,233 @@ describe("BattleshipsService", () => {
         turn: 0,
       });
     });
-  });
 
-  test("player 2 hit", () => {
-    const move: BattleshipsMove = {
-      coords: [0, 1],
-      datetime: "today",
-    };
-    const game: BattleshipsGame = {
-      gameId: "",
-      boardDimensions: [1, 3],
-      playerUsernames: ["Rob", "Yin"],
-      playerBoards: [[[-1, -1, -1]], [[-1, -1, -1]]],
-      playerMoves: [[], []],
-      state: "playing",
-      turn: 1,
-    };
-    const opponentShips: BattleshipsStartConfiguration = {
-      configuration: [["", "Submarine", "Submarine"]],
-      gameId: "",
-      username: "",
-    };
-    const changedGame = BattleshipsService.makeMove(move, game, opponentShips);
-
-    expect(changedGame).toEqual({
-      gameId: "",
-      boardDimensions: [1, 3],
-      playerUsernames: ["Rob", "Yin"],
-      playerBoards: [[[-1, 1, -1]], [[-1, -1, -1]]],
-      playerMoves: [
-        [],
-        [
+    test("player 1 hit and battleship sunk", () => {
+      const move: BattleshipsMove = {
+        coords: [0, 2],
+        datetime: "today",
+      };
+      const game: BattleshipsGame = {
+        gameId: "",
+        boardDimensions: [1, 3],
+        playerUsernames: ["Rob", "Yin"],
+        playerShips: [
           {
-            coords: [0, 1],
-            datetime: "today",
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
           },
         ],
-      ],
-      state: "playing",
-      turn: 1,
+        playerBoards: [[[-1, -1, -1]], [[-1, 1, -1]]],
+        playerMoves: [[], []],
+        state: "playing",
+        turn: 0,
+      };
+      const opponentShips: BattleshipsStartConfiguration = {
+        configuration: [["", "Battleship", "Battleship"]],
+        gameId: "",
+        username: "",
+      };
+      const changedGame = BattleshipsService.makeMove(
+        move,
+        game,
+        opponentShips
+      );
+
+      expect(changedGame).toEqual({
+        gameId: "",
+        boardDimensions: [1, 3],
+        playerUsernames: ["Rob", "Yin"],
+        playerBoards: [[[-1, -1, -1]], [[-1, 1, 1]]],
+        playerShips: [
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "sunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+        ],
+        playerMoves: [
+          [
+            {
+              coords: [0, 2],
+              datetime: "today",
+            },
+          ],
+          [],
+        ],
+        state: "playing",
+        turn: 0,
+      });
+    });
+
+    test("player 2 hit", () => {
+      const move: BattleshipsMove = {
+        coords: [0, 1],
+        datetime: "today",
+      };
+      const game: BattleshipsGame = {
+        gameId: "",
+        boardDimensions: [1, 3],
+        playerShips: [
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+        ],
+        playerUsernames: ["Rob", "Yin"],
+        playerBoards: [[[-1, -1, -1]], [[-1, -1, -1]]],
+        playerMoves: [[], []],
+        state: "playing",
+        turn: 1,
+      };
+      const opponentShips: BattleshipsStartConfiguration = {
+        configuration: [["", "Submarine", "Submarine"]],
+        gameId: "",
+        username: "",
+      };
+      const changedGame = BattleshipsService.makeMove(
+        move,
+        game,
+        opponentShips
+      );
+
+      expect(changedGame).toEqual({
+        gameId: "",
+        boardDimensions: [1, 3],
+        playerUsernames: ["Rob", "Yin"],
+        playerBoards: [[[-1, 1, -1]], [[-1, -1, -1]]],
+        playerShips: [
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+        ],
+        playerMoves: [
+          [],
+          [
+            {
+              coords: [0, 1],
+              datetime: "today",
+            },
+          ],
+        ],
+        state: "playing",
+        turn: 1,
+      });
+    });
+
+    test("player 2 hit and submarine sunk", () => {
+      const move: BattleshipsMove = {
+        coords: [0, 1],
+        datetime: "today",
+      };
+      const game: BattleshipsGame = {
+        gameId: "",
+        boardDimensions: [1, 3],
+        playerShips: [
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+        ],
+        playerUsernames: ["Rob", "Yin"],
+        playerBoards: [[[-1, -1, 1]], [[-1, -1, -1]]],
+        playerMoves: [[], []],
+        state: "playing",
+        turn: 1,
+      };
+      const opponentShips: BattleshipsStartConfiguration = {
+        configuration: [["", "Submarine", "Submarine"]],
+        gameId: "",
+        username: "",
+      };
+      const changedGame = BattleshipsService.makeMove(
+        move,
+        game,
+        opponentShips
+      );
+
+      expect(changedGame).toEqual({
+        gameId: "",
+        boardDimensions: [1, 3],
+        playerUsernames: ["Rob", "Yin"],
+        playerBoards: [[[-1, 1, 1]], [[-1, -1, -1]]],
+        playerShips: [
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "sunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+        ],
+        playerMoves: [
+          [],
+          [
+            {
+              coords: [0, 1],
+              datetime: "today",
+            },
+          ],
+        ],
+        state: "playing",
+        turn: 1,
+      });
     });
   });
 
@@ -101,6 +322,22 @@ describe("BattleshipsService", () => {
         boardDimensions: [3, 3],
         playerUsernames: [username, "Yin"],
         playerBoards: [[], []],
+        playerShips: [
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+        ],
         playerMoves: [[], []],
         state: "playing",
         turn: 0,
@@ -125,6 +362,22 @@ describe("BattleshipsService", () => {
       const game: BattleshipsGame = {
         gameId: "",
         boardDimensions: [3, 3],
+        playerShips: [
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+        ],
         playerUsernames: [username, "Yin"],
         playerBoards: [[], []],
         playerMoves: [[], []],
@@ -153,6 +406,22 @@ describe("BattleshipsService", () => {
         boardDimensions: [1, 3],
         playerUsernames: [username, "Yin"],
         playerBoards: [[], []],
+        playerShips: [
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+        ],
         playerMoves: [[], []],
         state: "playing",
         turn: 0,
@@ -178,6 +447,22 @@ describe("BattleshipsService", () => {
         gameId: "",
         boardDimensions: [1, 3],
         playerUsernames: ["Rob", "Yin"],
+        playerShips: [
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+        ],
         playerBoards: [[[-1, -1, -1]], [[-1, -1, -1]]],
         playerMoves: [[], []],
         state: "playing",
@@ -186,11 +471,28 @@ describe("BattleshipsService", () => {
 
       const changedGame = BattleshipsService.setWinner(game, "Rob");
 
-      expect(changedGame).toEqual({
+      expect(changedGame).toEqual(<BattleshipsGame>{
         gameId: "",
         boardDimensions: [1, 3],
         playerUsernames: ["Rob", "Yin"],
         playerBoards: [[[-1, -1, -1]], [[-1, -1, -1]]],
+        finishedAt: "Wed, 01 Jan 2020 00:00:00 GMT",
+        playerShips: [
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+        ],
         playerMoves: [[], []],
         state: "finished",
         winner: "Rob",
@@ -206,6 +508,22 @@ describe("BattleshipsService", () => {
             gameId: "",
             boardDimensions: [1, 3],
             playerUsernames: ["Rob", "Yin"],
+            playerShips: [
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+            ],
             playerBoards: [[[-1, -1, -1]], [[-1, -1, -1]]],
             playerMoves: [[], []],
             state: "playing",
@@ -226,6 +544,22 @@ describe("BattleshipsService", () => {
             gameId: "",
             boardDimensions: [1, 3],
             playerUsernames: ["Rob", "Yin"],
+            playerShips: [
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+            ],
             playerBoards: [[[-1, -1, -1]], [[-1, 1, 1]]],
             playerMoves: [[], []],
             state: "playing",
@@ -246,6 +580,22 @@ describe("BattleshipsService", () => {
           {
             gameId: "",
             boardDimensions: [1, 3],
+            playerShips: [
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+            ],
             playerUsernames: ["Rob", "Yin"],
             playerBoards: [
               [
@@ -282,6 +632,22 @@ describe("BattleshipsService", () => {
           {
             gameId: "",
             boardDimensions: [1, 3],
+            playerShips: [
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+            ],
             playerUsernames: ["Rob", "Yin"],
             playerBoards: [
               [
@@ -314,6 +680,22 @@ describe("BattleshipsService", () => {
           {
             gameId: "",
             boardDimensions: [1, 3],
+            playerShips: [
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+            ],
             playerUsernames: ["Rob", "Yin"],
             playerBoards: [[], []],
             playerMoves: [[], []],
@@ -335,6 +717,22 @@ describe("BattleshipsService", () => {
           {
             gameId: "",
             boardDimensions: [1, 3],
+            playerShips: [
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+            ],
             playerUsernames: ["Rob", "Yin"],
             playerBoards: [
               [
@@ -371,6 +769,22 @@ describe("BattleshipsService", () => {
           {
             gameId: "",
             boardDimensions: [1, 3],
+            playerShips: [
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+              {
+                Carrier: "unsunk",
+                Battleship: "unsunk",
+                Cruiser: "unsunk",
+                Submarine: "unsunk",
+                Destroyer: "unsunk",
+              },
+            ],
             playerUsernames: ["Rob", "Yin"],
             playerBoards: [
               [

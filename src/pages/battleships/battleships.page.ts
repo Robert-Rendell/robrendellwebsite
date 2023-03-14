@@ -175,6 +175,22 @@ export class BattleshipsAPI {
           BattleshipsService.createEmpty2DBoard(width, height),
           BattleshipsService.createEmpty2DBoard(width, height),
         ],
+        playerShips: [
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+          {
+            Carrier: "unsunk",
+            Battleship: "unsunk",
+            Cruiser: "unsunk",
+            Submarine: "unsunk",
+            Destroyer: "unsunk",
+          },
+        ],
         playerUsernames: [req.body.username, ""],
         playerMoves: [[], []],
         state: "created",
