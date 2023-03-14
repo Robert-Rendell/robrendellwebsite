@@ -6,9 +6,7 @@ import {
 } from "robrendellwebsite-common";
 import { BattleshipsService } from "../../../../src/pages/battleships/services/battleships.service";
 
-jest
-  .spyOn(Date.prototype, "toUTCString")
-  .mockImplementation(() => "mocked-date");
+jest.useFakeTimers().setSystemTime(new Date("2020-01-01"));
 describe("BattleshipsService", () => {
   describe("makeMove fn", () => {
     test("player 1 hit", () => {
@@ -478,7 +476,7 @@ describe("BattleshipsService", () => {
         boardDimensions: [1, 3],
         playerUsernames: ["Rob", "Yin"],
         playerBoards: [[[-1, -1, -1]], [[-1, -1, -1]]],
-        finishedAt: "mocked-date",
+        finishedAt: "Wed, 01 Jan 2020 00:00:00 GMT",
         playerShips: [
           {
             Carrier: "unsunk",
