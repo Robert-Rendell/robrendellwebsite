@@ -99,9 +99,13 @@ const resolveAttachments = (opts: {
         errors.push(d);
       }
     }
-    throw Error(
-      "Should have found the file by now, only using otherFolders[0] just now."
+    console.error(
+      `Should have found the file (${fixedFileExtensionFilename}) by now, only using otherFolders[0] just now.`
     );
+    return {
+      resolvedFolder: "",
+      filename: "",
+    };
   });
   console.log("Errors", errors);
   return resolvedAttachments;
@@ -202,7 +206,9 @@ const resolveAttachments = (opts: {
       });
 
       const imgPromises = resolvedAttachmentFilenames.map(
-        ({ resolvedFolder, filename }, index) => {
+        (resolvedAttachmentFilename, index) => {
+          const { resolvedFolder, filename } =
+            resolvedAttachmentFilename as any;
           const matchedKeepNote = keepNotes.find((keepNote) =>
             keepNote.attachments
               ?.map((attachment) => attachment.filePath)
@@ -215,13 +221,17 @@ const resolveAttachments = (opts: {
             "; Matched to",
             matchedKeepNote?.title
           );
+          let body: string | Buffer = "";
+          if (resolvedFolder && filename) {
+            body = getRawKeepNote(resolvedFolder, filename);
+          }
           return s3
             .upload({
               Bucket: targetBucket,
               Key: `${targetKeyPrefix}/${
                 matchedKeepNote?.title.trim().replace("_", "") || "UNMATCHED"
               }/${filename}`,
-              Body: getRawKeepNote(resolvedFolder, filename),
+              Body: body,
             })
             .promise()
             .then(() =>
