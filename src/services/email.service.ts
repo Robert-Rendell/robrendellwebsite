@@ -1,10 +1,9 @@
 import * as mailer from "nodemailer";
+import { ConfigService } from "./config.service";
 
-const email = "robrendellwebsite@hotmail.com";
-const pass = "FplRqa23@!";
 const defaultOptions = {
-  from: email,
-  to: "rob_452@hotmail.co.uk",
+  from: ConfigService.EmailServiceEmail,
+  to: ConfigService.EmailServiceEmailTarget,
 };
 
 type Props = {
@@ -20,8 +19,8 @@ export class EmailService {
       const transporter = mailer.createTransport({
         service: "Hotmail",
         auth: {
-          user: email,
-          pass,
+          user: ConfigService.EmailServiceEmail,
+          pass: ConfigService.EmailServicePass,
         },
       });
       const opts = { ...props };

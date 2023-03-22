@@ -114,4 +114,16 @@ export class ConfigService {
   static get KnockKnockSecurityKey(): string {
     return ConfigService.GetEnvVar(EnvVar.KNOCK_KNOCK_SECURITY_KEY);
   }
+
+  static get EmailServiceEmail(): string {
+    return ConfigService.GetEnvVar(EnvVar.EMAIL_SERVICE_EMAIL);
+  }
+
+  static get EmailServicePass(): string {
+    return ConfigService.GetEnvVar(EnvVar.EMAIL_SERVICE_PASS);
+  }
+
+  static get EmailServiceEmailTarget(): string {
+    return ConfigService.GetEnvVar(EnvVar.EMAIL_SERVICE_EMAIL_TARGET);
+  }
 }
