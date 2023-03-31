@@ -193,7 +193,9 @@ const resolveAttachments = (opts: {
             Key: `${targetKeyPrefix}/${filename
               .replace(".json", "")
               .trim()
-              .replace("_", "")}/data.json`,
+              .replace("_", "")
+              .replace("'", "")
+              .replace("/", "")}/data.json`,
             Body: getRawKeepNote(folder, filename),
           })
           .promise()
@@ -230,7 +232,11 @@ const resolveAttachments = (opts: {
           s3.upload({
             Bucket: targetBucket,
             Key: `${targetKeyPrefix}/${
-              matchedKeepNote?.title.trim().replace("_", "") || "UNMATCHED"
+              matchedKeepNote?.title
+                .trim()
+                .replace("_", "")
+                .replace("'", "")
+                .replace("/", "") || "UNMATCHED"
             }/${filename}`,
             Body: body,
           })
@@ -240,24 +246,31 @@ const resolveAttachments = (opts: {
                 `Success! ${filename} uploaded... (${index + 1}/${
                   resolvedAttachmentFilenames.length
                 })`
-              ));
+              )
+            );
           return sharp(body)
             .resize(100, 100)
-            .toBuffer().then((newBody) => {
+            .toBuffer()
+            .then((newBody) => {
               s3.upload({
                 Bucket: targetBucket,
                 Key: `${targetKeyPrefix}/${
-                  matchedKeepNote?.title.trim().replace("_", "") || "UNMATCHED"
+                  matchedKeepNote?.title
+                    .trim()
+                    .replace("_", "")
+                    .replace("'", "")
+                    .replace("/", "") || "UNMATCHED"
                 }/thumbnail/${filename}`,
                 Body: newBody,
               })
                 .promise()
                 .then(() =>
                   console.log(
-                    `Success! [Thumbnail] ${filename} uploaded... (${index + 1}/${
-                      resolvedAttachmentFilenames.length
-                    })`
-                  ));
+                    `Success! [Thumbnail] ${filename} uploaded... (${
+                      index + 1
+                    }/${resolvedAttachmentFilenames.length})`
+                  )
+                );
             })
             .catch((error) => {
               console.log(error);
