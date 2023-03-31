@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import AWS from "aws-sdk";
+import sharp from "sharp";
 import {
   KeepNote,
   KeepNoteLabel,
@@ -225,22 +226,42 @@ const resolveAttachments = (opts: {
           if (resolvedFolder && filename) {
             body = getRawKeepNote(resolvedFolder, filename);
           }
-          return s3
-            .upload({
-              Bucket: targetBucket,
-              Key: `${targetKeyPrefix}/${
-                matchedKeepNote?.title.trim().replace("_", "") || "UNMATCHED"
-              }/${filename}`,
-              Body: body,
-            })
+          if (!body) return Promise.resolve();
+          s3.upload({
+            Bucket: targetBucket,
+            Key: `${targetKeyPrefix}/${
+              matchedKeepNote?.title.trim().replace("_", "") || "UNMATCHED"
+            }/${filename}`,
+            Body: body,
+          })
             .promise()
             .then(() =>
               console.log(
                 `Success! ${filename} uploaded... (${index + 1}/${
                   resolvedAttachmentFilenames.length
                 })`
-              )
-            );
+              ));
+          return sharp(body)
+            .resize(100, 100)
+            .toBuffer().then((newBody) => {
+              s3.upload({
+                Bucket: targetBucket,
+                Key: `${targetKeyPrefix}/${
+                  matchedKeepNote?.title.trim().replace("_", "") || "UNMATCHED"
+                }/thumbnail/${filename}`,
+                Body: newBody,
+              })
+                .promise()
+                .then(() =>
+                  console.log(
+                    `Success! [Thumbnail] ${filename} uploaded... (${index + 1}/${
+                      resolvedAttachmentFilenames.length
+                    })`
+                  ));
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         }
       );
 
