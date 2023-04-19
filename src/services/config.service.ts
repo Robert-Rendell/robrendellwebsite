@@ -47,8 +47,9 @@ export class ConfigService {
     return ConfigService.GetEnvVar(EnvVar.API_HOST);
   }
 
-  static get AppHost(): string {
-    return ConfigService.GetEnvVar(EnvVar.APP_HOST);
+  static get AppHost(): string[] {
+    const appHost = ConfigService.GetEnvVar(EnvVar.APP_HOST);
+    return appHost.split(",");
   }
 
   static get MyPublicIpAddress(): string {
