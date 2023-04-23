@@ -1,11 +1,6 @@
 import * as mailer from "nodemailer";
 import { ConfigService } from "./config.service";
 
-const defaultOptions = {
-  from: ConfigService.EmailServiceEmail,
-  to: ConfigService.EmailServiceEmailTarget,
-};
-
 type Props = {
   from?: string;
   to?: string;
@@ -15,6 +10,10 @@ type Props = {
 
 export class EmailService {
   public static send(props: Props): Promise<boolean> {
+    const defaultOptions = {
+      from: ConfigService.EmailServiceEmail,
+      to: ConfigService.EmailServiceEmailTarget,
+    };
     return new Promise((resolve) => {
       const transporter = mailer.createTransport({
         service: "Hotmail",

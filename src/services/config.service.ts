@@ -1,7 +1,10 @@
 import AWS from "aws-sdk";
+import { config } from "dotenv";
 import { EnvVar } from "../enums/env-vars.enum";
 import FeatureFlags from "../models/feature-flags";
 import { UniDataEnvVars } from "../pages/technical-tests/uni-data-291121/models/uni-data-env-vars";
+
+config();
 
 AWS.config.update({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -125,5 +128,17 @@ export class ConfigService {
 
   static get EmailServiceEmailTarget(): string {
     return ConfigService.GetEnvVar(EnvVar.EMAIL_SERVICE_EMAIL_TARGET);
+  }
+
+  static get DBHost(): string {
+    return ConfigService.GetEnvVar(EnvVar.DB_HOST);
+  }
+
+  static get DBPass(): string {
+    return ConfigService.GetEnvVar(EnvVar.DB_PASS);
+  }
+
+  static get DBUser(): string {
+    return ConfigService.GetEnvVar(EnvVar.DB_USER);
   }
 }
