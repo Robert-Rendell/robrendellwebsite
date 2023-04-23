@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import AWS from "aws-sdk";
+import sharp from "sharp";
 import {
   KeepNote,
   KeepNoteLabel,
@@ -99,9 +100,13 @@ const resolveAttachments = (opts: {
         errors.push(d);
       }
     }
-    throw Error(
-      "Should have found the file by now, only using otherFolders[0] just now."
+    console.error(
+      `Should have found the file (${fixedFileExtensionFilename}) by now, only using otherFolders[0] just now.`
     );
+    return {
+      resolvedFolder: "",
+      filename: "",
+    };
   });
   console.log("Errors", errors);
   return resolvedAttachments;
@@ -188,7 +193,9 @@ const resolveAttachments = (opts: {
             Key: `${targetKeyPrefix}/${filename
               .replace(".json", "")
               .trim()
-              .replace("_", "")}/data.json`,
+              .replace("_", "")
+              .replace("'", "")
+              .replace("/", "")}/data.json`,
             Body: getRawKeepNote(folder, filename),
           })
           .promise()
@@ -202,7 +209,9 @@ const resolveAttachments = (opts: {
       });
 
       const imgPromises = resolvedAttachmentFilenames.map(
-        ({ resolvedFolder, filename }, index) => {
+        (resolvedAttachmentFilename, index) => {
+          const { resolvedFolder, filename } =
+            resolvedAttachmentFilename as any;
           const matchedKeepNote = keepNotes.find((keepNote) =>
             keepNote.attachments
               ?.map((attachment) => attachment.filePath)
@@ -215,14 +224,22 @@ const resolveAttachments = (opts: {
             "; Matched to",
             matchedKeepNote?.title
           );
-          return s3
-            .upload({
-              Bucket: targetBucket,
-              Key: `${targetKeyPrefix}/${
-                matchedKeepNote?.title.trim().replace("_", "") || "UNMATCHED"
-              }/${filename}`,
-              Body: getRawKeepNote(resolvedFolder, filename),
-            })
+          let body: string | Buffer = "";
+          if (resolvedFolder && filename) {
+            body = getRawKeepNote(resolvedFolder, filename);
+          }
+          if (!body) return Promise.resolve();
+          s3.upload({
+            Bucket: targetBucket,
+            Key: `${targetKeyPrefix}/${
+              matchedKeepNote?.title
+                .trim()
+                .replace("_", "")
+                .replace("'", "")
+                .replace("/", "") || "UNMATCHED"
+            }/${filename}`,
+            Body: body,
+          })
             .promise()
             .then(() =>
               console.log(
@@ -231,6 +248,33 @@ const resolveAttachments = (opts: {
                 })`
               )
             );
+          return sharp(body)
+            .resize(100, 100)
+            .toBuffer()
+            .then((newBody) => {
+              s3.upload({
+                Bucket: targetBucket,
+                Key: `${targetKeyPrefix}/${
+                  matchedKeepNote?.title
+                    .trim()
+                    .replace("_", "")
+                    .replace("'", "")
+                    .replace("/", "") || "UNMATCHED"
+                }/thumbnail/${filename}`,
+                Body: newBody,
+              })
+                .promise()
+                .then(() =>
+                  console.log(
+                    `Success! [Thumbnail] ${filename} uploaded... (${
+                      index + 1
+                    }/${resolvedAttachmentFilenames.length})`
+                  )
+                );
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         }
       );
 

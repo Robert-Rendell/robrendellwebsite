@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import { config } from "dotenv";
 import RateLimit from "express-rate-limit";
 // Don't ever use this, it crashes back end with CORS issues
 import { OpsEndpoints } from "robrendellwebsite-common";
@@ -25,8 +24,18 @@ import { AddDateInHistoryEndpoint } from "./src/standalone/add-date-in-history.e
 import { HealthEndpoint } from "./src/standalone/health.endpoint";
 import { BattleshipsAPI } from "./src/pages/battleships/battleships.page";
 import { MidjourneyCreationsPage } from "./src/pages/misc/midjourney.page";
+import { AppDataSource } from "./src/data-source";
 
-config();
+// establish database connection
+AppDataSource
+  .initialize()
+  .then(() => {
+    console.log(`Data Source ${ConfigService.DBHost} has been initialised!`);
+  })
+  .catch((err) => {
+    console.error("Error during Data Source initialization:", err);
+  });
+
 // Heroku exposes PORT env var by default
 const PORT = process.env.PORT || ConfigService.Port || 80;
 

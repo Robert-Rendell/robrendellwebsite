@@ -62,6 +62,7 @@ export default class S3BucketService {
     };
 
     console.log(`Going to delete: ${JSON.stringify(req, null, 2)}`);
+    await S3BucketService.s3.deleteObjects(req).promise();
   }
 
   public static async getDownloadLinks(
