@@ -6,8 +6,8 @@ export const WebhooksEndpoint = async (req: Request, res: Response) => {
   try {
     if (req.query.category) {
       await S3BucketService.upload(
-        ConfigService.PublicBucket,
-        "webhooks/" + req.query.category,
+        "robrendellwebsite-webhooks",
+        `${req.query.category}/${new Date().toISOString()}.json`,
         JSON.stringify(req.body)
       );
       res.status(200).send();
