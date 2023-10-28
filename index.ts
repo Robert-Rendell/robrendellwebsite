@@ -25,6 +25,7 @@ import { HealthEndpoint } from "./src/standalone/health.endpoint";
 import { BattleshipsAPI } from "./src/pages/battleships/battleships.page";
 import { MidjourneyCreationsPage } from "./src/pages/misc/midjourney.page";
 import { AppDataSource } from "./src/data-source";
+import { WebhooksEndpoint } from "./src/standalone/webhooks.endpoint";
 
 // establish database connection
 AppDataSource
@@ -68,6 +69,7 @@ app.post("/view-page", SavePageView);
 app.get("/cv", CVPage);
 app.get("/knock-knock", KnockKnockEndpoint);
 app.get("/health", HealthEndpoint);
+app.post("/webhooks", WebhooksEndpoint)
 
 app.post("/operations", OperationsDashboardPage);
 app.post("/operations/word-of-the-day/add", AddWordOfDayEndpoint);
