@@ -8,7 +8,7 @@ export const WebhooksEndpoint = async (req: Request, res: Response) => {
       await S3BucketService.upload(
         "robrendellwebsite-webhooks",
         `${req.query.category}/${new Date().toISOString()}.json`,
-        JSON.stringify(req.body)
+        JSON.stringify(req.body, null, 2)
       );
       res.status(200).send();
     } else {
