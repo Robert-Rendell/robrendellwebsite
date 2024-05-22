@@ -1,3 +1,3 @@
-import { Sudoku } from "../models/sudoku";
+import { SudokuDto } from "../models/sudoku.dto";
 
-export type SudokuListResponse = Sudoku[];
+export type SudokuListResponse = SudokuDto[];
