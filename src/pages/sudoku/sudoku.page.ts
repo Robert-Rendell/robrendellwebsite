@@ -36,6 +36,7 @@ import { PostSudokuListRequest } from "./requests/sudoku-list.post";
 import { SudokuListResponse } from "./response/sudoku-list.response";
 import { ListSudokuParams } from "./models/params/list-sudoku-params";
 import GetSudokuLeaderboardRequest from "./requests/sudoku-leaderboard.get";
+import { SudokuDto } from "./models/sudoku.dto";
 
 class SudokuAPI {
   static Routes = {
@@ -135,7 +136,20 @@ class SudokuAPI {
           .splice(0, request.pagination.limit || 5);
       }
 
-      res.status(200).send(sudokus as SudokuListResponse);
+      const listedSudokus: SudokuListResponse = sudokus.map((s: Sudoku) => {
+        const listedSudoku: SudokuDto = {
+          sudokuId: s.sudokuId,
+          puzzle: s.puzzle,
+          solution: s.solution,
+          dateGenerated: s.dateGenerated,
+          clues: s.clues,
+          difficulty: s.difficulty,
+          generationJobId: s.generationJobId,
+        };
+        return listedSudoku;
+      });
+
+      res.status(200).send(listedSudokus);
     } catch (e) {
       console.error(e);
       res.status(500).send(SudokuInternalServerError((e as Error).message));
