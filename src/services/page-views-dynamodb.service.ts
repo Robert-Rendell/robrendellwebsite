@@ -64,7 +64,8 @@ export class PageViewsDynamoDbService extends DynamoDBService {
       };
       IPAddressService.getVPNInformation(pageViewer.ipAddress).then(
         (vpnInfo) => {
-          if (vpnInfo) emailData.text += "- " + JSON.stringify(vpnInfo);
+          if (vpnInfo)
+            emailData.text += " - " + JSON.stringify(vpnInfo, null, 2);
           EmailService.send(emailData);
         }
       );
