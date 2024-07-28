@@ -3,7 +3,7 @@ import * as geoip from "fast-geoip";
 import { IPLocation } from "robrendellwebsite-common";
 import { Request } from "express";
 import { ConfigService } from "./config.service";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 export class IPAddressService {
   /**
@@ -33,10 +33,10 @@ export class IPAddressService {
   public static async getVPNInformation(
     ipAddress: string
   ): Promise<VPNInformation | undefined> {
-    const vpnInfo = await axios.get<unknown, VPNInformation>(
+    const vpnInfo = await axios.get<unknown, AxiosResponse<VPNInformation>>(
       `https://vpnapi.io/api/${ipAddress}?key=${ConfigService.VPNInfoServiceAPIKey}`
     );
-    return vpnInfo;
+    return vpnInfo.data;
   }
 
   public static isOneOfMyIpAddresses(req: Request): boolean {
