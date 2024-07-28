@@ -27,16 +27,6 @@ import { MidjourneyCreationsPage } from "./src/pages/misc/midjourney.page";
 import { AppDataSource } from "./src/data-source";
 import { WebhooksEndpoint } from "./src/standalone/webhooks.endpoint";
 
-// establish database connection
-AppDataSource
-  .initialize()
-  .then(() => {
-    console.log(`Data Source ${ConfigService.DBHost} has been initialised!`);
-  })
-  .catch((err) => {
-    console.error("Error during Data Source initialization:", err);
-  });
-
 // Heroku exposes PORT env var by default
 const PORT = process.env.PORT || ConfigService.Port || 80;
 
