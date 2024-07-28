@@ -35,8 +35,14 @@ export class IPAddressService {
   ): Promise<VPNInformation | undefined> {
     try {
       const vpnInfo = await axios.get<unknown, AxiosResponse<VPNInformation>>(
-        `https://vpnapi.io/api/${ipAddress}?key=${ConfigService.VPNInfoServiceAPIKey}`
+        `https://vpnapi.io/api/${ipAddress}`,
+        {
+          params: {
+            key: ConfigService.VPNInfoServiceAPIKey,
+          },
+        }
       );
+
       return vpnInfo.data;
     } catch (e) {
       console.error(e);
