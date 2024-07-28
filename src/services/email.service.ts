@@ -1,7 +1,7 @@
 import * as mailer from "nodemailer";
 import { ConfigService } from "./config.service";
 
-type Props = {
+export type EmailOptions = {
   from?: string;
   to?: string;
   subject: string;
@@ -9,7 +9,7 @@ type Props = {
 };
 
 export class EmailService {
-  public static send(props: Props): Promise<boolean> {
+  public static send(emailOptions: EmailOptions): Promise<boolean> {
     const defaultOptions = {
       from: ConfigService.EmailServiceEmail,
       to: ConfigService.EmailServiceEmailTarget,
@@ -22,10 +22,10 @@ export class EmailService {
           pass: ConfigService.EmailServicePass,
         },
       });
-      const opts = { ...props };
-      if (!opts.from) opts.from = defaultOptions.from;
-      if (!opts.to) opts.to = defaultOptions.to;
-      transporter.sendMail(opts, (error) => {
+      const mailOptions = { ...emailOptions };
+      if (!mailOptions.from) mailOptions.from = defaultOptions.from;
+      if (!mailOptions.to) mailOptions.to = defaultOptions.to;
+      transporter.sendMail(mailOptions, (error) => {
         if (error) {
           console.error(error);
           resolve(false);

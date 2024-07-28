@@ -131,6 +131,10 @@ export class ConfigService {
     return ConfigService.GetEnvVar(EnvVar.EMAIL_SERVICE_EMAIL_TARGET);
   }
 
+  static get VPNInfoServiceAPIKey(): string {
+    return ConfigService.GetEnvVar(EnvVar.VPN_INFO_SERVICE_API_KEY);
+  }
+
   static get DBHost(): string {
     return ConfigService.GetEnvVar(EnvVar.DB_HOST);
   }

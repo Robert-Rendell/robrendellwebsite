@@ -27,4 +27,5 @@ export enum EnvVar {
   DB_HOST,
   DB_USER,
   DB_PASS,
+  VPN_INFO_SERVICE_API_KEY,
 }

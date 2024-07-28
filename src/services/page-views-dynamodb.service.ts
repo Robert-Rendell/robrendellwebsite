@@ -9,7 +9,7 @@ import { doNotSaveIps } from "../standalone/utils/do-not-save-ip-list";
 import { ConfigService } from "./config.service";
 import DynamoDBService from "./dynamo-db.service";
 import { IPAddressService } from "./ip-address.service";
-import { EmailService } from "./email.service";
+import { EmailOptions, EmailService } from "./email.service";
 
 type SavePageViewProps = {
   pageViewer: PageViewRequest;
@@ -52,7 +52,7 @@ export class PageViewsDynamoDbService extends DynamoDBService {
         ipLocation,
         ipAddress: pageViewer.ipAddress,
       };
-      EmailService.send({
+      const emailData: EmailOptions = {
         subject: "[robrendellwebsite] Page view!",
         text: `${pageUrl} - ${
           pageViewer.ipAddress
@@ -61,7 +61,14 @@ export class PageViewsDynamoDbService extends DynamoDBService {
           null,
           2
         )}`,
-      });
+      };
+      IPAddressService.getVPNInformation(pageViewer.ipAddress)
+        .then((vpnInfo) => {
+          emailData.text += "- " + JSON.stringify(vpnInfo);
+        })
+        .finally(() => {
+          EmailService.send(emailData);
+        });
       currentPage.views.push(viewer);
       const marshalled = AWS.DynamoDB.Converter.marshall(currentPage);
       await super.save(ConfigService.PageViewsDynamoDbTable, marshalled);
