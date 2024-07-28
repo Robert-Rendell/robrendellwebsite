@@ -33,10 +33,14 @@ export class IPAddressService {
   public static async getVPNInformation(
     ipAddress: string
   ): Promise<VPNInformation | undefined> {
-    const vpnInfo = await axios.get<unknown, AxiosResponse<VPNInformation>>(
-      `https://vpnapi.io/api/${ipAddress}?key=${ConfigService.VPNInfoServiceAPIKey}`
-    );
-    return vpnInfo.data;
+    try {
+      const vpnInfo = await axios.get<unknown, AxiosResponse<VPNInformation>>(
+        `https://vpnapi.io/api/${ipAddress}?key=${ConfigService.VPNInfoServiceAPIKey}`
+      );
+      return vpnInfo.data;
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   public static isOneOfMyIpAddresses(req: Request): boolean {

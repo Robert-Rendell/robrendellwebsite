@@ -62,13 +62,12 @@ export class PageViewsDynamoDbService extends DynamoDBService {
           2
         )}`,
       };
-      IPAddressService.getVPNInformation(pageViewer.ipAddress)
-        .then((vpnInfo) => {
-          emailData.text += "- " + JSON.stringify(vpnInfo);
-        })
-        .finally(() => {
+      IPAddressService.getVPNInformation(pageViewer.ipAddress).then(
+        (vpnInfo) => {
+          if (vpnInfo) emailData.text += "- " + JSON.stringify(vpnInfo);
           EmailService.send(emailData);
-        });
+        }
+      );
       currentPage.views.push(viewer);
       const marshalled = AWS.DynamoDB.Converter.marshall(currentPage);
       await super.save(ConfigService.PageViewsDynamoDbTable, marshalled);
