@@ -6,7 +6,7 @@ import { ConfigService } from "./config.service";
 import axios, { AxiosResponse } from "axios";
 
 export class IPAddressService {
-  public static getIPAddress(req: Request<unknown>): string | string[] {
+  public static getIPAddress(req: Request<unknown>): string {
     const forwarded = req.headers["x-forwarded-for"];
     if (Array.isArray(forwarded)) {
       return forwarded[0];
@@ -52,13 +52,6 @@ export class IPAddressService {
     if (typeof requestIpAddresses === "string") {
       return myIps.includes(requestIpAddresses);
     }
-    myIps.forEach((myIp) => {
-      requestIpAddresses.forEach((requestIp) => {
-        if (requestIp === myIp) {
-          return true;
-        }
-      });
-    });
     return false;
   }
 
@@ -69,11 +62,6 @@ export class IPAddressService {
       return blockedIps.includes(ipAddress);
     }
     let blocked = false;
-    ipAddress.forEach((ip) => {
-      if (blockedIps.includes(ip)) {
-        blocked = true;
-      }
-    });
     return blocked;
   }
 
