@@ -24,7 +24,6 @@ import { AddDateInHistoryEndpoint } from "./src/standalone/add-date-in-history.e
 import { HealthEndpoint } from "./src/standalone/health.endpoint";
 import { BattleshipsAPI } from "./src/pages/battleships/battleships.page";
 import { MidjourneyCreationsPage } from "./src/pages/misc/midjourney.page";
-import { AppDataSource } from "./src/data-source";
 import { WebhooksEndpoint } from "./src/standalone/webhooks.endpoint";
 
 // Heroku exposes PORT env var by default
@@ -32,7 +31,9 @@ const PORT = process.env.PORT || ConfigService.Port || 80;
 
 const app = express();
 app.use(helmet());
-app.use(cors({ origin: ConfigService.AppHost }));
+if (!ConfigService.AppHost.includes("*")) {
+  app.use(cors({ origin: ConfigService.AppHost }));
+}
 app.use(morgan("combined"));
 app.use(express.json());
 // === Rate Limiting =======================
