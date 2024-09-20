@@ -10,7 +10,7 @@ export class EmailService {
   public static async send(emailOptions: EmailOptions) {
     try {
       await axios.post(ConfigService.EmailServiceUrl, {
-        params: emailOptions,
+        emailOptions,
       });
     } catch (e) {
       console.error(e);
