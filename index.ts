@@ -15,7 +15,7 @@ import { InsectsPage } from "./src/pages/photos-ive-taken/nature/pages/insects.p
 import { LichenPage } from "./src/pages/photos-ive-taken/nature/pages/lichen.page";
 import { FungiPage } from "./src/pages/photos-ive-taken/nature/pages/fungi.page";
 import { ConfigService } from "./src/services/config.service";
-import { SavePageView } from "./src/standalone/view-page.endpoint";
+import { SavePageView } from "./src/standalone/view-page/view-page.endpoint";
 import { CVPage } from "./src/pages/home/cv.page";
 import { KnockKnockEndpoint } from "./src/standalone/knock-knock.endpoint";
 import { OperationsDashboardPage } from "./src/operations/dashboard.page";
@@ -60,7 +60,7 @@ app.post("/view-page", SavePageView);
 app.get("/cv", CVPage);
 app.get("/knock-knock", KnockKnockEndpoint);
 app.get("/health", HealthEndpoint);
-app.post("/webhooks", WebhooksEndpoint)
+app.post("/webhooks", WebhooksEndpoint);
 
 app.post("/operations", OperationsDashboardPage);
 app.post("/operations/word-of-the-day/add", AddWordOfDayEndpoint);

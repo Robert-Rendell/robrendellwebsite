@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ViewPageFunc } from "../../standalone/view-page.function";
+import { ViewPageFunc } from "../../standalone/view-page/view-page.function";
 import { resourcesPath } from "../../resources/path";
 import { IPAddressService } from "../../services/ip-address.service";
 

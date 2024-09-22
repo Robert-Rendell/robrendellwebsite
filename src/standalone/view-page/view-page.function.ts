@@ -4,9 +4,10 @@ import {
   PageViewerDocument,
   ViewPageResponse,
 } from "robrendellwebsite-common";
-import { IPAddressService } from "../services/ip-address.service";
-import { PageViewsDynamoDbService } from "../services/page-views-dynamodb.service";
-import { doNotSaveIps } from "./utils/do-not-save-ip-list";
+import { IPAddressService } from "../../services/ip-address.service";
+import { PageViewsDynamoDbService } from "../../services/page-views-dynamodb.service";
+import { doNotSaveIps } from "../utils/do-not-save-ip-list";
+import { invokeCustomAnalyticsLambda } from "./invoke-custom-analytics";
 
 export const ViewPageFunc = async (
   req: Request<PageViewRequest>
@@ -24,6 +25,12 @@ export const ViewPageFunc = async (
       pageViewer: pageViewObj,
       isSaving,
     });
+  invokeCustomAnalyticsLambda({
+    pageRoute: pageViewObj.pageUrl,
+    browserAgent: req.headers["user-agent"] as string,
+    ipAddress: pageViewObj.ipAddress,
+    dateTime: pageViewObj.dateTime,
+  });
   if (!isSaving) {
     console.log(
       "[SavePageView]:",

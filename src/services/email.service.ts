@@ -1,5 +1,5 @@
-import { ConfigService } from "./config.service";
 import axios from "axios";
+import { ConfigService } from "./config.service";
 
 export type EmailOptions = {
   subject: string;

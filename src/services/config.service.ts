@@ -123,8 +123,8 @@ export class ConfigService {
     return ConfigService.GetEnvVar(EnvVar.EMAIL_SERVICE_URL);
   }
 
-  static get VPNInfoServiceAPIKey(): string {
-    return ConfigService.GetEnvVar(EnvVar.VPN_INFO_SERVICE_API_KEY);
+  static get CustomAnalyticsARN(): string {
+    return ConfigService.GetEnvVar(EnvVar.CUSTOM_ANALYTICS_ARN);
   }
 
   static get DBHost(): string {
