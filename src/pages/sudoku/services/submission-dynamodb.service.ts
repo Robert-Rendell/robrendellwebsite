@@ -22,10 +22,10 @@ export default class SubmissionsDynamoDbService extends DynamoDBService {
     if (SubmissionsDynamoDbService.isCompletedSubmission(submission)) {
       EmailService.send({
         subject: "[robrendellwebsite] Sudoku completed!",
-        text:
-          `${submission.submitterName} - ${submission.ipAddress}` +
-          ` - Sudoku Id: [${submission.sudokuId} - ` +
-          `<a href="${ConfigService.AppHost}/sudoku/play/${submission.sudokuId}>Play now</a>]`,
+        html:
+          `<h3>Submitter</h3><p>${submission.submitterName}</p><p>${submission.ipAddress}</p>` +
+          `<h3>Sudoku</h3><p>Id: ${submission.sudokuId}</p>` +
+          `<h2><a href="${ConfigService.AppHost}/sudoku/play/${submission.sudokuId}>Play now!</a><h2>`,
       });
     }
   }
