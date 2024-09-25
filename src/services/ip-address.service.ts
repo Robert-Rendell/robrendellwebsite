@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-import * as geoip from "fast-geoip";
 import { IPLocation } from "robrendellwebsite-common";
 import { Request } from "express";
 import { ConfigService } from "./config.service";
@@ -16,14 +14,6 @@ export class IPAddressService {
     }
     const ip = forwarded || req.socket.remoteAddress || "unknown IP";
     return ip;
-  }
-
-  public static async getIPLocation(
-    ipAddress: string
-  ): Promise<IPLocation | undefined> {
-    const geo = await geoip.lookup(ipAddress);
-    console.log(`IPAddressService.getIPLocation(${ipAddress})`, geo);
-    return geo ?? undefined;
   }
 
   public static isOneOfMyIpAddresses(req: Request): boolean {

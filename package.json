@@ -75,7 +75,6 @@
     "dotenv": "^16.0.3",
     "express": "^4.17.3",
     "express-rate-limit": "^5.5.1",
-    "fast-geoip": "^1.1.88",
     "helmet": "~4.6.0",
     "lodash": "^4.17.21",
     "morgan": "~1.10.0",
