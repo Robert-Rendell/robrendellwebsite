@@ -70,6 +70,7 @@ class SudokuAPI {
       dateCompleted: "",
       ipAddress: `${IPAddressService.getIPAddress(req)}`,
       timesValidated: 0,
+      invalidSubmissionCount: 0,
       valid: opts?.validation?.valid,
       complete: opts?.validation?.complete,
       submitterName: opts?.submitterName || "",
@@ -93,6 +94,10 @@ class SudokuAPI {
       timesValidated:
         typeof partial.timesValidated !== "undefined"
           ? partial.timesValidated
+          : 0,
+      invalidSubmissionCount:
+        typeof partial.invalidSubmissionCount !== "undefined"
+          ? partial.invalidSubmissionCount
           : 0,
       valid: partial.valid,
       complete: partial.complete,
@@ -273,6 +278,10 @@ class SudokuAPI {
             submissionRequest.sudokuSubmission,
             sudoku?.solution || ""
           );
+        response.invalidSubmissionCount =
+          startSubmission?.invalidSubmissionCount
+            ? startSubmission.invalidSubmissionCount + 1
+            : 1;
       }
 
       const completedDate = new Date();
@@ -291,6 +300,7 @@ class SudokuAPI {
         valid: response.valid,
         timeTakenMs: response.timeTakenMs,
         timesValidated: response.timesValidated,
+        invalidSubmissionCount: response.invalidSubmissionCount,
         submitterName: submissionRequest.submitterName,
       });
 

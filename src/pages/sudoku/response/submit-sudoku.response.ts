@@ -9,6 +9,7 @@ import SudokuValidationIssue from "../models/sudoku-validation-issue";
 export interface SubmitSudokuBasicResponse extends SudokuValidation {
   timeTakenMs?: number;
   timesValidated?: number;
+  invalidSubmissionCount?: number;
 }
 export interface ExtendedSubmitSudokuResponse
   extends SubmitSudokuBasicResponse {

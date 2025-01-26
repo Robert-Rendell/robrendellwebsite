@@ -55,7 +55,7 @@ export default class SubmissionsDynamoDbService extends DynamoDBService {
       },
       FilterExpression: "complete = :completedSubmissions",
       ProjectionExpression:
-        "timeTakenMs, dateSubmitted, dateCompleted, submitterName, timesValidated",
+        "timeTakenMs, dateSubmitted, dateCompleted, submitterName, timesValidated, invalidSubmissionCount",
       ScanIndexForward: false,
     };
 

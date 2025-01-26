@@ -16,6 +16,8 @@ export class Submission implements ISubmissionModel {
   @Column()
   timesValidated!: number;
   @Column()
+  invalidSubmissionCount!: number;
+  @Column()
   timeTakenMs!: number;
   @Column()
   dateCompleted!: string;
