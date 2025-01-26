@@ -270,7 +270,7 @@ class SudokuAPI {
         timesValidated: startSubmission?.timesValidated
           ? startSubmission.timesValidated + 1
           : 1,
-        invalidSubmissionCount: startSubmission.invalidSubmissionCount,
+        invalidSubmissionCount: startSubmission?.invalidSubmissionCount ?? 0,
       };
 
       if (!response.valid) {
