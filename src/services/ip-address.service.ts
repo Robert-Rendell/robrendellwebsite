@@ -25,13 +25,16 @@ export class IPAddressService {
     return false;
   }
 
+  /**
+   * TODO: Currently disabled for some reason that I can't remember; remove or enable.
+   */
   public static isBlockedIpAddress(req: Request): boolean {
     const ipAddress = IPAddressService.getIPAddress(req);
     const blockedIps = ConfigService.BlockedIpAddresses;
     if (typeof ipAddress === "string") {
       return blockedIps.includes(ipAddress);
     }
-    let blocked = false;
+    const blocked = false;
     return blocked;
   }
 
