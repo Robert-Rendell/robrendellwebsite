@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import AWS from "aws-sdk";
-import sharp from "sharp";
+import sharp from "sharp"; // eslint-disable-line import/no-extraneous-dependencies
 import {
   KeepNote,
   KeepNoteLabel,

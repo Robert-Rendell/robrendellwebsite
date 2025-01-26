@@ -14,5 +14,4 @@ export const ViewPageFunc = async (req: Request<PageViewRequest>) => {
     ipAddress: `${IPAddressService.getIPAddress(req)}`,
     dateTime: String(new Date()),
   });
-  return;
 };
