@@ -25,6 +25,8 @@ import { HealthEndpoint } from "./src/standalone/health.endpoint";
 import { BattleshipsAPI } from "./src/pages/battleships/battleships.page";
 import { MidjourneyCreationsPage } from "./src/pages/misc/midjourney.page";
 import { WebhooksEndpoint } from "./src/standalone/webhooks.endpoint";
+import { GetAvailableWalkingSlotsEndpoint } from "./src/standalone/robs-free-dog-walks/get-available-walking-slots.endpoint";
+import { BookWalkingSlotsEndpoint } from "./src/standalone/robs-free-dog-walks/book-walking-slot.endpoint";
 
 // Heroku exposes PORT env var by default
 const PORT = process.env.PORT || ConfigService.Port || 80;
@@ -65,6 +67,9 @@ app.post("/webhooks", WebhooksEndpoint);
 app.post("/operations", OperationsDashboardPage);
 app.post("/operations/word-of-the-day/add", AddWordOfDayEndpoint);
 app.post("/operations/dates-in-history/add", AddDateInHistoryEndpoint);
+
+app.post("/robs-free-dog-walks/get-available-slots", GetAvailableWalkingSlotsEndpoint);
+app.post("/robs-free-dog-walks/book-slots", BookWalkingSlotsEndpoint);
 
 app.get("/misc/midjourney-creations", MidjourneyCreationsPage);
 
