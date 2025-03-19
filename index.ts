@@ -27,6 +27,7 @@ import { MidjourneyCreationsPage } from "./src/pages/misc/midjourney.page";
 import { WebhooksEndpoint } from "./src/standalone/webhooks.endpoint";
 import { GetAvailableWalkingSlotsEndpoint } from "./src/standalone/robs-free-dog-walks/get-available-walking-slots.endpoint";
 import { BookWalkingSlotsEndpoint } from "./src/standalone/robs-free-dog-walks/book-walking-slot.endpoint";
+import { GetDogBreedsEndpoint } from "./src/standalone/robs-free-dog-walks/get-dog-breeds";
 
 // Heroku exposes PORT env var by default
 const PORT = process.env.PORT || ConfigService.Port || 80;
@@ -68,8 +69,10 @@ app.post("/operations", OperationsDashboardPage);
 app.post("/operations/word-of-the-day/add", AddWordOfDayEndpoint);
 app.post("/operations/dates-in-history/add", AddDateInHistoryEndpoint);
 
-app.post("/robs-free-dog-walks/get-available-slots", GetAvailableWalkingSlotsEndpoint);
-app.post("/robs-free-dog-walks/book-slots", BookWalkingSlotsEndpoint);
+const ROBS_FREE_DOG_WALKS_ROUTE = "/robs-free-dog-walks";
+app.post(`${ROBS_FREE_DOG_WALKS_ROUTE}/get-available-slots`, GetAvailableWalkingSlotsEndpoint);
+app.post(`${ROBS_FREE_DOG_WALKS_ROUTE}/book-slots`, BookWalkingSlotsEndpoint);
+app.get(`${ROBS_FREE_DOG_WALKS_ROUTE}/get-dog-breeds`, GetDogBreedsEndpoint);
 
 app.get("/misc/midjourney-creations", MidjourneyCreationsPage);
 
