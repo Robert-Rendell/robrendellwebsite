@@ -31,7 +31,7 @@ export default class S3BucketService {
     return Error("s3 instance in s3-bucket.service.ts not initialised");
   }
 
-  private static isOffline() {
+  private static get isOffline() {
     return ConfigService.AppHost.includes("http://localhost");
   }
 
@@ -46,7 +46,7 @@ export default class S3BucketService {
   }
 
   public static async download(bucket: string, key: string) {
-    if (S3BucketService.isOffline() || !S3BucketService.s3Object) {
+    if (S3BucketService.isOffline || !S3BucketService.s3Object) {
       console.log(bucket, key);
       const s3FilePath = `${bucket}/${key}`;
       const stub = S3BucketOfflineStubs[s3FilePath];
