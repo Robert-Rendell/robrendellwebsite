@@ -20,6 +20,10 @@ export default class S3BucketService {
     }
   }
 
+  private static get isOffline() {
+    return ConfigService.AppHost.includes("http://localhost");
+  }
+
   public static get s3() {
     if (!S3BucketService.s3Object) {
       throw S3BucketService.nullS3ObjectError();
@@ -29,10 +33,6 @@ export default class S3BucketService {
 
   public static nullS3ObjectError() {
     return Error("s3 instance in s3-bucket.service.ts not initialised");
-  }
-
-  private static get isOffline() {
-    return ConfigService.AppHost.includes("http://localhost");
   }
 
   public static async upload(bucket: string, key: string, content: string) {
