@@ -1,7 +1,7 @@
 import S3, { ObjectList } from "aws-sdk/clients/s3";
 import { Request, Response } from "express";
 import { ConfigService } from "../../services/config.service";
-import S3BucketService from "../../services/s3-bucket.service";
+import S3BucketService from "../../services/s3-bucket/s3-bucket.service";
 
 export async function MidjourneyCreationsPage(
   req: Request,
@@ -15,6 +15,7 @@ export async function MidjourneyCreationsPage(
       Bucket: bucket,
       Prefix: `${prefix}/`,
     };
+
     const objs = await S3BucketService.s3.listObjectsV2(options).promise();
     const keys: ObjectList | undefined = objs.Contents;
 

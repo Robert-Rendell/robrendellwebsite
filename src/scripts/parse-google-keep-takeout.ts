@@ -6,7 +6,7 @@ import {
   KeepNote,
   KeepNoteLabel,
 } from "./typing/parse-google-keep-takeout.models";
-import S3BucketService from "../services/s3-bucket.service";
+import S3BucketService from "../services/s3-bucket/s3-bucket.service";
 /**
  * Overview:
  * - Google Keep API is only for enterprise level users

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { HomePageResponse } from "robrendellwebsite-common";
 import { ConfigService } from "../../services/config.service";
-import S3BucketService from "../../services/s3-bucket.service";
+import S3BucketService from "../../services/s3-bucket/s3-bucket.service";
 import { S3ImagePrefix } from "../../enums/s3-image-prefix.enum";
 
 export const HomePage = async (req: Request, res: Response) => {

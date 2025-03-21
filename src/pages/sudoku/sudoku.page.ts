@@ -8,7 +8,7 @@ import {
   SudokuLeaderboardResponse,
 } from "robrendellwebsite-common";
 import { IPAddressService } from "../../services/ip-address.service";
-import S3BucketService from "../../services/s3-bucket.service";
+import S3BucketService from "../../services/s3-bucket/s3-bucket.service";
 import SudokuDynamoDBService from "./services/sudoku-dynamodb.service";
 import SudokuValidatorService from "./services/sudoku-validator.service";
 import SubmissionsDynamoDbService from "./services/submission-dynamodb.service";

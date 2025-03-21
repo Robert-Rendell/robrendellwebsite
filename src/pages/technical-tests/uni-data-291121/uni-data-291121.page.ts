@@ -1,7 +1,7 @@
 import { GetObjectOutput } from "aws-sdk/clients/s3";
 import { Request, Response } from "express";
 import { ConfigService } from "../../../services/config.service";
-import S3BucketService from "../../../services/s3-bucket.service";
+import S3BucketService from "../../../services/s3-bucket/s3-bucket.service";
 import { Graph } from "./models/graph";
 import { Institution } from "./models/institution";
 import { Submission } from "./models/submission";

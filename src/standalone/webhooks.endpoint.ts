@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import S3BucketService from "../services/s3-bucket.service";
+import S3BucketService from "../services/s3-bucket/s3-bucket.service";
 
 export const WebhooksEndpoint = async (req: Request, res: Response) => {
   try {

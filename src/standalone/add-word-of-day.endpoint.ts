@@ -8,7 +8,7 @@ import {
 import { AuthService } from "../services/auth.service";
 import { ConfigService } from "../services/config.service";
 import { IPAddressService } from "../services/ip-address.service";
-import S3BucketService from "../services/s3-bucket.service";
+import S3BucketService from "../services/s3-bucket/s3-bucket.service";
 
 const wordOfDayFilename = "word-of-day.json";
 
