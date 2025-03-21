@@ -25,9 +25,8 @@ import { HealthEndpoint } from "./src/standalone/health.endpoint";
 import { BattleshipsAPI } from "./src/pages/battleships/battleships.page";
 import { MidjourneyCreationsPage } from "./src/pages/misc/midjourney.page";
 import { WebhooksEndpoint } from "./src/standalone/webhooks.endpoint";
-import { GetAvailableWalkingSlotsEndpoint } from "./src/standalone/robs-free-dog-walks/get-available-walking-slots.endpoint";
-import { BookWalkingSlotsEndpoint } from "./src/standalone/robs-free-dog-walks/book-walking-slot.endpoint";
-import { GetDogBreedsEndpoint } from "./src/standalone/robs-free-dog-walks/get-dog-breeds";
+import { BookFreeDogWalkEndpoint } from "./src/standalone/robs-free-dog-walks/endpoints/book-free-dog-walk.endpoint";
+import { GetDogBreedsEndpoint } from "./src/standalone/robs-free-dog-walks/endpoints/get-dog-breeds.endpoint";
 
 // Heroku exposes PORT env var by default
 const PORT = process.env.PORT || ConfigService.Port || 80;
@@ -70,8 +69,7 @@ app.post("/operations/word-of-the-day/add", AddWordOfDayEndpoint);
 app.post("/operations/dates-in-history/add", AddDateInHistoryEndpoint);
 
 const ROBS_FREE_DOG_WALKS_ROUTE = "/robs-free-dog-walks";
-app.post(`${ROBS_FREE_DOG_WALKS_ROUTE}/get-available-slots`, GetAvailableWalkingSlotsEndpoint);
-app.post(`${ROBS_FREE_DOG_WALKS_ROUTE}/book-slots`, BookWalkingSlotsEndpoint);
+app.post(`${ROBS_FREE_DOG_WALKS_ROUTE}/book-free-dog-walk`, BookFreeDogWalkEndpoint);
 app.get(`${ROBS_FREE_DOG_WALKS_ROUTE}/get-dog-breeds`, GetDogBreedsEndpoint);
 
 app.get("/misc/midjourney-creations", MidjourneyCreationsPage);

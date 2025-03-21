@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import S3BucketService from "../../services/s3-bucket/s3-bucket.service";
-import { ConfigService } from "../../services/config.service";
-import { DOG_BREEDS_JSON, ROBS_FREE_DOG_WALKS_FOLDER_KEY } from "./const";
-import { DogBreedsJson } from "./types/dog-breeds";
+import S3BucketService from "../../../services/s3-bucket/s3-bucket.service";
+import { ConfigService } from "../../../services/config.service";
+import { DOG_BREEDS_JSON, ROBS_FREE_DOG_WALKS_FOLDER_KEY } from "../const";
+import { DogBreedsJson } from "../types/jsons/dog-breeds-json";
 
 export const GetDogBreedsEndpoint = async (req: Request, res: Response) => {
   try {
