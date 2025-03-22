@@ -26,23 +26,30 @@ const requiredFields: RequiredFields = [
 export const BookFreeDogWalkEndpoint = async (req: Request, res: Response) => {
   try {
     const payload: BookDogWalkingPayload = req.body;
-    const missingRequiredFields = [];
-    for (const field of requiredFields) {
-      if (!payload[field]) {
-        missingRequiredFields.push(payload[field]);
+    let s3Json = null;
+    try {
+      s3Json = await S3BucketService.download(
+        ConfigService.PublicBucket,
+        ROBS_FREE_DOG_WALKS_FOLDER_KEY + DOG_WALKING_CALENDAR_JSON
+      );
+    } catch (e) {
+      console.log((e as Error).message);
+      if ((e as Error).message === "The specified key does not exist.") {
+        const newDogWalkingCalendar: DogWalkingCalendarJson = {
+          lastUpdated: "22.03.25",
+          bookingsRequested: [],
+          bookingsConfirmed: [],
+        };
+        await S3BucketService.upload(
+          ConfigService.PublicBucket,
+          ROBS_FREE_DOG_WALKS_FOLDER_KEY + DOG_WALKING_CALENDAR_JSON,
+          JSON.stringify(newDogWalkingCalendar)
+        );
+      } else {
+        throw e;
       }
     }
-    if (missingRequiredFields.length > 0) {
-      return res.status(400).send(<ErrorResponse>{
-        errorMessage: `'Missing required fields in request body: ${missingRequiredFields.join(
-          ", "
-        )}`,
-      });
-    }
-    const s3Json = await S3BucketService.download(
-      ConfigService.PublicBucket,
-      ROBS_FREE_DOG_WALKS_FOLDER_KEY + DOG_WALKING_CALENDAR_JSON
-    );
+
     const dogWalkingCalendar: DogWalkingCalendarJson = JSON.parse(
       s3Json?.toString() || ""
     );
@@ -58,13 +65,12 @@ export const BookFreeDogWalkEndpoint = async (req: Request, res: Response) => {
       JSON.stringify(dogWalkingCalendar)
     );
 
-    EmailService.send({
-      subject: `[robs-free-dog-walks] Requested walk: ${payload.owner} (${payload.dog})`,
-      html: JSON.stringify(payload, null, 2),
+    return res.status(200).send({
+      index: dogWalkingCalendar.bookingsRequested.length,
+      payload,
     });
-
-    res.status(200).send();
   } catch (e) {
-    res.status(500).send((e as Error).message);
+    console.log(e);
+    return res.status(500).send((e as Error).message);
   }
 };
