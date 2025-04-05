@@ -7,6 +7,7 @@ export const KnockKnockEndpoint = async (req: Request, res: Response) => {
     if (AuthService.hasAccess(req)) {
       res.status(200).send();
     } else {
+      console.log(`Forbidden: ${IPAddressService.getIPAddress(req)}`);
       res.status(403).send(IPAddressService.blockedIpMessage);
     }
   } catch (e) {
